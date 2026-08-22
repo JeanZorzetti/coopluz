@@ -215,7 +215,21 @@ const NAV = [
       document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", cor));
     };
 
+    // O balanço do pêndulo. Reiniciado ANTES de mexer no tema, e a ordem não é
+    // estética: aqui o layout ainda está limpo e a leitura de offsetWidth sai
+    // do cache; depois de escrever dataset.tema ela forçaria um reflow síncrono
+    // da página inteira no frame do clique — exatamente o que o resto deste
+    // arquivo existe para evitar. Sem a releitura, puxar duas vezes seguidas
+    // não reiniciaria a animação: o atributo já estaria lá.
+    const balancar = () => {
+      cordao.removeAttribute("data-quicando");
+      void cordao.offsetWidth;
+      cordao.setAttribute("data-quicando", "");
+    };
+    cordao.addEventListener("animationend", () => cordao.removeAttribute("data-quicando"));
+
     const alternar = () => {
+      balancar();
       // Trava as transições durante a troca: sem isso, todo botão e chip da
       // página interpola cor no mesmo frame do clique. Ver o comentário em
       // global.css — vale INP e vale nitidez.

@@ -547,6 +547,10 @@ img, svg { max-width: 100%; height: auto; display: block; }
      elemento decorativo. O facho é que cede. */
   --cone-a: rgba(99, 198, 224, 0.16);
   --cone-b: rgba(95, 208, 143, 0.2);
+  /* A poça: onde o facho encosta. Fica ABAIXO de --cone-a de propósito — ela
+     soma com a cauda do facho no mesmo lugar, e a soma é que não pode passar
+     do teto medido em --cone-b. */
+  --cone-poca: rgba(95, 208, 143, 0.11);
   --fio-cor: rgba(36, 140, 160, 0.55);
   --no-cor: rgba(36, 140, 160, 0.9);
   --bulbo-apagado: #9dbcc2;
@@ -572,6 +576,7 @@ img, svg { max-width: 100%; height: auto; display: block; }
        duas intensidades — e é o cordão que decide qual. */
     --cone-a: light-dark(rgba(99, 198, 224, 0.13), rgba(99, 198, 224, 0.17));
     --cone-b: light-dark(rgba(95, 208, 143, 0.16), rgba(95, 208, 143, 0.22));
+    --cone-poca: light-dark(rgba(95, 208, 143, 0.09), rgba(95, 208, 143, 0.13));
     --fio-cor: light-dark(rgba(36, 140, 160, 0.55), rgba(99, 198, 224, 0.75));
     --no-cor: light-dark(rgba(36, 140, 160, 0.9), rgba(95, 208, 143, 0.95));
     --bulbo-apagado: light-dark(#9dbcc2, #2c4a54);
@@ -653,7 +658,12 @@ img, svg { max-width: 100%; height: auto; display: block; }
    dois retângulos com máscara em L (a receita do Aceternity que todo mundo já
    viu): é um vértice só, na posição física da lâmpada.
 
-   O `mask` vertical é o que impede o facho de terminar num corte reto na base.
+   Duas camadas, e a divisão entre elas é o que a máscara obriga: a máscara
+   vertical (que impede o facho de terminar num corte reto na base) vale para
+   o elemento INTEIRO, pseudo-elementos inclusive. Então quem é mascarado — o
+   facho — mora no ::before, e a poça, que a máscara apagaria justamente na
+   altura onde ela trabalha, fica no elemento.
+
    Nada aqui é elemento de LCP: o cone é fundo pintado por CSS no primeiro
    frame, o LCP é o <h1> que fica dentro dele. */
 .cone {
@@ -662,13 +672,35 @@ img, svg { max-width: 100%; height: auto; display: block; }
   height: min(92vh, 820px);
   z-index: 0;
   pointer-events: none;
+  /* O ápice num token porque três lugares precisam do MESMO x — o vértice do
+     facho, a origem da animação de abertura e o centro da poça. Enquanto
+     estava escrito à mão nos três, mudar a composição era mudar três números
+     e descobrir o esquecido no navegador. */
+  --cone-x: 22%;
+  --poca-x: 13%;
+  /* A poça: o lugar onde a luz ENCOSTA. É ela que tira o facho do ar — sem o
+     ponto de chegada, um cone de luz lê como mancha clara em diagonal. O
+     radial se apaga sozinho nas quatro direções, então não precisa de
+     máscara nenhuma. */
+  background: radial-gradient(56% 30% at var(--poca-x) 78%, var(--cone-poca), transparent 72%);
+}
+/* O facho. Paradas ASSIMÉTRICAS, e é isso que separa luz de gradiente: luz
+   real tem penumbra de um lado e uma borda de sombra quase reta do outro.
+   Aqui a subida é longa (13deg do transparente até o núcleo) e a descida é um
+   corte de 3.5deg. Nenhuma parada passa de --cone-b — a nitidez vem da
+   DISTÂNCIA entre as paradas, não de mais tinta, então o teto de contraste
+   medido continua valendo linha por linha. */
+.cone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background: conic-gradient(
-    from 172deg at 22% -10%,
+    from 172deg at var(--cone-x) -10%,
     transparent 0deg,
-    var(--cone-a) 11deg,
-    var(--cone-b) 20deg,
-    var(--cone-a) 29deg,
-    transparent 40deg
+    var(--cone-a) 13deg,
+    var(--cone-b) 23deg,
+    var(--cone-b) 31deg,
+    transparent 34.5deg
   );
   -webkit-mask: linear-gradient(to bottom, #000 0%, #000 26%, transparent 94%);
           mask: linear-gradient(to bottom, #000 0%, #000 26%, transparent 94%);
@@ -684,13 +716,23 @@ img, svg { max-width: 100%; height: auto; display: block; }
   opacity: 0.05;
   mix-blend-mode: soft-light;
   pointer-events: none;
+  -webkit-mask: linear-gradient(to bottom, #000 0%, #000 26%, transparent 94%);
+          mask: linear-gradient(to bottom, #000 0%, #000 26%, transparent 94%);
 }
 /* A abertura do facho na entrada: o cone cresce de uma fresta para a largura
    cheia. Anima `scale` no eixo X a partir do ápice, que é o único jeito de a
    luz parecer ABRIR em vez de aparecer. */
 @keyframes cone-abre { from { scale: 0.35 1; opacity: 0; } }
 @media (prefers-reduced-motion: no-preference) {
-  .cone { transform-origin: 22% 0; animation: cone-abre var(--dur-cena) var(--ease-cena) both; }
+  .cone { transform-origin: var(--cone-x) 0; animation: cone-abre var(--dur-cena) var(--ease-cena) both; }
+}
+
+/* No celular a lâmpada anda para o meio da tela. A 22% de 380px o facho nasce
+   colado na borda esquerda e sai de cena antes de cruzar o h1 — de perto vira
+   mancha de canto, que é justamente o que o resto desta seção existe para não
+   ser. O interruptor continua à direita: quem se move é a luminária. */
+@media (max-width: 699px) {
+  .cone { --cone-x: 52%; --poca-x: 30%; }
 }
 
 /* =========================================================================
@@ -788,14 +830,11 @@ img, svg { max-width: 100%; height: auto; display: block; }
    caminho garantido. Nasce `hidden` porque sem JS não faria nada — e botão
    morto é pior que botão ausente. */
 .cordao {
+  /* Sobrescrito por Header.astro, que o ancora em `absolute` no topo da
+     primeira linha. Fica aqui como base: sem contexto de posicionamento os
+     dois filhos escapariam para o cabeçalho inteiro. */
   position: relative;
-  flex: none;
   width: 34px;
-  /* Encosta no topo do cabeçalho: é o que faz o fio parecer preso ao teto e
-     não flutuando. A margem negativa cancela o padding da linha. */
-  align-self: stretch;
-  min-height: 44px;
-  margin-block: calc(-1 * var(--e-3));
   padding: 0;
   border: 0;
   background: none;
@@ -806,33 +845,81 @@ img, svg { max-width: 100%; height: auto; display: block; }
      rola embora: ninguém rola a página a partir daqui, e o toque simples
      continua alternando o tema como qualquer botão. */
   touch-action: none;
+  /* A queda em repouso, em px e não em 50%: é o MESMO número que o pivô do
+     balanço precisa ler para os dois filhos girarem em torno do teto, e
+     porcentagem em `transform-origin` se refere à caixa de cada um deles.
+     Sai da altura fixada em Header.astro (56px = 12 de padding + 44 de alvo);
+     30px deixa o bulbo pendurado abaixo do meio, e não centrado — cordão
+     centrado lê como ícone. */
+  --cordao-queda: 34px;
 }
 .cordao[hidden] { display: none; }
 .cordao:active { cursor: grabbing; }
+/* Um convite de 3px: o cordão desce um pouco quando o ponteiro chega ou o
+   foco cai nele. É o que diz "isto se puxa" sem tooltip e sem instrução. */
+@media (hover: hover) {
+  .cordao:hover { --puxao: 3px; }
+}
+.cordao:focus-visible { --puxao: 3px; }
+
 .cordao__fio {
   position: absolute;
   left: 50%;
   top: 0;
-  height: calc(50% + var(--puxao, 0px));
-  width: 2px;
+  height: calc(var(--cordao-queda) + var(--puxao, 0px));
+  width: 3px;
   translate: -50% 0;
-  background: var(--borda);
+  /* O pivô dos dois filhos é o mesmo ponto físico — o topo do cabeçalho, onde
+     o cordão está preso. É isso que faz o balanço ler como pêndulo rígido em
+     vez de duas peças girando cada uma no próprio eixo. */
+  transform-origin: 50% 0;
+  /* Trançado, não traço: a hachura diagonal de duas tintas é o que separa um
+     cordão de uma linha de 2px — que a 1x lia como artefato de render. A
+     tinta dominante é --cinza-500 porque --borda sozinha sumia sobre branco. */
+  background: repeating-linear-gradient(
+    -40deg,
+    var(--cinza-500) 0 1.5px,
+    var(--borda) 1.5px 3.5px
+  );
+  border-radius: 0 0 1px 1px;
 }
 .cordao__bulbo {
   position: absolute;
   left: 50%;
-  top: calc(50% + var(--puxao, 0px));
-  width: 13px;
-  height: 13px;
+  top: calc(var(--cordao-queda) + var(--puxao, 0px));
+  width: 14px;
+  height: 14px;
   translate: -50% 0;
+  transform-origin: 50% calc(-1 * var(--cordao-queda));
   border-radius: 50%;
-  background: var(--bulbo-apagado);
+  /* Realce fora de centro: é o reflexo que faz uma bola chapada virar vidro.
+     Fica na direção da luz do sistema, e não no meio. */
+  background:
+    radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 52%),
+    var(--bulbo-apagado);
+}
+/* O casquilho. Sem ele o bulbo é uma bolinha na ponta de um fio; com ele é uma
+   lâmpada pendurada — a peça que mais barato compra a leitura do objeto. */
+.cordao__bulbo::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 3px);
+  width: 7px;
+  height: 5px;
+  translate: -50% 0;
+  border-radius: 2px 2px 0 0;
+  background: var(--cinza-500);
 }
 /* Aceso = tema claro. O bulbo é a única fonte de luz da interface, e o estado
-   dele é redundante com o rótulo do botão — cor nunca é o único sinal. */
+   dele é redundante com o rótulo do botão — cor nunca é o único sinal.
+   Três anéis de brilho e não um: o vidro, o halo curto e o derrame longe. */
 .cordao[data-aceso] .cordao__bulbo {
-  background: var(--bulbo-aceso);
-  box-shadow: 0 0 0 3px var(--bulbo-halo), 0 0 18px 5px var(--bulbo-halo-longe);
+  background:
+    radial-gradient(circle at 36% 30%, #fffaf0, rgba(255, 255, 255, 0) 58%),
+    var(--bulbo-aceso);
+  box-shadow: 0 0 0 3px var(--bulbo-halo), 0 0 10px 2px var(--bulbo-halo-longe),
+    0 0 26px 9px var(--bulbo-halo);
 }
 /* Sem transição durante o arrasto: `--puxao` muda a cada frame, e transição em
    algo que segue o dedo lê como atraso, não como suavidade. Fora do arrasto,
@@ -841,6 +928,22 @@ img, svg { max-width: 100%; height: auto; display: block; }
 .cordao:not([data-arrastando]) .cordao__bulbo {
   transition: height var(--dur-base) var(--ease-mola), top var(--dur-base) var(--ease-mola),
     background-color var(--dur-rapida) ease, box-shadow var(--dur-rapida) ease;
+}
+/* O balanço. Uma mola vertical sozinha devolve o bulbo em linha reta, e nada
+   pendurado volta em linha reta: o que falta é o pêndulo. Como os dois filhos
+   giram em torno do mesmo pivô, basta o mesmo `rotate` nos dois.
+   `rotate` (e não `transform`) porque o `translate: -50%` da centralização
+   precisa continuar valendo — as propriedades individuais não se sobrescrevem. */
+@keyframes cordao-balanca {
+  25% { rotate: 3.6deg; }
+  50% { rotate: -2.1deg; }
+  75% { rotate: 1deg; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .cordao[data-quicando] .cordao__fio,
+  .cordao[data-quicando] .cordao__bulbo {
+    animation: cordao-balanca 780ms var(--ease-saida);
+  }
 }
 
 /* Trocar o tema reescreve `color-scheme` na raiz, e TODA declaração de
@@ -859,6 +962,15 @@ img, svg { max-width: 100%; height: auto; display: block; }
 :root[data-trocando-tema] *::before,
 :root[data-trocando-tema] *::after {
   transition: none !important;
+}
+/* O cordão é a exceção, e precisa ser: quem puxa e solta troca o tema no mesmo
+   gesto, então a supressão pegava a mola no exato frame em que ela ia começar
+   — o bulbo voltava para o lugar por corte seco, e o gesto perdia a única
+   parte que confirma que ele foi um puxão. Duas propriedades num elemento de
+   14px não são o que estourava o INP; vinte elementos interpolando cor eram. */
+:root[data-trocando-tema] .cordao__fio,
+:root[data-trocando-tema] .cordao__bulbo {
+  transition: height var(--dur-base) var(--ease-mola), top var(--dur-base) var(--ease-mola) !important;
 }
 
 /* =========================================================================
