@@ -4,8 +4,12 @@
 // "nenhum import atravessando a fronteira"), então o NAP da Autogestor
 // existe fisicamente nos dois lugares. Não importa daqui o original: os
 // builds são independentes. Atualizar aqui manualmente sempre que o hub
-// mudar endereço, telefone, e-mail, fundação ou o prazo/horário de
-// atendimento — os dois arquivos precisam continuar batendo.
+// mudar endereço, e-mail, fundação ou o prazo/horário de atendimento — os
+// dois arquivos precisam continuar batendo.
+//
+// Exceção deliberada: telefone/telefoneExibicao NÃO batem mais com o hub —
+// o site coopluz passou a ter linha de WhatsApp própria (62 98344-3919),
+// diferente do número da Autogestor em autogestor.roilabs.com.br.
 //
 // EXTERNOS (cotação de seguro/viagens, consulta SUSEP) não migrou: nenhuma
 // página deste site usa esses links, são específicos de outras verticais.
@@ -18,8 +22,8 @@ export const EMPRESA = {
   nomeLegal: "Grupo Autogestor Adm de Serviços — Seguros, Financiamentos e Turismo",
   fundacao: "2004",
   susep: "202070004",
-  telefone: "+5562982622220",
-  telefoneExibicao: "(62) 98262-2220",
+  telefone: "+5562983443919",
+  telefoneExibicao: "(62) 98344-3919",
   email: "atendimento@autogestor.com.br",
   endereco: {
     rua: "Av. Itália, 1326",
