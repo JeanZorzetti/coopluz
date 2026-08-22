@@ -20,9 +20,9 @@ const schema = [
   {
     "@type": "Blog",
     "@id": `${abs("/blog")}#blog`,
-    name: "Guias da Autogestor",
+    name: "Guias da Coopluz Goiás",
     inLanguage: "pt-BR",
-    publisher: { "@id": abs("/#organizacao") },
+    publisher: { "@id": abs("/#operadora") },
     blogPost: posts.map((p) => ({
       "@type": "BlogPosting",
       "@id": `${abs(`/blog/${p.id}`)}#post`,

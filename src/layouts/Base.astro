@@ -1,7 +1,7 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import { ATENDIMENTO, EMPRESA, GA4 } from "../consts";
+import { ATENDIMENTO, COOPERATIVA, EMPRESA, GA4, SITE } from "../consts";
 import { AREA_SERVIDA } from "../data/solucoes";
 import "../styles/global.css";
 
@@ -45,6 +45,19 @@ const site = Astro.site ?? new URL("https://coopluz.roilabs.com.br");
 const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/", site).href;
 const abs = (p: string) => new URL(p, site).href;
 
+// Duas organizações, papéis diferentes e explícitos (spec 003, FR-014):
+//
+//   Autogestor  — `publisher` do WebSite. Quem opera ESTE site, faz a captação
+//                 e atende no WhatsApp. É a dona do domínio.
+//   Coopluz     — `about` de cada página. A cooperativa sobre a qual o site
+//                 fala e que emite o termo de associação. NUNCA aparece como
+//                 autora ou publicadora: este site não é o canal oficial dela,
+//                 e `sameAs` aponta para onde o canal oficial está.
+//
+// Antes desta feature havia um nó só, a Autogestor, e a página declarava
+// `about` apontando para ela mesma — o site dizia que era sobre a corretora,
+// não sobre energia por compensação.
+//
 // Só "Organization" (sem "InsuranceAgency" nem `identifier` de SUSEP): este
 // site é sobre energia por compensação, não sobre corretagem de seguros —
 // registro SUSEP é fato da vertical de seguros, não da Coopluz (spec
@@ -52,7 +65,7 @@ const abs = (p: string) => new URL(p, site).href;
 const grafo: Record<string, unknown>[] = [
   {
     "@type": "Organization",
-    "@id": abs("/#organizacao"),
+    "@id": abs("/#operadora"),
     name: EMPRESA.nome,
     legalName: EMPRESA.nomeLegal,
     url: abs("/"),
@@ -60,7 +73,7 @@ const grafo: Record<string, unknown>[] = [
     image: { "@id": abs("/#logo") },
     foundingDate: EMPRESA.fundacao,
     description:
-      "Parceira credenciada da cooperativa de energia Coopluz, responsável pela captação, cadastro e acompanhamento do associado. Atende a área de concessão da Equatorial Goiás, com sede em Goiânia (GO).",
+      "Representante autorizado da cooperativa de energia Coopluz, responsável pela captação, cadastro e acompanhamento do associado. Atende a área de concessão da Equatorial Goiás, com sede em Goiânia (GO).",
     telephone: EMPRESA.telefone,
     email: EMPRESA.email,
     address: {
@@ -77,12 +90,34 @@ const grafo: Record<string, unknown>[] = [
     sameAs: [...EMPRESA.redes],
   },
   {
+    "@type": "Organization",
+    "@id": abs("/#cooperativa"),
+    name: COOPERATIVA.nome,
+    description: COOPERATIVA.descricao,
+    url: COOPERATIVA.site,
+    telephone: COOPERATIVA.telefone,
+    email: COOPERATIVA.email,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: COOPERATIVA.endereco.rua,
+      addressLocality: COOPERATIVA.endereco.cidade,
+      addressRegion: COOPERATIVA.endereco.uf,
+      postalCode: COOPERATIVA.endereco.cep,
+      addressCountry: COOPERATIVA.endereco.pais,
+    },
+    areaServed: AREA_SERVIDA.GO,
+    // O canal oficial da cooperativa, dito em dado e não só em texto: é o que
+    // permite a um assistente responder "qual é o site da Coopluz?" sem
+    // devolver este aqui.
+    sameAs: [COOPERATIVA.site],
+  },
+  {
     "@type": "WebSite",
     "@id": abs("/#site"),
     url: abs("/"),
-    name: `${EMPRESA.nome} Energia`,
+    name: SITE.nome,
     inLanguage: "pt-BR",
-    publisher: { "@id": abs("/#organizacao") },
+    publisher: { "@id": abs("/#operadora") },
   },
   {
     "@type": tipoPagina,
@@ -92,7 +127,7 @@ const grafo: Record<string, unknown>[] = [
     description: descricao,
     inLanguage: "pt-BR",
     isPartOf: { "@id": abs("/#site") },
-    about: { "@id": abs("/#organizacao") },
+    about: { "@id": abs("/#cooperativa") },
     ...(atualizado ? { dateModified: atualizado } : {}),
     ...(trilha.length ? { breadcrumb: { "@id": `${canonical}#trilha` } } : {}),
   },
@@ -145,16 +180,17 @@ const grafo: Record<string, unknown>[] = [
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    {/* Archivo variable (wdth+wght): a fonte de exibição dos títulos e dos
-         números grandes. `preconnect` para o handshake TLS não competir com o
-         CSS; Google já entrega só o subset "latin" (cobre ç/ã/õ) para quem lê
-         português — as outras ~176KB de vietnamese/latin-ext nem chegam a ser
-         pedidas, por `unicode-range`. */}
+    {/* Outfit variable (wght): a fonte de exibição dos títulos e dos números
+         grandes — e a fonte que separa este site do hub, que usa Archivo.
+         `preconnect` para o handshake TLS não competir com o CSS; Google já
+         entrega só o subset "latin" (cobre ç/ã/õ) para quem lê português — os
+         outros subsets nem chegam a ser pedidos, por `unicode-range`. Só o
+         eixo `wght`: a Outfit não tem `wdth`, o que também corta bytes. */}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet" />
-    <meta name="theme-color" content="#002b74" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#060d19" media="(prefers-color-scheme: dark)" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet" />
+    <meta name="theme-color" content="#0b3d47" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#051419" media="(prefers-color-scheme: dark)" />
     {/* As duas <meta> acima seguem o sistema operacional de graça, sem JS —
          mas só o sistema, não a escolha manual salva. Quem salvou "escuro"
          num SO claro via a barra do navegador na cor errada até o script do
@@ -163,7 +199,7 @@ const grafo: Record<string, unknown>[] = [
     <script is:inline>
       try {
         const t = document.documentElement.dataset.tema;
-        if (t) document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", t === "escuro" ? "#060d19" : "#002b74"));
+        if (t) document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", t === "escuro" ? "#051419" : "#0b3d47"));
       } catch {}
     </script>
 
@@ -189,12 +225,12 @@ const grafo: Record<string, unknown>[] = [
     <meta property="og:type" content={artigo ? "article" : "website"} />
     {artigo && <meta property="article:published_time" content={artigo.publicado.toISOString()} />}
     {artigo && <meta property="article:modified_time" content={(artigo.atualizado ?? artigo.publicado).toISOString()} />}
-    {/* "Autogestor Energia", não `EMPRESA.nome` ("Autogestor"): este site tem
-         identidade própria, igual ao WebSite.name do @graph acima e à marca
-         no cabeçalho — as três precisam bater. `EMPRESA.nome` continua
-         "Autogestor" porque é o nome da empresa (Organization), não deste
-         site específico. */}
-    <meta property="og:site_name" content="Autogestor Energia" />
+    {/* `SITE.nome`, não `EMPRESA.nome`: o nome DESTE site não é o nome de
+         nenhuma das duas organizações do @graph. Sai daqui, do WebSite.name,
+         do cabeçalho e do rodapé — os quatro leem a mesma constante porque
+         divergir entre eles é o que faz um cartão de compartilhamento
+         contradizer a página que ele anuncia. */}
+    <meta property="og:site_name" content={SITE.nome} />
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:title" content={titulo} />
     <meta property="og:description" content={descricao} />

@@ -68,6 +68,43 @@ export const ATENDIMENTO = {
  *  uma linha, se um dia fizer sentido medir em propriedade própria. */
 export const GA4 = "G-SHG12H2NZX";
 
+/** A COOPERATIVA. Entidade diferente da de cima, e o motivo de este arquivo
+ *  ter dois donos em vez de um: a Coopluz é quem emite o termo de associação
+ *  e a Autogestor é quem opera este site. Misturar os dois NAPs num objeto só
+ *  seria o erro que o Princípio II existe para evitar — o JSON-LD declara a
+ *  Autogestor como `publisher` e a Coopluz como `about`, e os dois blocos
+ *  precisam sair de lugares diferentes para nunca se confundirem.
+ *
+ *  Fonte: apresentação institucional da própria Coopluz, abril/2026. Ao
+ *  atualizar, atualizar da fonte — não do que estiver escrito em outra
+ *  página do site. */
+export const COOPERATIVA = {
+  nome: "Coopluz",
+  descricao: "Cooperativa de geração distribuída de energia solar",
+  site: "https://www.coopluz.eco.br",
+  email: "contato@coopluz.eco.br",
+  telefone: "+5562998189000",
+  telefoneExibicao: "(62) 99818-9000",
+  endereco: {
+    rua: "Av. T-4, 619, Ed. Buena Vista Office Design, Sala 1404/1405",
+    bairro: "Setor Bueno",
+    cidade: "Goiânia",
+    uf: "GO",
+    cep: "74230-035",
+    pais: "BR",
+  },
+} as const;
+
+/** Nome DESTE site, que não é o nome de nenhuma das duas entidades acima.
+ *  Sai no cabeçalho, no rodapé, no og:site_name e no WebSite do JSON-LD —
+ *  os quatro precisam bater, e por isso vivem aqui. */
+export const SITE = {
+  nome: "Coopluz Goiás",
+  /** Vai colado à marca no cabeçalho. É a divulgação exigida por FR-012:
+   *  quem opera o site, visível sem rolagem. */
+  papel: "Representante autorizado",
+} as const;
+
 /** Data da última revisão dos textos legais. Sai nas duas páginas e no llms.txt;
  *  política sem data é política que ninguém sabe se ainda vale. */
 export const LEGAL_ATUALIZADO = "2026-08-21";

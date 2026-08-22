@@ -3,7 +3,7 @@ import Base from "../layouts/Base.astro";
 import Faq from "../components/Faq.astro";
 import BarraAcao from "../components/BarraAcao.astro";
 import { COOPLUZ } from "../data/solucoes";
-import { EMPRESA, enderecoLinha, whatsapp } from "../consts";
+import { COOPERATIVA, EMPRESA, enderecoLinha, whatsapp } from "../consts";
 
 const perguntas = [
   {
@@ -12,7 +12,7 @@ const perguntas = [
   },
   {
     p: "A Autogestor é a Coopluz?",
-    r: "Não. A Coopluz é uma cooperativa de energia independente, com sede em Goiânia, que opera em parceria com o Sicoob Secovicred. A Autogestor é parceira comercial credenciada: faz a captação, o cadastro e o acompanhamento do associado — quem emite o contrato de associação é a própria Coopluz.",
+    r: `Não, e este site também não é o canal oficial da cooperativa. A Coopluz é uma cooperativa de geração distribuída de energia solar independente, com sede no Setor Bueno em Goiânia, que opera em parceria com o Sicoob. O site oficial dela é ${COOPERATIVA.site.replace(/^https?:\/\//, "")}. A Autogestor é representante autorizado: faz a captação, o cadastro e o acompanhamento do associado — quem emite o termo de associação é a própria Coopluz.`,
   },
   {
     p: "Onde fica o escritório?",
@@ -40,8 +40,8 @@ const schema = [
 ---
 
 <Base
-  titulo="Sobre a Autogestor Energia — parceira credenciada da Coopluz desde 2004"
-  descricao="A Autogestor é parceira comercial credenciada da cooperativa de energia Coopluz em Goiás, responsável pela captação, cadastro e acompanhamento do associado."
+  titulo="Quem somos — representante autorizado da Coopluz em Goiás | Coopluz Goiás"
+  descricao="Este site é operado pela Autogestor, representante autorizado da cooperativa de energia Coopluz em Goiás, responsável pela captação, cadastro e acompanhamento do associado. A Coopluz é a cooperativa e tem canal oficial próprio."
   schema={schema}
   tipoPagina={["WebPage", "AboutPage"]}
   trilha={[
@@ -52,7 +52,7 @@ const schema = [
   <section class="topo">
     <div class="container">
       <span class="olho">Quem somos</span>
-      <h1>Parceira credenciada da Coopluz, no ar desde 2004</h1>
+      <h1>Representante autorizado da Coopluz, no ar desde 2004</h1>
       <p class="chamada">
         A Autogestor nasceu em 2004 em Goiânia como corretora de serviços e hoje representa a cooperativa de energia
         Coopluz na área de concessão da Equatorial Goiás — cuidando de todo o relacionamento com o associado, do

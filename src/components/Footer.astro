@@ -1,15 +1,15 @@
 ---
-import { ATENDIMENTO, EMPRESA, enderecoLinha, whatsapp } from "../consts";
+import { ATENDIMENTO, COOPERATIVA, EMPRESA, SITE, enderecoLinha, whatsapp } from "../consts";
 const ano = new Date().getFullYear();
 ---
 
 <footer class="rodape">
   <div class="container rodape__grade">
     <div>
-      <p class="rodape__marca">Autogestor Energia</p>
+      <p class="rodape__marca">{SITE.nome}</p>
       <p class="rodape__texto">
-        Energia por compensação em Goiás. Parceria credenciada da cooperativa Coopluz, atendimento desde{" "}
-        {EMPRESA.fundacao}.
+        Energia por compensação na área da Equatorial Goiás. {SITE.papel} da cooperativa {COOPERATIVA.nome},
+        atendendo desde {EMPRESA.fundacao}.
       </p>
     </div>
 
@@ -25,7 +25,7 @@ const ano = new Date().getFullYear();
     <nav aria-label="Institucional">
       <h2 class="rodape__titulo">Institucional</h2>
       <ul class="rodape__links" role="list">
-        <li><a href="/sobre">Sobre a Autogestor</a></li>
+        <li><a href="/sobre">Quem somos</a></li>
         <li><a href="/privacidade">Privacidade</a></li>
         <li><a href="/termos">Termos de uso</a></li>
         <li>
@@ -68,9 +68,22 @@ const ano = new Date().getFullYear();
         <span class="tema__rotulo">Ativar tema escuro</span>
       </button>
     </div>
+    {/* FR-013: quem opera o site, dito por extenso, e o caminho para o canal
+         oficial da cooperativa. Não é disclaimer defensivo — é a informação
+         que a pessoa precisa para saber com quem está falando antes de mandar
+         o WhatsApp dela. Fica ACIMA do aviso contratual porque é a mais
+         importante das duas. */}
     <p class="rodape__aviso">
-      Cotação, cadastro e associação estão sujeitos a análise da cooperativa Coopluz. As condições apresentadas aqui
-      não substituem o termo de associação formal.
+      Este site é operado por {EMPRESA.nomeLegal}, {SITE.papel.toLowerCase()} da {COOPERATIVA.nome} —
+      não é o canal oficial da cooperativa. A {COOPERATIVA.nome} é uma {COOPERATIVA.descricao.toLowerCase()}
+      independente, com sede em {COOPERATIVA.endereco.cidade}/{COOPERATIVA.endereco.uf}, e atende pelo site{" "}
+      <a class="externo" href={COOPERATIVA.site} target="_blank" rel="noopener">
+        {COOPERATIVA.site.replace(/^https?:\/\//, "")}<span class="visualmente-oculto"> — abre em nova aba</span>
+      </a>.
+    </p>
+    <p class="rodape__aviso">
+      Cotação, cadastro e associação estão sujeitos a análise da cooperativa {COOPERATIVA.nome}. As condições
+      apresentadas aqui não substituem o termo de associação formal.
     </p>
   </div>
 </footer>
@@ -86,7 +99,14 @@ const ano = new Date().getFullYear();
     gap: var(--e-8);
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
-  .rodape__marca { color: var(--texto-invertido); font-size: var(--t-lg); font-weight: 700; margin-bottom: var(--e-2); }
+  .rodape__marca {
+    color: var(--texto-invertido);
+    font-family: var(--display);
+    font-variation-settings: "wght" 700;
+    font-size: var(--t-lg);
+    letter-spacing: -0.02em;
+    margin-bottom: var(--e-2);
+  }
   .rodape__titulo { color: var(--texto-invertido); font-size: var(--t-sm); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--e-4); }
   .rodape__texto { font-size: var(--t-sm); font-style: normal; line-height: 1.7; }
   .rodape__links, .rodape__redes { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--e-2); font-size: var(--t-sm); }
@@ -100,6 +120,7 @@ const ano = new Date().getFullYear();
     font-size: var(--t-sm);
   }
   .rodape__aviso { color: var(--texto-sobre-marca-suave); max-width: 78ch; }
+  .rodape__aviso + .rodape__aviso { margin-top: var(--e-3); }
 
   .rodape__linha {
     display: flex;
@@ -146,7 +167,7 @@ const ano = new Date().getFullYear();
       const escuro = estaEscuro();
       botao.toggleAttribute("data-escuro", escuro);
       rotulo.textContent = escuro ? "Ativar tema claro" : "Ativar tema escuro";
-      const cor = escuro ? "#060d19" : "#002b74";
+      const cor = escuro ? "#051419" : "#0b3d47";
       document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", cor));
     };
 

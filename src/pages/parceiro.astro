@@ -56,7 +56,7 @@ const schema = [
     name: PARCEIRO_COOPLUZ.nome,
     description: PARCEIRO_COOPLUZ.descricao,
     url,
-    provider: { "@id": abs("/#organizacao") },
+    provider: { "@id": abs("/#operadora") },
     areaServed: AREA_SERVIDA[PARCEIRO_COOPLUZ.abrangencia],
   },
   {
@@ -81,10 +81,11 @@ const schema = [
   ]}
 >
   <section class="topo">
+    <span class="selo selo--claro selo--entra" aria-hidden="true"></span>
     <div class="container topo__grade">
       <div class="topo__texto">
         <span class="olho">Parceiro autorizado · Energia Coopluz</span>
-        <h1>Seja parceiro da Autogestor Energia e construa sua renda recorrente</h1>
+        <h1>Seja parceiro da energia Coopluz e construa sua renda recorrente</h1>
         <p class="chamada">
           Uma oportunidade para quem tem relacionamento em Goiás e quer transformar isso em renda todos os meses.
           Você apresenta a economia de 20% na conta de luz, a Autogestor cuida do cadastro e do pós-venda, e você
@@ -238,18 +239,26 @@ const schema = [
 </Base>
 
 <style>
+  /* Mesma capa da home: o gesto é do sistema, não da página. Geometria aqui,
+     matéria no .selo do global.css. */
+  .topo { position: relative; overflow: clip; }
+  .topo .selo { width: min(48vw, 520px); left: -11%; bottom: -44%; --giro: -8deg; }
+  @media (max-width: 899px) {
+    .topo .selo { width: 86vw; left: -30%; bottom: -30%; }
+  }
+
   .destaques { margin-top: var(--e-6); font-weight: 600; }
 
   .ganhos { margin-top: var(--e-8); }
   @media (min-width: 560px) { .ganhos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (min-width: 980px) { .ganhos { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-  .ganhos li { border-top: 3px solid var(--laranja-500); padding-top: var(--e-4); }
+  .ganhos li { border-top: 3px solid var(--verde-500); padding-top: var(--e-4); }
   .ganhos h3 { font-size: var(--t-sm); text-transform: uppercase; letter-spacing: 0.06em; }
   .ganhos__numero {
     font-size: var(--t-3xl);
     font-weight: 800;
     line-height: 1;
-    color: var(--laranja-400);
+    color: var(--verde-400);
     margin: var(--e-2) 0 var(--e-3);
   }
   .ganhos li p:last-child { color: var(--texto-sobre-marca); font-size: var(--t-sm); margin: 0; }

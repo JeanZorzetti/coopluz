@@ -30,7 +30,7 @@ export const COOPLUZ: Solucao = {
   nome: "Energia Coopluz",
   curto: "Energia",
   resumo: "20% de desconto na conta da Equatorial Goiás, sem obra e sem placa no telhado.",
-  titulo: "Coopluz: 20% de desconto na conta de luz em Goiás | Autogestor",
+  titulo: "20% de desconto na conta de luz da Equatorial Goiás | Coopluz Goiás",
   descricao:
     "Associe-se à Coopluz e pague 20% menos na conta da Equatorial Goiás. Sem instalar placa solar, sem obra, sem taxa de adesão e sem multa para sair.",
   abrangencia: "GO",
@@ -70,10 +70,10 @@ export const CIDADES_COOPLUZ = [
 
 export const PARCEIRO_COOPLUZ: Solucao = {
   slug: "parceiro-coopluz",
-  nome: "Parceiro Autogestor Energia",
+  nome: "Parceiro Coopluz Goiás",
   curto: "Parceiro Energia",
   resumo: "Ative contas de energia em Goiás e receba na ativação mais recorrente sobre a carteira.",
-  titulo: "Seja parceiro da energia Coopluz em Goiás | Autogestor",
+  titulo: "Seja parceiro da energia Coopluz em Goiás | Coopluz Goiás",
   descricao:
     "Represente a energia Coopluz em Goiás: 50% da primeira receita de cada conta ativada e 2% recorrente sobre toda a carteira a partir de 100 contas ativas. Sem investimento, sem instalação e sem taxa de adesão.",
   abrangencia: "GO",

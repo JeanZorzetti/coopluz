@@ -1,45 +1,39 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Versão: (template não ratificado) → 1.0.0
-Tipo de bump: MAJOR — ratificação inicial. O arquivo anterior era o scaffold do
-Spec Kit com todos os placeholders intactos; nenhum princípio existia para ser
-alterado ou removido.
+Versao: 1.0.0 -> 1.1.0
+Tipo de bump: MINOR - principio novo (VI) e escopo corrigido.
 
-Princípios adicionados (5):
-  I.   HTML estático primeiro, JavaScript por exceção
-  II.  Fonte única por domínio
-  III. Simplicidade deliberada e marcada
-  IV.  Falhar fechado, nunca mentir para o usuário
-  V.   Acessibilidade e contraste são requisito
+Principios adicionados (1):
+  VI.  Identidade de terceiro se declara, nao se assume
 
-Seções adicionadas:
-  - Restrições de Stack e Dados      (SECTION_2)
-  - Fluxo de Desenvolvimento e Portões de Qualidade  (SECTION_3)
-  - Governança
+Principios modificados: nenhum. Os cinco originais valem palavra por palavra.
 
-Princípios modificados: nenhum (não havia).
-Princípios removidos: nenhum (não havia).
+Escopo corrigido: o arquivo era copia literal da constituicao do hub
+`autogestor` - inclusive o titulo ("Autogestor Constitution") e a frase de
+escopo, que falava do painel Next.js em `admin/`. Este repositorio NAO tem
+`admin/` e nunca teve: o painel continua sendo o do hub, e e decisao registrada
+que nao deve existir um segundo. A correcao nao remove nem afrouxa regra
+nenhuma - remove uma referencia a codigo que nao esta aqui.
 
-Origem dos princípios: derivados das regras já escritas e praticadas no repo —
-CLAUDE.md da raiz ("Convenções que não são óbvias no código"), README.md
-("Decisões que não são óbvias no código", tabela de Stack), admin/lib/*.mjs,
-src/pages/api/lead.ts, admin/proxy.ts. Nenhuma regra nova foi inventada; a
-constituição codifica o que já governa o código.
-
-Follow-up TODOs: nenhum. Todos os placeholders foram substituídos.
+Origem do principio VI: spec 003-identidade-coopluz, FR-012 a FR-015. O site
+adota a identidade visual de uma cooperativa que nao o publica; a divulgacao de
+quem opera passa a ser requisito verificavel, nao boa pratica.
 
 Artefatos dependentes a revisar:
-  - specs/001-kanban-leads/plan.md — a seção "Constitution Check" registra
-    "constituição no estado de template, sem gates". Passa a haver gates;
-    reavaliar na próxima execução de /speckit-analyze. A avaliação informal já
-    feita naquele plano cobre os 5 princípios e não muda de veredito.
+  - specs/003-identidade-coopluz/plan.md - a tabela "Constitution Check" avalia
+    contra a v1.0.0 e trata o risco de identidade dentro do Principio IV. Com o
+    VI existindo, a proxima execucao de /speckit-analyze deve avalia-lo
+    separadamente. O veredito nao muda: os requisitos que ele exige ja estao
+    implementados e verificados.
+  - README.md - atualizado na mesma leva.
 -->
 
-# Autogestor Constitution
+# Coopluz Goiás Constitution
 
-Aplica-se a todo o repositório: o site Astro na raiz (`src/`) e o painel
-Next.js em `admin/`.
+Aplica-se a este repositório: o site Astro em `coopluz.roilabs.com.br`. O
+painel administrativo que lê os leads deste site é o do hub `autogestor` e mora
+naquele repositório — aqui não há, e não deve haver, um segundo.
 
 ## Core Principles
 
@@ -57,21 +51,28 @@ e declarado. O orçamento atual do site é ~1 KB; ultrapassá-lo é uma decisão
 não um acidente.
 
 **Rationale**: HTML pronto no source é o que o crawler indexa, é o que dá o
-melhor LCP, e é a razão de o Astro ter sido escolhido. O painel `admin/` é o
-contrapeso deliberado: autenticado, sem indexação, e ali o custo de JavaScript
-compra interatividade real.
+melhor LCP, e é a razão de o Astro ter sido escolhido. O contrapeso
+deliberado — onde o custo de JavaScript compra interatividade real — é o painel
+do hub: autenticado, sem indexação, e fora deste repositório.
 
 ### II. Fonte única por domínio
 
-Cada domínio de dado MUST ter exatamente um arquivo dono: NAP e links externos
-em `src/consts.ts`; verticais em `src/data/solucoes.ts`; etapas, pipelines e
-limiares em `admin/lib/pipelines.mjs`. Rodapé, JSON-LD, formulários e páginas
-MUST ler do dono, nunca repetir o valor.
+Cada domínio de dado MUST ter exatamente um arquivo dono: NAP da operadora,
+NAP da cooperativa, nome do site e links externos em `src/consts.ts`; verticais
+em `src/data/solucoes.ts`; cor em `src/styles/global.css`; o símbolo da marca em
+`logos/gerar-marca.py` — e nenhum arquivo derivado dele MUST ser editado à mão.
+Rodapé, JSON-LD, formulários e páginas MUST ler do dono, nunca repetir o valor.
 
-Duplicação entre o site e o `admin/` é permitida SOMENTE quando os dois builds
+As DUAS organizações do `consts.ts` — `EMPRESA` (quem opera o site) e
+`COOPERATIVA` (sobre quem o site fala) — MUST permanecer separadas. Fundi-las
+num objeto só é exatamente o erro que este princípio existe para evitar, e
+desta vez seria erro de veracidade, não só de manutenção.
+
+Duplicação com o repositório do hub é permitida SOMENTE quando os dois builds
 não devem se acoplar, e nesse caso o arquivo duplicado MUST carregar, no topo,
 o comentário que diz de onde veio, por que não importa o original, e o que
-dispara a atualização. `admin/lib/pipelines.mjs` é o exemplo canônico.
+dispara a atualização. `src/consts.ts` e `src/data/solucoes.ts` são os exemplos
+canônicos.
 
 **Rationale**: NAP divergente entre rodapé, JSON-LD e página de contato é o erro
 clássico que derruba SEO local. Uma etapa de funil que existe no formulário e
@@ -142,12 +143,46 @@ Animação MUST respeitar `prefers-reduced-motion`.
 não é reportada por quem é afetado, e custa dez vezes mais para consertar depois
 que a tela existe.
 
+Todo par de cor novo MUST passar por `npm run contraste` antes de entrar no CSS,
+e o valor medido MUST ficar escrito ao lado da declaração. Estimativa não conta:
+o número que vale é o que a ferramenta devolveu.
+
+### VI. Identidade de terceiro se declara, não se assume
+
+Este site usa a identidade visual da cooperativa Coopluz e não é publicado por
+ela. Enquanto isso for verdade, quem opera o site MUST estar declarado em três
+lugares, e os três MUST continuar existindo:
+
+1. **No cabeçalho**, junto da marca, legível SEM rolagem em qualquer largura a
+   partir de 360px.
+2. **No rodapé**, com a razão social de quem opera e o link para o canal oficial
+   da cooperativa.
+3. **No JSON-LD**, com a operadora como `publisher` e a cooperativa como
+   `about` — nunca a cooperativa como autora ou publicadora.
+
+Nenhum texto do site MUST afirmar ou sugerir que ele é o canal oficial da
+cooperativa. O lockup registrado da cooperativa MUST aparecer apenas onde é
+atribuição de terceiro; a marca do cabeçalho MUST ser o símbolo próprio deste
+site.
+
+**Rationale**: adotar a identidade de outra organização é uma afirmação sobre
+quem publica, e o Princípio IV já proíbe a tela afirmar o que não ocorreu. A
+diferença é que aqui a afirmação é implícita — ninguém escreve "somos a
+Coopluz", a página inteira insinua. Por isso a contramedida também precisa ser
+estrutural e verificável, e não uma linha de letra miúda que a próxima
+refatoração de layout apaga sem ninguém notar.
+
 ## Restrições de Stack e Dados
 
-**Dois projetos, um banco.** O site Astro (raiz) e o painel Next.js (`admin/`)
-são builds independentes, com `package.json`, `npm test` e projeto Vercel
-próprios. Eles compartilham SOMENTE o Postgres. Nenhum pacote compartilhado,
-nenhum monorepo, nenhum import atravessando a fronteira.
+**Dois repositórios, um banco.** Este site e o hub `autogestor` (com o painel
+`admin/` dele) são builds independentes, com `package.json`, `npm test` e
+projeto Vercel próprios. Eles compartilham SOMENTE o Postgres. Nenhum pacote
+compartilhado, nenhum monorepo, nenhum import atravessando a fronteira.
+
+**Uma URL, um domínio.** Nenhum conteúdo deste site MUST ser publicado também
+no hub, e vice-versa. Quando uma página migra, ela SAI da origem e a origem
+responde 301 — `canonical` cruzada não basta, porque mantém as duas servindo
+200. Foi a violação dessa regra que motivou a spec 003.
 
 **Banco.** Acesso via `pg` cru, sem ORM. O schema MUST ser criado e evoluído
 idempotentemente no próprio código (`CREATE TABLE IF NOT EXISTS`,
@@ -179,8 +214,13 @@ não precisam do fluxo.
 
 **Lógica testável mora em `.mjs`.** Toda lógica pura não-trivial — validação,
 cálculo, parsing, agrupamento — MUST ficar em um `.mjs` sem JSX, sem React e
-sem `pg`, para que `node --test` importe direto sem transpilar. `lead.mjs`,
-`senha.mjs`, `sessao.mjs` e `pipelines.mjs` são o padrão.
+sem `pg`, para que `node --test` importe direto sem transpilar. `lead.mjs` e
+`tabela.mjs` são o padrão.
+
+**Ativo de marca é gerado, nunca desenhado.** Símbolo, ícones, favicon e imagem
+de compartilhamento MUST sair de script (`npm run marca`), de uma fonte só.
+Arquivo de marca mantido à mão desatualiza em silêncio — foi assim que o PNG da
+cooperativa ficou uma geração inteira atrasado sem ninguém ver.
 
 **Todo caminho não-trivial deixa um teste.** Ramo, laço, parser, cálculo de
 dinheiro ou de segurança MUST deixar ao menos uma checagem executável — a menor
@@ -188,10 +228,14 @@ coisa que falha se a lógica quebrar. Sem framework, sem fixture, sem suíte por
 função. One-liner trivial não precisa de teste.
 
 **Portão de conclusão.** Antes de declarar qualquer trabalho pronto, o autor
-MUST rodar o comando de verificação e MUST ter visto a saída. `npm test` roda
-separadamente na raiz e em `admin/`; os dois MUST passar. Afirmação de sucesso
-sem evidência é violação desta constituição. Se um teste falha, o relato MUST
-dizer isso, com a saída.
+MUST rodar o comando de verificação e MUST ter visto a saída: `npm test`,
+`npm run build` e, quando a paleta mudar, `npm run contraste`. Afirmação de
+sucesso sem evidência é violação desta constituição. Se um teste falha, o relato
+MUST dizer isso, com a saída.
+
+**Verificação de tela é sobre o BUILD.** O `astro dev` injeta a barra de
+ferramentas do Astro — DOM extra e ~1,8 MB de JavaScript que não existem em
+produção. Medir ali é medir outra página.
 
 **Decisão não óbvia vira documentação.** Escolha de UI, contraste, formulário,
 tema ou arquitetura cuja razão não é legível no código MUST ser registrada em
@@ -224,16 +268,15 @@ princípio MUST nomear o que passa a ser permitido em consequência.
 - **PATCH** — esclarecimento, redação, correção sem mudança de sentido.
 
 **Conformidade.** A seção "Constitution Check" de todo `plan.md` MUST avaliar a
-feature contra os cinco princípios, antes da Phase 0 e de novo depois da
+feature contra os seis princípios, antes da Phase 0 e de novo depois da
 Phase 1. Violação MUST ser registrada na tabela "Complexity Tracking" com o
 motivo e a alternativa mais simples recusada — complexidade não justificada por
 escrito é reprovação, não observação. `/speckit-analyze` MUST ser executado
 antes de `/speckit-implement` em features que tocam banco, autenticação ou
 interface pública.
 
-**Orientação de runtime.** Para o dia a dia, `CLAUDE.md` (raiz e `admin/`) e
-`README.md` carregam os comandos, as pegadinhas de ambiente e as decisões já
+**Orientação de runtime.** Para o dia a dia, o `README.md` carrega os comandos, as pegadinhas de ambiente e as decisões já
 tomadas. Esta constituição diz o que não se negocia; aqueles arquivos dizem como
 o trabalho é feito.
 
-**Version**: 1.0.0 | **Ratified**: 2026-08-20 | **Last Amended**: 2026-08-20
+**Version**: 1.1.0 | **Ratified**: 2026-08-20 | **Last Amended**: 2026-08-22

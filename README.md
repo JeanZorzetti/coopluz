@@ -1,10 +1,13 @@
-# Coopluz — site institucional próprio
+# Coopluz Goiás — site de captação da energia por compensação
 
-Site da vertical de energia da Autogestor (`coopluz.roilabs.com.br`),
-extraído do hub `autogestor` (`C:\dev\autogestor`) como projeto irmão
-independente. Ver `specs/002-coopluz-standalone-site/` **no repositório do
-hub** para a spec, o plano técnico e as tarefas que geraram este projeto —
-esta cópia não duplicou os documentos de spec-kit em si, só o código.
+Site em `coopluz.roilabs.com.br`, operado pela **Autogestor**, representante
+autorizado da cooperativa **Coopluz**. Extraído do hub `autogestor`
+(`C:\dev\autogestor`) como projeto irmão independente.
+
+Specs: a `002-coopluz-standalone-site` (extração) vive **no repositório do
+hub**; a `003-identidade-coopluz` (identidade própria + fim da canibalização de
+SEO) vive em [`specs/003-identidade-coopluz/`](specs/003-identidade-coopluz/),
+aqui.
 
 ## Rodando localmente
 
@@ -14,47 +17,87 @@ $env:DATABASE_URL = "<mesma connection string do hub>"
 npm run dev
 ```
 
-O Astro carrega `.env` só para `import.meta.env`; o código lê
-`process.env`, que é o que a Vercel entrega em runtime — por isso a
-variável precisa ser **exportada** no shell antes de `npm run dev`, copiar
-`.env.example` para `.env` não basta.
+O Astro carrega `.env` só para `import.meta.env`; o código lê `process.env`,
+que é o que a Vercel entrega em runtime — por isso a variável precisa ser
+**exportada** no shell antes de `npm run dev`, copiar `.env.example` para
+`.env` não basta.
+
+```bash
+npm test        # node --test test/*.test.mjs
+npm run build
+npm run check   # astro check (tipos)
+npm run marca   # regera símbolo, ícones e imagem de compartilhamento
+npm run contraste   # mede todos os pares de cor, nos dois temas
+```
+
+**Verificar tela é sobre o build, não sobre o dev server.** O `astro dev`
+injeta a barra de ferramentas do Astro: DOM extra e ~1,8 MB de JavaScript que
+não existem em produção. Rode `npm run build` e sirva `.vercel/output/static`.
 
 ## Decisões que não são óbvias no código
 
+**A identidade é da Coopluz; o site não é da Coopluz.** A paleta
+(verde `#40AC68`, teal `#248CA0`, azul `#1C68B4`), o símbolo lâmpada-folha e o
+tom vêm do material institucional da cooperativa. Quem opera o site é a
+Autogestor, e isso é declarado em três lugares obrigatórios — cabeçalho,
+rodapé e JSON-LD (`publisher` = Autogestor, `about` = Coopluz). É o Princípio VI
+da constituição, não uma boa prática opcional: se um desses três sumir numa
+refatoração, o site passa a insinuar que é o canal oficial da cooperativa.
+
+**O símbolo é próprio, o lockup oficial é atribuição.** A marca do cabeçalho é
+gerada por fórmula em `logos/gerar-marca.py` — não é a marca registrada da
+cooperativa redesenhada. O lockup oficial aparece só na faixa "quem está por
+trás" da home, onde é atribuição de terceiro. O arquivo em
+`public/img/parceiros/coopluz.png` foi extraído do material de abril/2026; o que
+existia antes era uma geração anterior da marca (verde/lima) e estava errado.
+
+**Nenhum ativo de marca é editado à mão.** `npm run marca` regenera
+`logo.svg`, `logo-mono.svg`, `favicon.svg`, os três PNGs de ícone e a imagem de
+Open Graph. A OG é renderizada no navegador (Playwright) e não montada no
+sharp, porque a Outfit não está instalada no sistema e um SVG rasterizado
+cairia numa grotesca qualquer justamente no lugar onde a marca aparece para
+quem ainda não entrou no site.
+
+**Contraste é medido, não estimado.** `npm run contraste` roda os pares dos dois
+temas e falha com código 1 se algum reprovar. O verde da marca sobre branco dá
+2.87:1 e reprova em AA — o botão primário é verde com **texto tinta** (5.96:1).
+A cor da marca não é escurecida para passar; o texto é que muda.
+
+**Fonte de exibição é Outfit, não Archivo.** A Archivo é a do hub, e o site
+existe para não parecer o hub. O `@font-face` de métrica casada
+(`"Outfit capa"`) tem `size-adjust` **medido** em `logos/metricas-fonte.mjs`,
+não chutado: número errado ali troca um reflow por outro e ninguém percebe.
+
 **Mesmo banco do hub, de propósito.** `src/lib/db.ts` e `src/pages/api/lead.ts`
-são cópias sem alteração de lógica dos arquivos equivalentes do hub. Os leads
-deste site caem nas mesmas tabelas `crm_leads`/`crm_eventos`, nos pipelines
-`coopluz` e `parceiro-coopluz` que o painel administrativo do hub **já lê**.
-Não existe painel próprio deste site e não deve existir — criar um
-duplicaria um sistema que já funciona.
+são cópias sem alteração de lógica do hub. Os leads deste site caem nas mesmas
+tabelas `crm_leads`/`crm_eventos`, nos pipelines `coopluz` e `parceiro-coopluz`
+que o painel administrativo do hub **já lê**. Não existe painel próprio deste
+site e não deve existir.
 
 **`consts.ts` e `data/solucoes.ts` são duplicados, não importados.** Este
-repositório não tem dependência de build no hub (nem monorepo, nem pacote
-compartilhado — mesma regra que já vale entre o hub e o `admin/` dele). Os
-dois arquivos têm um comentário no topo explicando a duplicação; ao mudar
-NAP, telefone ou horário de atendimento no hub, replicar aqui manualmente.
+repositório não tem dependência de build no hub. Os dois arquivos têm comentário
+no topo explicando a duplicação; ao mudar NAP, telefone ou horário de
+atendimento no hub, replicar aqui manualmente.
 
-**GA4 reaproveitado.** Mesma propriedade do hub (`G-SHG12H2NZX`), não uma
-nova. Tráfego deste site é distinguível por hostname na mesma propriedade.
-Trocar por uma propriedade dedicada é uma linha em `src/consts.ts`, quando
-fizer sentido medir separado.
+**Duas organizações em `consts.ts`, separadas.** `EMPRESA` é quem opera o site
+(Autogestor); `COOPERATIVA` é sobre quem o site fala (Coopluz, com o NAP público
+dela e o canal oficial `coopluz.eco.br`). Fundir as duas num objeto só seria
+erro de veracidade, não só de manutenção.
 
-**Imagem de Open Graph reaproveitada.** `/img/og.png` é a mesma do hub —
-não existe hoje uma imagem de compartilhamento específica da Coopluz.
-Produzir uma é trabalho de design, não desta migração.
+**GA4 reaproveitado.** Mesma propriedade do hub (`G-SHG12H2NZX`). Tráfego deste
+site é distinguível por hostname na mesma propriedade. Trocar por uma
+propriedade dedicada é uma linha em `src/consts.ts`.
 
-**Sem página `/contato` própria.** Segue o padrão do hub: contato mora em
-`/sobre` (endereço, WhatsApp, e-mail), não numa rota separada.
+**Sem página `/contato` própria.** Contato mora em `/sobre` (endereço, WhatsApp,
+e-mail), não numa rota separada.
 
-**Sem menção a SUSEP.** O registro SUSEP é da vertical de seguros da
-Autogestor, não desta. Todo texto herdado do hub que citava SUSEP foi
-reescrito para "parceira credenciada da Coopluz desde 2004".
+**Sem menção a SUSEP.** O registro SUSEP é da vertical de seguros da Autogestor,
+não desta.
 
-**Conteúdo duplicado com o hub, por enquanto.** O hub continua com sua
-própria página `/coopluz` no ar. As duas versões existem ao mesmo tempo até
-uma decisão futura de redirecionar ou remover a página do hub — decisão
-fora do escopo desta migração, já prevista em
-`docs/estrutura-hub-e-subdominios.md` do hub.
+**A duplicação com o hub acabou.** O hub deixou de publicar `/coopluz`,
+`/coopluz/parceiro` e os dois artigos do cluster de energia; as quatro URLs
+respondem 301 para cá. Foi a spec 003 que fechou isso — a spec 002 tinha
+registrado a duplicação como trade-off temporário.
 
 ## Deploy
 
@@ -62,3 +105,8 @@ Projeto Vercel próprio (não o mesmo do hub), variáveis de ambiente
 `DATABASE_URL` (idêntica à do hub) e `SITE_URL=https://coopluz.roilabs.com.br`,
 domínio `coopluz.roilabs.com.br` apontado no projeto — passo manual, fora do
 código.
+
+`SITE_URL` inválida (vazia ou sem esquema) não derruba mais o build: o
+`astro.config.mjs` valida com `URL.canParse` e cai no domínio de produção. O
+build para de quebrar, mas o canonical fica errado — conferir a variável
+continua sendo obrigação.

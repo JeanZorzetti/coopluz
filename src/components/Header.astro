@@ -1,6 +1,6 @@
 ---
 import { ICONES } from "../data/solucoes";
-import { EMPRESA, whatsapp } from "../consts";
+import { EMPRESA, SITE, whatsapp } from "../consts";
 import Logo from "./Logo.astro";
 
 const { pathname } = Astro.url;
@@ -17,9 +17,23 @@ const NAV = [
 
 <header class="cabecalho">
   <div class="container cabecalho__linha">
-    <a href="/" class="marca" aria-label={`${EMPRESA.nome} Energia — página inicial`}>
-      <Logo size={40} />
-      <span class="marca__nome">Autogestor Energia</span>
+    {/* Lockup em duas linhas, e não a marca sozinha: FR-012 exige que quem
+         opera o site seja legível SEM rolagem, em qualquer largura. O selo
+         não é letra miúda de rodapé — sobe para o topo, ao lado do nome, e é
+         a primeira coisa que a pessoa lê depois da marca.
+         O `aria-label` carrega as duas informações porque o leitor de tela
+         anuncia o link inteiro de uma vez; o `aria-hidden` no texto evita que
+         ele leia tudo duas vezes. */}
+    <a
+      href="/"
+      class="marca"
+      aria-label={`${SITE.nome}, ${SITE.papel.toLowerCase()} ${EMPRESA.nome} — página inicial`}
+    >
+      <Logo size={44} />
+      <span class="marca__texto" aria-hidden="true">
+        <span class="marca__nome">{SITE.nome}</span>
+        <span class="marca__papel">{SITE.papel} <b>{EMPRESA.nome}</b></span>
+      </span>
     </a>
     <a class="cabecalho__zap externo" href={whatsapp("Olá! Vim pelo site da Coopluz.")} target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICONES.zap} />
@@ -63,15 +77,30 @@ const NAV = [
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    gap: var(--e-2);
+    gap: var(--e-3);
     text-decoration: none;
     color: var(--marca-forte);
   }
+  .marca__texto { display: grid; gap: 1px; }
   .marca__nome {
-    font-weight: 700;
+    font-family: var(--display);
+    font-variation-settings: "wght" 700;
     font-size: var(--t-lg);
     letter-spacing: -0.02em;
+    line-height: 1.1;
   }
+  /* 0.6875rem (11px) e não --t-sm: a 360px o lockup inteiro precisa caber ao
+     lado do símbolo sem quebrar a linha do WhatsApp para baixo. Abaixo disso
+     o texto deixa de ser lido, e um selo que ninguém lê não cumpre FR-012. */
+  .marca__papel {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    color: var(--texto-suave);
+    text-transform: uppercase;
+  }
+  .marca__papel b { font-weight: 700; color: var(--texto); }
   .cabecalho__zap {
     display: inline-flex;
     align-items: center;

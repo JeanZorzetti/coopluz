@@ -60,8 +60,8 @@ const schema = [
     datePublished: post.data.publicado.toISOString(),
     dateModified: (post.data.atualizado ?? post.data.publicado).toISOString(),
     inLanguage: "pt-BR",
-    author: { "@id": abs("/#organizacao") },
-    publisher: { "@id": abs("/#organizacao") },
+    author: { "@id": abs("/#operadora") },
+    publisher: { "@id": abs("/#operadora") },
     mainEntityOfPage: { "@id": `${url}#pagina` },
     about: { "@id": abs(`/${solucao.slug}#servico`) },
   },
@@ -82,7 +82,7 @@ const schema = [
 ---
 
 <Base
-  titulo={`${post.data.titulo} | Autogestor`}
+  titulo={`${post.data.titulo} | Coopluz Goiás`}
   descricao={post.data.descricao}
   schema={schema}
   artigo={{ publicado: post.data.publicado, atualizado: post.data.atualizado }}
