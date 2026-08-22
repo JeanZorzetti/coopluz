@@ -1,4 +1,13 @@
-/* art-direction · circuito (custom) · eixos: luz/estado/ambas · orçamento: 1.4kb JS · 2026-08-22
+/* art-direction · fatura (custom) · eixos: pigmento/scroll/média · orçamento: 0kb JS · 2026-08-22
+   art-direction · circuito (custom) · eixos: luz/estado/ambas · orçamento: 1.4kb JS · 2026-08-22
+
+   DUAS DIREÇÕES, UMA CADEIA — e é por isso que não são duas ideias brigando.
+   O circuito é abstrato: cordão, cone e fio conduzem corrente por uma página
+   que não mostrava coisa nenhuma. A fatura é o que a corrente ENCONTRA no fim
+   do fio — o documento que o visitante já tem na gaveta, sendo reescrito. O
+   circuito conduz; a fatura é onde ele chega. A folha obedece o mesmo
+   --luz-azimute: 90deg do resto do arquivo e não acende luz própria.
+
    Uma cadeia causal, não três efeitos: o CORDÃO é o interruptor, o CONE é o
    que a lâmpada emite, o FIO é a corrente descendo a página. Puxar o cordão
    acende ou apaga a página inteira — a banda (clara/escura) é escolha do
@@ -108,6 +117,48 @@
      teal-900 — nunca colocar sobre branco (2.05:1). */
   --brasa: #5fd08f;
   --lamina: #63c6e0;
+
+  /* --- o papel: matéria da direção "fatura" -------------------------------
+     A folha da seção "Como funciona" é um OBJETO FÍSICO desenhado, não uma
+     superfície de interface. Por isso estes tokens ficam fora de light-dark():
+     uma conta de luz não fica preta quando o visitante puxa o cordão. E não
+     precisa ficar — a folha só existe sobre --superficie-marca, que é #0b3d47
+     nos dois temas, então todo par medido aqui vale igual nos dois.
+
+     Medidos por `node logos/contraste.mjs`, não estimados. Os apertados:
+     crédito/papel 4.83:1 (o verde-600 dava 3.50 e reprovava, o -700 passa) e
+     tinta-2/papel 5.19:1 — este é o valor RISCADO do total, que continua
+     sendo texto que se lê, então não vale tratá-lo como decorativo. A barra
+     do histórico é gráfico, não texto: 3.39:1 contra o mínimo de 3 da WCAG
+     1.4.11.
+
+     Papel tem cor: croma zero aqui seria o branco de escritório que o gate
+     G19 reprova. #f6f3ea puxa para o quente, e a tinta puxa para o verde —
+     é toner sobre papel reciclado barato, não #000 sobre #fff. */
+  --papel: #f6f3ea;
+  --papel-vinco: #e4dece;
+  --papel-marcado: #ece7d9;
+  --papel-linha: #d8d2c2;
+  --papel-barra: #7d867f;
+  --papel-tinta-2: #5f6863;
+  --papel-tinta: #2a2f2c;
+  --papel-credito: #1d7a45;
+  /* A régua dos passos, sobre a mesa. Elemento gráfico apagado: é o estado
+     INATIVO, e quem carrega o contraste é o texto ao lado, que nunca esmaece. */
+  --regua: rgba(197, 221, 225, 0.24);
+
+  /* A sombra da folha na mesa. Quatro degraus, cada um dobrando o desfoque e
+     baixando a alfa — é a rampa que lê como luz difusa real, em vez do
+     `0 4px 12px rgba(0,0,0,.1)` que lê como framework. Deslocamento só em Y,
+     zero em X, porque a fonte de luz do site está declarada uma vez em
+     --luz-azimute: 90deg e todo elemento obedece. A tinta é o teal quase preto
+     da própria mesa: sombra preta pura sobre objeto colorido é o erro mais
+     visível que existe. */
+  --sombra-folha:
+    0 1px 2px rgba(4, 24, 30, 0.3),
+    0 4px 8px rgba(4, 24, 30, 0.24),
+    0 12px 24px rgba(4, 24, 30, 0.18),
+    0 32px 64px rgba(4, 24, 30, 0.14);
 
   /* --- escala de espaço: base 4, nada entre os passos --- */
   --e-1: 0.25rem;
@@ -288,6 +339,7 @@ img, svg { max-width: 100%; height: auto; display: block; }
 /* Sobre o teal-900 o anel azul dá 1.62:1 e some — e o rodapé sozinho tem 13
    links. Sobre superfície de marca o anel é branco, que dá 11.85:1. */
 .rodape :focus-visible,
+.fatura :focus-visible,
 .secao--marca :focus-visible {
   outline-color: var(--texto-invertido);
 }

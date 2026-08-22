@@ -2,6 +2,74 @@
   {
     "data": "2026-08-22",
     "projeto": "coopluz",
+    "pagina": "/ (secao \"Como funciona\")",
+    "direcao": "fatura",
+    "tipo": "custom",
+    "eixos": {
+      "materia": "pigmento",
+      "motor": "scroll",
+      "banda": "media"
+    },
+    "estrutura": "Percurso (#8), em Diptico no desktop — coluna presa com a folha | coluna que rola com os quatro passos",
+    "pedido": "\"Sinto falta de videos e imagens\". Acervo: NENHUM — a cooperativa nao tem foto de usina, nao tem drone, e banco de imagem foi vetado pelo dono. Entao a imagem nao foi comprada nem fotografada: foi desenhada, e o objeto escolhido e o unico que todo visitante ja tem em casa.",
+    "nota_eixos": "Banda declarada MEDIA e nao CLARA (como foi proposto): papel claro sobre pagina clara e invisivel. Sobre a mesa teal-900 a folha le como ILUMINADA, e a secao escura ja existia no ritmo da pagina. Nenhuma entrada do catalogo cobre \"documento desenhado que se reescreve\" — a vizinha e Papel Sujo (pigmento/autonomo/clara), que faz a PAGINA de papel; aqui a pagina nao e papel, um objeto de papel esta deitado nela.",
+    "relacao_com_circuito": "NAO substitui a direcao anterior: completa. O circuito (cordao/cone/fio) conduzia corrente por uma pagina que nao mostrava coisa nenhuma; a fatura e o que a corrente ENCONTRA no fim do fio. A folha obedece o mesmo --luz-azimute: 90deg e nao acende luz propria. O selo (.selo--revela) foi REMOVIDO desta secao: o eco da marca existia porque nao havia o que olhar; agora ha, e duas figuras grandes sobre a mesma mesa escura brigariam.",
+    "verbo": "emitir o documento — imprimir da esquerda para a direita, e carimbar (unica excecao, porque carimbo e prensado e nao impresso)",
+    "camadas": {
+      "entrada": "regua propria (--chegada, a intro da secao): a folha so entra em opacidade, faixa curta, para estar OPACA quando o leitor chega nela",
+      "scroll": "regua --percurso (view-timeline na coluna de passos, faixa `contain`): carimbo (0-4%), historico impresso (21-31%), linha de compensacao impressa (49-59%), total riscado (76-83%) e refeito (79-87%)",
+      "ponteiro": "passar sobre um passo marca no papel a linha que ele descreve, via :has() — como quem passa a caneta na conta enquanto explica. Desligado em (hover: none).",
+      "transicao": "AUSENTE POR DECLARACAO: a secao vive numa pagina so, e a transicao entre rotas ja existe no nivel do documento (View Transitions do circuito). Duplicar seria um segundo motor no mesmo trabalho."
+    },
+    "calibragem": "As faixas NAO saem de aritmetica de vh — saem de medida no navegador. A primeira tentativa errou: os passos caiam em -4/30/64/98% da faixa `contain` (passo 1 antes dela comecar, passo 4 no ultimo instante) e no celular, onde a folha gruda no TOPO, o olho le a faixa ABAIXO dela e nao o centro da tela — outros ~10 pontos de defasagem. Depois de ajustar respiro (desktop 50vh/68vh, celular 70vh/44vh) as tres larguras convergiram em ~4/32/60/88%, e cada mudanca TERMINA quando o passo centraliza: quem parar no meio ve documento pronto, nao linha pela metade.",
+    "bugs_achados_olhando_frame": [
+      "@keyframes imprimir sem `to` explicito — o quadro final vinha do estilo base (clip-path: none), e inset() nao interpola contra none: virava troca discreta na metade da faixa, e nas posicoes medidas (centro do passo cai a ~21% da propria faixa) nem aparecia",
+      "grao empilhado como `multiply` em forca cheia dentro da pilha de background: o tile de feTurbulence e ruido cru, virava cascalho e derrubava o par tinta/papel. Virou camada ::after com opacity .055, que e como o resto do arquivo ja usava o grao no cone",
+      "entrada amarrada a --percurso deixava a folha TRANSLUCIDA por meia tela, porque a coluna de passos so comeca a entrar bem depois de o papel estar visivel. Regua propria (--chegada) resolveu",
+      "no celular o bloco preso incluia a legenda e a nota de rodape: 660px de 740, e o texto dos passos passava POR TRAS do papel. A nota saiu do palco e a ressalva virou letra miuda DENTRO do papel — que e onde a letra miuda de um documento mora de verdade"
+    ],
+    "custo": {
+      "faixa": "captacao",
+      "js_gzip_kb": 0,
+      "deps_novas": [],
+      "delta_pagina_gzip_b": 2534,
+      "nota_peso": "21178b contra 18644b no HEAD anterior, medido com git stash nos dois estados. Zero JS: e tudo HTML e CSS, que o Astro inlina. Nenhum bundle .js separado e servido pela home.",
+      "lcp_ms": {
+        "mediana": 1320,
+        "amostras": [
+          932,
+          968,
+          1320,
+          1360,
+          1588
+        ],
+        "alvo": 2000,
+        "condicao": "4G simulado (150ms RTT, 1.6Mbps) + CPU 4x estrangulada"
+      },
+      "cls": 0,
+      "inp": "nao remedido: esta direcao nao adiciona um byte de JS nem um listener. A camada de ponteiro e :has() com transicao de background-color em 100ms."
+    },
+    "gates_corrigidos": [
+      "G6 token fechado — rgba() solta na sombra da folha virou --sombra-folha",
+      "G9 metrica inventada — os valores da fatura ganharam letra miuda VISIVEL no pe do documento, alem do <caption> da tabela e do rotulo do grafico",
+      "G14 resposta imediata — hover em 160ms caiu para 100ms",
+      "G15 primitivas <= 3 — a entrada da folha usava translate, quarta primitiva da pagina (recorte, escala, giro ja gastas). Virou so opacidade",
+      "G22 contraste — o grao em multiply de forca cheia (ver bugs)",
+      "G25 foco visivel — .fatura nao estava na regra que troca a cor do anel sobre superficie escura: o anel azul da 1.62:1 sobre teal-900 e sumiria",
+      "G33 estrutura nao repete — era o gate aberto da entrada anterior. A pilha .secao--marca + .grade auto-fit + .conta saiu; entrou Percurso/Diptico"
+    ],
+    "gates_nao_atingidos": [
+      "G3 salto tipografico — segue em 4x, herdado e pelo mesmo motivo documentado na entrada anterior: a 5rem o H1 de 76 caracteres empurra o formulario para fora da primeira tela num notebook de 900px. Fora do escopo desta entrega, que nao tocou o heroi."
+    ],
+    "gates_nao_aplicaveis": [
+      "G16 palco delimitado — nao ha loop autonomo: todo movimento e funcao do scroll ou do ponteiro",
+      "G31 dpr travado — nao ha canvas"
+    ],
+    "divida_declarada": "A pagina ainda tem SEIS secoes no ritmo herdado do hub (.secao > .container > h2 + p, .grade auto-fit, .cartao). Esta entrega trocou uma. O heroi continua sem imagem: por escolha, nao por esquecimento — e a unica tela onde o formulario precisa caber acima da dobra, e por um objeto ali se paga em conversao, isso e medicao, nao gosto."
+  },
+  {
+    "data": "2026-08-22",
+    "projeto": "coopluz",
     "pagina": "/ (e toda capa: /parceiro, /sobre)",
     "direcao": "circuito",
     "tipo": "custom",

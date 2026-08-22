@@ -73,6 +73,26 @@ const PARES = {
     ["destaque: texto-suave / verde-100 escuro", "#a9bcbc", "#153a2a", 4.5],
     ["borda do destaque / verde-100 escuro", "#40ac68", "#153a2a", 1],
   ],
+  // A folha da direção "fatura". Bloco próprio, e não repetido nos dois temas,
+  // porque o papel é objeto físico e NÃO inverte: ele só existe sobre
+  // --superficie-marca (#0b3d47 nos dois temas), então cada par abaixo vale
+  // uma vez só. Duplicar em claro/escuro seria a mesma linha medida duas vezes.
+  papel: [
+    ["folha / mesa (superficie-marca)", "#f6f3ea", "#0b3d47", 4.5],
+    ["tinta / papel", "#2a2f2c", "#f6f3ea", 4.5],
+    // O total antigo, riscado. Continua sendo texto que se lê — não vale
+    // tratar como decorativo só porque tem um traço em cima.
+    ["tinta-2 (total riscado) / papel", "#5f6863", "#f6f3ea", 4.5],
+    ["crédito e carimbo: verde-700 / papel", "#1d7a45", "#f6f3ea", 4.5],
+    // Reprova de propósito, registrada para quem for mexer na paleta do papel:
+    // o verde-600 é o degrau natural da escala e NÃO serve sobre off-white.
+    ["verde-600 / papel (REPROVA de propósito)", "#34925a", "#f6f3ea", 4.5],
+    // Gráfico, não texto: WCAG 1.4.11 pede 3, não 4.5.
+    ["barra do histórico / papel", "#7d867f", "#f6f3ea", 3],
+    ["fio da tabela / papel", "#d8d2c2", "#f6f3ea", 1],
+    ["vinco do envelope / papel", "#e4dece", "#f6f3ea", 1],
+    ["linha marcada pelo ponteiro / papel", "#ece7d9", "#f6f3ea", 1],
+  ],
 };
 
 let reprovas = 0;

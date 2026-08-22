@@ -1,6 +1,7 @@
 ---
 import Vertical from "../layouts/Vertical.astro";
 import { COOPLUZ } from "../data/solucoes";
+import Fatura from "../components/Fatura.astro";
 
 const solucao = COOPLUZ;
 
@@ -83,41 +84,7 @@ const perguntas = [
     </div>
   </section>
 
-  <section class="secao secao--marca">
-    {/* Segunda aparição do mesmo gesto, agora sobre a superfície de marca:
-         aqui o par lâmina/brasa aparece na força cheia (0.2), porque o fundo
-         é escuro. É o eco da capa, não um enfeite novo — uma ideia, duas
-         expressões. */}
-    <span class="selo selo--entra selo--revela" aria-hidden="true"></span>
-    <div class="container">
-      <span class="olho">Como funciona</span>
-      <h2>Quatro passos entre a assinatura e o desconto</h2>
-      <ol class="etapas" role="list">
-        <li>
-          <h3>Você se associa</h3>
-          <p>Cadastro digital com uma fatura recente da Equatorial em mãos. Sem visita técnica, sem análise de crédito e sem consulta ao SPC ou Serasa.</p>
-        </li>
-        <li>
-          <h3>A fazenda gera</h3>
-          <p>Usinas solares cooperadas injetam energia na rede da distribuidora e geram créditos de compensação.</p>
-        </li>
-        <li>
-          <h3>Os créditos entram no seu medidor</h3>
-          <p>A Coopluz aloca os créditos para a sua unidade consumidora, proporcionalmente ao seu consumo médio.</p>
-        </li>
-        <li>
-          <h3>A fatura chega menor</h3>
-          <p>A Equatorial reconhece os créditos e a mesma conta de sempre passa a chegar com 20% de desconto, em até 90 dias.</p>
-        </li>
-      </ol>
-      <ul class="conta lista-limpa" role="list">
-        <li><span>Conta de R$ 450</span><strong>R$ 90/mês de desconto</strong></li>
-        <li><span>Conta de R$ 700</span><strong>R$ 140/mês de desconto</strong></li>
-        <li><span>Conta de R$ 1.200</span><strong>R$ 240/mês de desconto</strong></li>
-      </ul>
-      <p class="nota">20% de qualquer uma dessas contas dá mais de R$ 1.000 de volta no ano.</p>
-    </div>
-  </section>
+  <Fatura />
 
   <section class="secao">
     <div class="container">
@@ -236,17 +203,6 @@ const perguntas = [
 </Vertical>
 
 <style>
-  .secao--marca { position: relative; overflow: clip; }
-  .secao--marca .selo {
-    width: min(46vw, 460px);
-    left: -10%;
-    bottom: -34%;
-    --giro: 14deg;
-  }
-  @media (max-width: 899px) {
-    .secao--marca .selo { width: 78vw; left: -30%; bottom: -8%; }
-  }
-
   /* O bloco de prova. `--t-3xl` no algarismo (o mesmo corpo do H1) porque é
      a única seção da página em que o dado, e não a frase, é o argumento. */
   .numeros {
@@ -316,29 +272,6 @@ const perguntas = [
      5.97:1. Bug anterior a esta direção; corrigido aqui porque estava na
      página que ela entrega. */
   .beneficios__item--acento span { color: var(--texto-suave); }
-  .etapas {
-    display: grid;
-    gap: var(--e-6);
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    margin: var(--e-8) 0 0;
-    padding: 0;
-    list-style: none;
-    counter-reset: etapa;
-  }
-  .etapas li { counter-increment: etapa; border-top: 3px solid var(--verde-500); padding-top: var(--e-4); }
-  .etapas li::before { content: "0" counter(etapa); display: block; font-weight: 700; color: var(--verde-400); margin-bottom: var(--e-2); }
-  .etapas p { color: var(--texto-sobre-marca); font-size: var(--t-sm); }
-  .conta {
-    display: grid;
-    gap: var(--e-3);
-    margin: var(--e-8) 0 0;
-    padding-top: var(--e-6);
-    border-top: 1px solid rgba(255, 255, 255, 0.16);
-  }
-  .conta li { display: flex; justify-content: space-between; gap: var(--e-4); flex-wrap: wrap; }
-  .conta span { color: var(--texto-sobre-marca); }
-  .conta strong { color: var(--verde-400); }
-  .secao--marca .nota { color: var(--texto-sobre-marca-suave); }
   .fora li { padding-left: var(--e-6); position: relative; color: var(--texto-suave); }
   .fora li::before { content: "—"; position: absolute; left: 0; color: var(--cinza-400); }
   .nota { font-size: var(--t-sm); color: var(--texto-suave); margin-top: var(--e-4); }

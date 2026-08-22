@@ -1,0 +1,664 @@
+---
+/**
+ * A FATURA — o objeto da direção "fatura" (pigmento · scroll · média).
+ *
+ * O site não tem uma fotografia sequer e a cooperativa não tem acervo: não há
+ * usina para fotografar nem drone para alugar. Mas todo visitante desta página
+ * tem, na gaveta, o objeto mais persuasivo deste mercado — a própria conta de
+ * luz. Então a imagem não é comprada nem fotografada: é DESENHADA, e é o
+ * documento que o visitante já sabe ler.
+ *
+ * A folha fica presa (`sticky`) enquanto os quatro passos passam ao lado, e
+ * cada passo REESCREVE uma parte dela: o carimbo assenta, o histórico de
+ * créditos sobe, a linha de compensação é impressa da esquerda para a direita
+ * e o total é riscado e refeito. Isso ocupa o lugar que um vídeo ocuparia, com
+ * zero byte de JS e sem depender de arquivo de mídia nenhum.
+ *
+ * NÃO É FAC-SÍMILE. Não há marca, cor nem diagramação da Equatorial em lugar
+ * nenhum: as rubricas (TE, TUSD, bandeira, iluminação pública, tributos,
+ * energia compensada) são a estrutura tarifária pública da ANEEL, comum a
+ * qualquer distribuidora do país, e os valores estão rotulados como exemplo no
+ * cabeçalho, na legenda da tabela e no rodapé. Documento de distribuidora
+ * desenhado realista demais deixa de ser ilustração e vira problema jurídico —
+ * o limite aqui é deliberado, não estético.
+ *
+ * A folha é conteúdo, não decoração: é uma <table> de verdade, com <caption> e
+ * cabeçalhos de linha. Quem lê por leitor de tela recebe a conta inteira já no
+ * estado final (com o crédito e com o total menor), porque o movimento é a
+ * única coisa que o scroll acrescenta — nunca a informação.
+ */
+
+/* As rubricas somam exatamente 700,00, e 20% de 700 é 140 — o mesmo par que a
+   página já usava na lista "Conta de R$ 700 → R$ 140/mês". Um exemplo que não
+   fecha na soma é a primeira coisa que um leitor atento confere. */
+const rubricas = [
+  { nome: "Energia elétrica (TE)", valor: "289,40" },
+  { nome: "Uso do sistema (TUSD)", valor: "301,15" },
+  { nome: "Bandeira tarifária", valor: "18,90" },
+  { nome: "Iluminação pública", valor: "12,55" },
+  { nome: "Tributos (ICMS, PIS, COFINS)", valor: "78,00" },
+];
+
+/* Histórico de créditos, em kWh. Os três primeiros meses são zero de
+   propósito: é a unidade ANTES de se associar. A subida a partir do quarto mês
+   é o passo 2 acontecendo dentro do próprio documento. Altura em % do maior. */
+const historico = [
+  { mes: "abr", kwh: 0 }, { mes: "mai", kwh: 0 }, { mes: "jun", kwh: 0 },
+  { mes: "jul", kwh: 148 }, { mes: "ago", kwh: 312 }, { mes: "set", kwh: 486 },
+  { mes: "out", kwh: 502 }, { mes: "nov", kwh: 478 }, { mes: "dez", kwh: 511 },
+  { mes: "jan", kwh: 530 }, { mes: "fev", kwh: 498 }, { mes: "mar", kwh: 540 },
+];
+const teto = Math.max(...historico.map((m) => m.kwh));
+
+const passos = [
+  {
+    titulo: "Você se associa",
+    texto:
+      "Cadastro digital com uma fatura recente em mãos. Sem visita técnica, sem análise de crédito e sem consulta ao SPC ou Serasa. A sua unidade consumidora passa a constar como associada.",
+  },
+  {
+    titulo: "A fazenda gera",
+    texto:
+      "Usinas solares cooperadas injetam energia na rede da distribuidora. Cada mês de geração vira um crédito em kWh registrado no histórico da sua unidade.",
+  },
+  {
+    titulo: "Os créditos entram no seu medidor",
+    texto:
+      "A Coopluz aloca os créditos para a sua unidade proporcionalmente ao consumo médio. Na fatura eles aparecem como uma rubrica nova, negativa: energia compensada.",
+  },
+  {
+    titulo: "A fatura chega menor",
+    texto:
+      "A distribuidora reconhece os créditos e a mesma conta de sempre passa a chegar com 20% de desconto, em até 90 dias. Nada foi instalado e nada foi trocado.",
+  },
+];
+---
+
+<section class="fatura" aria-labelledby="fatura-titulo">
+  <div class="container fatura__grade">
+    <div class="fatura__intro">
+      <span class="olho">Como funciona</span>
+      <h2 id="fatura-titulo">Quatro passos até a sua conta chegar menor</h2>
+      <p class="chamada">
+        Acompanhe pela própria fatura: a cada passo, um pedaço do documento muda.
+      </p>
+    </div>
+
+    {/* A COLUNA PRESA. O wrapper é quem gruda; a folha dentro dele fica livre
+        para receber `rotate` e `translate` sem brigar com o `sticky`. */}
+    <div class="fatura__palco">
+      <div class="folha">
+        <div class="folha__papel">
+          <div class="folha__topo">
+            <p class="folha__ref">
+              Fatura de energia<br />
+              <span>unidade consumidora · exemplo · ref. 03/2026</span>
+            </p>
+            <p class="folha__carimbo">Unidade<br />associada</p>
+          </div>
+
+          <div class="folha__historico">
+            <p class="folha__rotulo">Créditos da usina cooperada, por mês (kWh) &middot; exemplo</p>
+            <ul class="folha__barras" role="list">
+              {historico.map((m) => (
+                <li>
+                  <span style={`--h:${Math.round((m.kwh / teto) * 100)}%`}>
+                    <span class="visualmente-oculto">{m.mes}: {m.kwh} kWh</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <table class="folha__conta">
+            <caption class="visualmente-oculto">
+              Exemplo esquemático de uma fatura de R$ 700,00 com 20% de compensação.
+              Ilustração da estrutura tarifária da ANEEL — não reproduz o documento
+              de nenhuma distribuidora e os valores não são de uma conta real.
+            </caption>
+            <tbody>
+              {rubricas.map((r) => (
+                <tr>
+                  <th scope="row">{r.nome}</th>
+                  <td>{r.valor}</td>
+                </tr>
+              ))}
+              <tr class="folha__linha-credito">
+                <th scope="row">Energia compensada (GD)</th>
+                <td>&minus;140,00</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="folha__total">
+            <p class="folha__antes">
+              <span class="visualmente-oculto">Total sem a compensação:</span>
+              <s>R$ 700,00</s>
+            </p>
+            <p class="folha__depois">
+              <span>Total a pagar</span>
+              <strong>R$ 560,00</strong>
+            </p>
+          </div>
+
+          {/* A ressalva mora DENTRO do papel, e não numa legenda embaixo dele.
+               Duas razões, e as duas são melhores que a legenda: letra miúda no
+               rodapé é onde a ressalva de um documento vive de verdade, então
+               ela reforça o objeto em vez de comentá-lo de fora; e no celular
+               tudo que fica FORA do papel soma altura ao bloco preso, que foi
+               exatamente o que empurrava o texto dos passos para trás da
+               folha. Visível, e não só no <caption> da tabela: um documento
+               desenhado precisa se declarar desenhado para quem OLHA. */}
+          <p class="folha__miudo">
+            Ilustração esquemática da estrutura tarifária da ANEEL &middot; não reproduz o
+            documento de nenhuma distribuidora &middot; valores de exemplo
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <ol class="fatura__passos" role="list">
+      {passos.map((p) => (
+        <li>
+          <h3>{p.titulo}</h3>
+          <p>{p.texto}</p>
+        </li>
+      ))}
+    </ol>
+
+    {/* FORA do palco preso, de propósito: no celular tudo que fica dentro do
+         bloco grudado ocupa altura de tela o tempo todo, e esta nota empurrava
+         a folha para cima do texto dos passos. É rodapé da seção — o lugar
+         dela é no fim, depois da leitura. */}
+    <p class="fatura__outras">
+      Sua conta é outra? <b>R$ 450</b> viram R$ 90 de desconto &middot; <b>R$ 700</b> viram
+      R$ 140 &middot; <b>R$ 1.200</b> viram R$ 240. Sempre 20%, todo mês.
+    </p>
+  </div>
+</section>
+
+<style>
+  /* =======================================================================
+     FATURA — estrutura Percurso: um objeto só se transforma do topo ao fim.
+     Substitui a pilha `.secao--marca` + `.grade auto-fit` + `.conta` herdada
+     do hub autogestor, que o gate G33 vinha reprovando desde a direção
+     anterior: era o MESMO ritmo de seção de todas as outras páginas. Aqui o
+     bloco tem uma forma que nenhum outro tem — coluna presa de um lado,
+     leitura correndo do outro.
+     ======================================================================= */
+
+  .fatura {
+    background: var(--superficie-marca);
+    color: var(--texto-invertido);
+    padding-block: var(--e-16);
+    /* Torna os nomes das linhas do tempo (declaradas na intro e na coluna de
+       passos) visíveis para a folha, que é IRMÃ das duas e não descendente.
+       Sem isto cada elemento só enxerga a própria timeline e a folha ficaria
+       parada. Duas réguas porque são dois relógios diferentes: a CHEGADA da
+       folha é a seção entrando na tela; o PERCURSO é a folha já grudada,
+       sendo reescrita. Amarrar a chegada ao percurso era o bug do primeiro
+       frame — a folha ficava translúcida por meia tela, porque a coluna de
+       passos só começa a entrar bem depois de o papel já estar visível. */
+    timeline-scope: --percurso, --chegada;
+  }
+
+  .fatura__grade { display: grid; gap: var(--e-8); }
+  .fatura__intro { max-width: 46ch; }
+  .fatura .olho { color: var(--brasa); }
+  .fatura .chamada { color: var(--texto-sobre-marca); }
+  .fatura h2 { color: var(--texto-invertido); }
+
+  @media (min-width: 900px) {
+    .fatura__grade {
+      /* 480px e não 400: a folha é a IMAGEM que esta seção existe para
+         mostrar. A 400px ela virava um cartãozinho boiando num vão de 1440 —
+         medido em frame, não suposto. */
+      grid-template-columns: minmax(340px, 480px) 1fr;
+      grid-template-areas:
+        "intro  intro"
+        "palco  passos"
+        "notas  notas";
+      column-gap: var(--e-12);
+      row-gap: var(--e-8);
+      align-items: start;
+    }
+    .fatura__intro { grid-area: intro; }
+    .fatura__palco { grid-area: palco; }
+    .fatura__passos { grid-area: passos; }
+    .fatura__outras { grid-area: notas; }
+    /* 68px = altura do cabeçalho preso (padding-block 12+12 + alvo de 44).
+       O respiro extra centra a folha na tela em vez de encostá-la no topo com
+       um vão de 400px embaixo. */
+    .fatura__palco { position: sticky; top: calc(68px + var(--e-8)); }
+    /* Corpo maior que o `clamp` base. A folha É o assunto da seção, e a
+       0.82rem ela ocupava 410px de uma tela de 900 — sobrava metade do palco
+       vazia, medido em frame, não suposto. A 0.92rem ela cresce ~90px e o vão
+       fecha sem precisar alargar a coluna. */
+    .fatura__palco .folha__papel { font-size: 0.92rem; padding: 1.25rem; }
+  }
+  @media (max-width: 899px) {
+    /* Sem cabeçalho preso no celular, mas COM a barra de ação fixa embaixo
+       (72px). A folha gruda no topo e os passos correm SOB ela — e é por isso
+       que o palco precisa de fundo opaco: sem ele o texto dos passos passava
+       por dentro do papel e as duas leituras se atropelavam. */
+    .fatura__palco {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      padding-block: var(--e-3);
+      background: var(--superficie-marca);
+    }
+    /* A folha encolhe para caber junto dos passos numa tela de 740px: sem
+       isto o bloco preso comia 89% da altura e não sobrava leitura nenhuma. */
+    .fatura__palco .folha__papel { font-size: 0.68rem; padding: var(--e-3); }
+    .fatura__palco .folha__barras { height: 24px; }
+    .fatura__palco .folha__depois strong { font-size: 1.6em; }
+  }
+
+  /* -----------------------------------------------------------------------
+     A FOLHA — matéria: papel, não superfície de UI.
+     Três coisas fazem papel em vez de cartão: fibra (dois grãos em escalas
+     diferentes — um só lê como ruído digital), o vinco de quem veio dobrado
+     dentro do envelope, e uma sombra de quatro degraus que cai RETO para
+     baixo, obedecendo o `--luz-azimute: 90deg` que o resto do site já
+     declarou. Sombra com deslocamento lateral aqui brigaria com a lâmpada da
+     capa — e sombra preta pura sobre objeto colorido é o erro que o gate G18
+     reprova, então ela puxa para o teal da mesa.
+     ----------------------------------------------------------------------- */
+  .folha { margin: 0; }
+  .folha__papel {
+    position: relative;
+    padding: var(--e-4);
+    border-radius: 2px;
+    background:
+      /* o vinco de quem veio dobrado no envelope */
+      linear-gradient(var(--papel-vinco), var(--papel-vinco)) 0 38% / 100% 1px no-repeat,
+      var(--papel);
+    color: var(--papel-tinta);
+    font-size: clamp(0.72rem, 0.62rem + 0.5vw, 0.82rem);
+    line-height: 1.45;
+    /* Papel na mesa nunca está no esquadro. 0.7deg basta para o olho registrar
+       "objeto pousado" e é pouco o bastante para não ler como erro de CSS. */
+    rotate: -0.7deg;
+    box-shadow: var(--sombra-folha);
+  }
+  /* A FIBRA. Camada de cima com opacidade baixa, e NÃO um `multiply` dentro da
+     pilha de `background`: o tile de `feTurbulence` é ruído em força cheia, e
+     multiplicado direto no papel ele vira cascalho e derruba o par tinta/papel
+     de 12.28:1 para algo que nem se mede. 0.055 fica na faixa 0.03–0.08 que o
+     resto do arquivo já usa no cone. Duas escalas sobrepostas (240px e 90px):
+     uma só lê como ruído digital, duas leem como fibra de papel.
+     O grão fica por CIMA do texto de propósito — fibra de papel passa por cima
+     da tinta também, e em `multiply` ele só escurece, então o contraste sobe
+     em vez de cair. */
+  .folha__papel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background-image: var(--grao), var(--grao);
+    background-size: 240px 240px, 90px 90px;
+    opacity: 0.055;
+    mix-blend-mode: multiply;
+  }
+  /* A folha NÃO inverte no tema escuro. Papel é objeto físico: uma conta de
+     luz não fica preta quando o visitante troca o tema. E não precisa — a mesa
+     (--superficie-marca) é #0b3d47 nos dois temas, então o par papel/mesa
+     (10.68:1) e todos os pares internos valem igual nos dois. */
+
+  .folha__topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--e-3);
+    padding-bottom: var(--e-3);
+    border-bottom: 1px solid var(--papel-linha);
+  }
+  .folha__ref { margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+  .folha__ref span {
+    display: block;
+    margin-top: 2px;
+    font-weight: 400;
+    font-size: 0.86em;
+    color: var(--papel-tinta-2);
+  }
+
+  /* O carimbo. É a única coisa desta folha que não é impressa — carimbo é
+     prensado, e por isso é o único elemento com giro próprio e borda dupla. */
+  .folha__carimbo {
+    flex: none;
+    margin: 0;
+    padding: 4px 8px;
+    border: 2px solid var(--papel-credito);
+    border-radius: 3px;
+    color: var(--papel-credito);
+    font-size: 0.78em;
+    font-weight: 800;
+    line-height: 1.15;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    rotate: -5deg;
+  }
+
+  /* A linha de base do gráfico mora AQUI, e não na <ul> das barras: a <ul> é
+     que recebe o recorte de impressão, e com a borda nela o eixo sumia junto —
+     o lugar do gráfico virava um buraco em vez de um gráfico ainda em branco. */
+  .folha__historico {
+    padding-block: var(--e-3);
+    border-bottom: 1px solid var(--papel-linha);
+  }
+  .folha__rotulo {
+    margin: 0 0 var(--e-2);
+    font-size: 0.86em;
+    color: var(--papel-tinta-2);
+  }
+  .folha__barras {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .folha__barras li { flex: 1; display: flex; align-items: flex-end; height: 100%; }
+  .folha__barras li > span {
+    width: 100%;
+    height: var(--h);
+    min-height: 2px;
+    background: var(--papel-barra);
+  }
+  /* O mês corrente — o crédito que a linha de compensação abaixo está usando. */
+  .folha__barras li:last-child > span { background: var(--papel-credito); }
+
+  .folha__conta { width: 100%; border-collapse: collapse; margin-top: var(--e-3); }
+  .folha__conta th,
+  .folha__conta td { padding: 3px 0; text-align: left; font-weight: 400; }
+  .folha__conta td {
+    text-align: right;
+    /* Sem isto "289,40" e "18,90" desalinham e a coluna deixa de ler como
+       coluna de valor — que é justamente o que faz o desenho parecer fatura. */
+    font-variant-numeric: tabular-nums;
+  }
+  .folha__linha-credito th,
+  .folha__linha-credito td {
+    padding-top: var(--e-2);
+    border-top: 1px solid var(--papel-linha);
+    color: var(--papel-credito);
+    font-weight: 700;
+  }
+
+  .folha__total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--e-3);
+    flex-wrap: wrap;
+    margin-top: var(--e-3);
+    padding-top: var(--e-3);
+    border-top: 2px solid var(--papel-tinta);
+  }
+  .folha__antes { margin: 0; color: var(--papel-tinta-2); }
+  .folha__antes s { text-decoration-thickness: 2px; }
+  .folha__depois { margin: 0; text-align: right; }
+  .folha__depois span { display: block; font-size: 0.86em; color: var(--papel-tinta-2); }
+  .folha__depois strong {
+    font-family: var(--display);
+    font-variation-settings: "wght" 800;
+    font-size: 1.9em;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--papel-credito);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Letra miúda impressa no pé do documento. --papel-tinta-2 (5.19:1) e não
+     um cinza mais claro: é ressalva jurídica, tem que ser legível de verdade —
+     miúdo é o corpo, não o contraste. */
+  .folha__miudo {
+    margin: var(--e-3) 0 0;
+    padding-top: var(--e-2);
+    border-top: 1px solid var(--papel-linha);
+    font-size: 0.78em;
+    line-height: 1.4;
+    color: var(--papel-tinta-2);
+  }
+
+  .fatura__outras {
+    margin: var(--e-4) 0 0;
+    font-size: var(--t-sm);
+    color: var(--texto-sobre-marca);
+  }
+  .fatura__outras b { color: var(--texto-invertido); }
+
+  /* -----------------------------------------------------------------------
+     OS PASSOS — legenda do objeto, não cards.
+     Zero `.grade auto-fit`, zero `.cartao`: é lista numerada com régua à
+     esquerda, e a régua é o que acende. O TEXTO nunca esmaece — atenuar
+     parágrafo por opacidade derruba o contraste abaixo de AA, então quem marca
+     o passo ativo é a régua, que é elemento gráfico e só precisa de 3:1.
+     ----------------------------------------------------------------------- */
+  .fatura__passos {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: passo;
+    display: grid;
+    gap: var(--e-12);
+  }
+  .fatura__passos li {
+    counter-increment: passo;
+    padding-left: var(--e-6);
+    border-left: 3px solid var(--regua);
+  }
+  .fatura__passos li::before {
+    content: "0" counter(passo);
+    display: block;
+    margin-bottom: var(--e-2);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--brasa);
+  }
+  .fatura__passos h3 { color: var(--texto-invertido); margin-bottom: var(--e-2); }
+  .fatura__passos p { color: var(--texto-sobre-marca); margin: 0; }
+  @media (min-width: 900px) {
+    /* O respiro entre os passos É a distância de scroll que cada reescrita da
+       folha tem para acontecer. Menos que isto e as quatro mudanças acontecem
+       quase juntas: o gesto vira um piscar. */
+    .fatura__passos { gap: 40vh; padding-block: 50vh 68vh; }
+  }
+  @media (max-width: 899px) {
+    .fatura__passos { gap: 36vh; padding-block: 70vh 44vh; }
+  }
+</style>
+
+<style>
+  /* =======================================================================
+     COREOGRAFIA — uma ideia, quatro expressões: O DOCUMENTO SENDO EMITIDO.
+     Tudo nesta folha aparece do jeito que aparece numa impressora: da esquerda
+     para a direita, por `clip-path`/`background-size`, nunca por fade. A única
+     exceção é o carimbo, e é uma exceção do próprio objeto — carimbo é
+     prensado, não impresso. Quatro efeitos diferentes seriam quatro ideias
+     brigando (gate G11); aqui é um verbo só, quatro momentos.
+
+     Estado natural do documento = ESTADO FINAL (carimbado, com crédito, com o
+     total menor). As animações partem de um `from` que o desfaz. Consequência:
+     sem `animation-timeline`, sem `timeline-scope`, com JS desligado ou em
+     `prefers-reduced-motion`, o que fica na tela é uma fatura inteira e
+     composta — não um esqueleto esperando script. É o gate G24.
+     ======================================================================= */
+
+  /* --- camada 2 · SCROLL --------------------------------------------------
+     A coluna de passos é a régua do tempo; a folha, presa ao lado, lê essa
+     régua. `contain` é a faixa em que a coluna cobre a viewport inteira — ou
+     seja, exatamente o intervalo em que a folha está grudada. O respiro de
+     ~34vh/46vh nas pontas é o que faz o primeiro e o último passo caírem
+     DENTRO dessa faixa em vez de antes e depois dela. */
+  @supports (timeline-scope: --percurso) {
+    .fatura__passos { view-timeline: --percurso block; }
+    .fatura__intro { view-timeline: --chegada block; }
+
+    .folha__carimbo,
+    .folha__barras,
+    .folha__linha-credito th,
+    .folha__linha-credito td,
+    .folha__antes s,
+    .folha__depois {
+      animation-timeline: --percurso;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+    }
+
+    /* 0 · entrada — a folha assenta. Sobe 24px e para. Papel não quica: sem
+       overshoot, sem escala. `translate`/`opacity` porque `rotate` já é do
+       repouso do objeto e não pode ser sobrescrito. Régua própria (--chegada,
+       a intro da seção) e faixa curta: a folha tem que estar OPACA quando o
+       leitor chega nela, não a meio caminho. */
+    .folha__papel {
+      animation-name: folha-assenta;
+      animation-timeline: --chegada;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-range: entry 10% entry 70%;
+    }
+    /* Só opacidade. O `translate: 0 24px` que estava aqui era a QUARTA
+       primitiva de movimento da página — recorte, escala e giro já estavam
+       gastas entre esta direção e o circuito — e não acrescentava nada que se
+       percebesse: uma folha que gruda no topo não tem para onde assentar. */
+    @keyframes folha-assenta {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* 1 · o carimbo é prensado. Faixa curtíssima (10% do percurso) de
+       propósito: carimbo não desliza, ele bate. */
+    .folha__carimbo {
+      animation-name: carimbar;
+      animation-range: contain 0% contain 4%;
+    }
+    @keyframes carimbar {
+      from { opacity: 0; scale: 1.5; rotate: -14deg; }
+      to   { opacity: 1; scale: 1;   rotate: -5deg;  }
+    }
+
+    /* 2 · o histórico é impresso, mês a mês, da esquerda para a direita. */
+    .folha__barras {
+      animation-name: imprimir;
+      animation-range: contain 21% contain 31%;
+    }
+
+    /* 3 · a linha de compensação entra pela mesma cabeça de impressão. Duas
+       células, mesma faixa: a rubrica e o valor são uma linha só. */
+    .folha__linha-credito th,
+    .folha__linha-credito td {
+      animation-name: imprimir;
+      animation-range: contain 49% contain 59%;
+    }
+
+    /* 4 · o total é refeito: o risco atravessa o valor antigo e o novo é
+       impresso. `background-size` no lugar de `text-decoration` porque só o
+       fundo é animável — o <s> continua no HTML, então o leitor de tela ouve
+       "700,00" riscado do mesmo jeito. */
+    .folha__antes s {
+      text-decoration: none;
+      background: linear-gradient(var(--papel-tinta-2), var(--papel-tinta-2)) 0 58% / 100% 2px no-repeat;
+      animation-name: riscar;
+      animation-range: contain 76% contain 83%;
+    }
+    @keyframes riscar {
+      from { background-size: 0 2px; }
+      to   { background-size: 100% 2px; }
+    }
+
+    .folha__depois {
+      animation-name: imprimir;
+      animation-range: contain 79% contain 87%;
+    }
+
+    /* O verbo, uma vez só, usado por três elementos.
+       O `to` é EXPLÍCITO e isso não é estilo: sem ele o quadro final sai do
+       estilo base, que é `clip-path: none` — e `inset()` não interpola contra
+       `none`. O resultado era uma troca discreta na metade da faixa em vez de
+       uma varredura, ou seja, os três elementos apareciam de estalo (e, nas
+       posições medidas, nem apareciam: o centro de cada passo cai a ~21% da
+       própria faixa, antes do ponto de virada). */
+    @keyframes imprimir {
+      from { clip-path: inset(0 100% 0 0); }
+      to   { clip-path: inset(0 0 0 0); }
+    }
+  }
+
+  /* --- camada 2b · a régua do passo ativo ---------------------------------
+     Não depende de `timeline-scope`: cada <li> lê a própria passagem pela
+     viewport. Por isso acende mesmo em navegador que só tem metade das
+     linhas do tempo com nome. */
+  @supports (animation-timeline: view()) {
+    .fatura__passos li {
+      animation: acender linear both;
+      animation-timeline: view();
+      animation-range: entry 70% exit 30%;
+    }
+    @keyframes acender {
+      0%   { border-left-color: var(--regua); }
+      18%  { border-left-color: var(--brasa); }
+      82%  { border-left-color: var(--brasa); }
+      100% { border-left-color: var(--regua); }
+    }
+  }
+
+  /* --- camada 3 · PONTEIRO ------------------------------------------------
+     Enriquecimento puro: passar sobre um passo marca no papel a linha que ele
+     descreve — como quem passa a caneta na conta enquanto explica. Nada aqui
+     é alcançável só pelo ponteiro (gate G27): a mesma correspondência já é
+     dada pela ordem e pelo scroll. Desligado no toque, onde `:hover` gruda. */
+  @media (hover: hover) {
+    .folha__carimbo,
+    .folha__historico,
+    .folha__linha-credito th,
+    .folha__linha-credito td,
+    /* --dur-instante, e não --dur-rapida: é troca de cor respondendo ao
+       ponteiro, e acima de ~120ms isso lê como atraso em vez de suavidade. */
+    .folha__total { transition: background-color var(--dur-instante) var(--curva); }
+
+    .fatura:has(.fatura__passos > li:nth-child(1):hover) .folha__carimbo,
+    .fatura:has(.fatura__passos > li:nth-child(2):hover) .folha__historico,
+    .fatura:has(.fatura__passos > li:nth-child(3):hover) .folha__linha-credito th,
+    .fatura:has(.fatura__passos > li:nth-child(3):hover) .folha__linha-credito td,
+    .fatura:has(.fatura__passos > li:nth-child(4):hover) .folha__total {
+      background-color: var(--papel-marcado);
+    }
+  }
+
+  /* --- camada 4 · TRANSIÇÃO ----------------------------------------------
+     AUSENTE POR DECLARAÇÃO, e não por esquecimento: esta seção vive numa
+     página só. A transição entre rotas já existe no nível do documento (View
+     Transitions em global.css, herdadas da direção anterior) e duplicá-la aqui
+     seria um segundo motor fazendo o mesmo trabalho. */
+
+  /* --- o piso ------------------------------------------------------------
+     `prefers-reduced-motion` não pode depender só do `animation-duration:
+     0.01ms` global: animação de scroll é medida em PROGRESSO, e duração não a
+     alcança. Aqui o desligamento é explícito, e o que sobra é o estado final —
+     a fatura inteira, com carimbo, histórico, crédito e total refeito. */
+  @media (prefers-reduced-motion: reduce) {
+    .folha__papel,
+    .folha__carimbo,
+    .folha__barras,
+    .folha__linha-credito th,
+    .folha__linha-credito td,
+    .folha__antes s,
+    .folha__depois,
+    .fatura__passos li { animation: none !important; }
+
+    .folha__papel { opacity: 1; }
+    .folha__carimbo { opacity: 1; scale: 1; rotate: -5deg; }
+    .folha__barras,
+    .folha__linha-credito th,
+    .folha__linha-credito td,
+    .folha__depois { clip-path: none; }
+    .folha__antes s { background-size: 100% 2px; }
+    .fatura__passos li { border-left-color: var(--brasa); }
+  }
+</style>
