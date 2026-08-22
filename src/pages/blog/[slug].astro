@@ -1,0 +1,198 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import LeadForm from "../../components/LeadForm.astro";
+import BarraAcao from "../../components/BarraAcao.astro";
+import { porSlug } from "../../data/solucoes";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const solucao = porSlug(post.data.vertical);
+
+const site = Astro.site ?? new URL("https://coopluz.roilabs.com.br");
+const abs = (p: string) => new URL(p, site).href;
+const url = abs(`/blog/${post.id}`);
+
+// Spokes do mesmo cluster (`vertical`) linkam entre si — é o que faz o pilar
+// acumular relevância em vez de cada post competir sozinho na busca.
+const relacionados = (await getCollection("blog")).filter(
+  (p) => p.data.vertical === post.data.vertical && p.id !== post.id
+);
+
+// `timeZone: "UTC"` porque a data do front matter (2026-08-19) vira meia-noite
+// UTC: sem isso, uma máquina de build em UTC-3 publica o dia anterior.
+const dataLonga = (d: Date) =>
+  d.toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+
+// Os H2 em forma de pergunta já são o corpo do artigo (ver .md em
+// src/content/blog) — isto só declara o par pergunta/resposta que o texto já
+// tem, para quem extrai Q&A não precisar adivinhar a partir da prosa.
+const perguntasDoPost = (corpo: string) =>
+  corpo
+    .split(/\n## +/)
+    .slice(1)
+    .flatMap((bloco) => {
+      const quebra = bloco.indexOf("\n");
+      const pergunta = bloco.slice(0, quebra === -1 ? bloco.length : quebra).trim();
+      if (!pergunta.endsWith("?")) return [];
+      const resposta = bloco
+        .slice(quebra + 1)
+        .split(/\n\s*\n/)[0]
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+        .replace(/\n+/g, " ")
+        .trim();
+      return resposta ? [{ p: pergunta, r: resposta }] : [];
+    });
+const perguntas = perguntasDoPost(post.body ?? "");
+
+const schema = [
+  {
+    "@type": "BlogPosting",
+    "@id": `${url}#post`,
+    headline: post.data.titulo,
+    description: post.data.descricao,
+    url,
+    datePublished: post.data.publicado.toISOString(),
+    dateModified: (post.data.atualizado ?? post.data.publicado).toISOString(),
+    inLanguage: "pt-BR",
+    author: { "@id": abs("/#organizacao") },
+    publisher: { "@id": abs("/#organizacao") },
+    mainEntityOfPage: { "@id": `${url}#pagina` },
+    about: { "@id": abs(`/${solucao.slug}#servico`) },
+  },
+  ...(perguntas.length
+    ? [
+        {
+          "@type": "FAQPage",
+          "@id": `${url}#faq`,
+          mainEntity: perguntas.map((q) => ({
+            "@type": "Question",
+            name: q.p,
+            acceptedAnswer: { "@type": "Answer", text: q.r },
+          })),
+        },
+      ]
+    : []),
+];
+---
+
+<Base
+  titulo={`${post.data.titulo} | Autogestor`}
+  descricao={post.data.descricao}
+  schema={schema}
+  artigo={{ publicado: post.data.publicado, atualizado: post.data.atualizado }}
+  trilha={[
+    { nome: "Início", href: "/" },
+    { nome: "Blog", href: "/blog" },
+    { nome: post.data.curto ?? post.data.titulo, href: `/blog/${post.id}` },
+  ]}
+>
+  <article class="secao post">
+    <div class="container post__grade">
+      <div class="post__corpo">
+        <p class="olho"><a href={`/${solucao.slug}`}>{solucao.nome}</a></p>
+        <h1>{post.data.titulo}</h1>
+        {/* A regra do Fio B muda todo janeiro: sem data na tela, quem lê em
+             2027 não tem como saber se o número ainda vale. */}
+        <p class="post__data">
+          {
+            post.data.atualizado ? (
+              <time datetime={post.data.atualizado.toISOString()}>
+                Atualizado em {dataLonga(post.data.atualizado)}
+              </time>
+            ) : (
+              <time datetime={post.data.publicado.toISOString()}>
+                Publicado em {dataLonga(post.data.publicado)}
+              </time>
+            )
+          }
+        </p>
+        <div class="post__conteudo">
+          <Content />
+        </div>
+
+        {
+          relacionados.length > 0 && (
+            <nav class="post__relacionados" aria-label={`Também sobre ${solucao.nome}`}>
+              <h2>Também sobre {solucao.nome}</h2>
+              <ul class="lista-limpa" role="list">
+                {relacionados.map((p) => (
+                  <li>
+                    <a href={`/blog/${p.id}`}>{p.data.titulo}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )
+        }
+      </div>
+
+      <aside class="post__lateral" id="pedir" tabindex="-1">
+        <LeadForm solucao={solucao} destaque instancia="blog" />
+      </aside>
+    </div>
+  </article>
+
+  {/* No celular a lateral cai para o fim de um documento de ~5.400px: da
+       primeira rolagem até o rodapé não sobrava nenhuma ação na tela. */}
+  <BarraAcao solucao={solucao} rotulo="Pedir análise" />
+</Base>
+
+<style>
+  .post__grade {
+    display: grid;
+    gap: var(--e-12);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 900px) {
+    .post__grade { grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); align-items: start; }
+    .post__lateral { position: sticky; top: calc(var(--e-16) + var(--e-4)); }
+  }
+  .post__corpo h1 { margin-top: var(--e-2); max-width: 24ch; }
+  .post__data { font-size: var(--t-sm); color: var(--texto-suave); }
+  .post__conteudo {
+    margin-top: var(--e-8);
+    max-width: 72ch;
+    color: var(--texto);
+    line-height: 1.7;
+  }
+  /* `:global()` obrigatório nos descendentes: este HTML vem de <Content />, e o
+     markdown renderizado não recebe o atributo de escopo que o Astro exige no
+     último elemento do seletor. Sem isto nenhuma regra abaixo aplica — a tabela
+     saía sem borda, sem fundo e com o padding de 1px do navegador. */
+  .post__conteudo > :global(:first-child) { margin-top: 0; }
+  .post__conteudo :global(p) { margin: 0 0 var(--e-4); }
+  .post__conteudo :global(h2) {
+    margin: var(--e-12) 0 var(--e-4);
+    font-size: var(--t-xl);
+    scroll-margin-top: var(--e-8);
+  }
+  .post__conteudo :global(a) { color: var(--link); }
+  .post__conteudo :global(a:hover) { color: var(--link-hover); }
+  .post__conteudo :global(table) {
+    width: 100%;
+    margin: var(--e-6) 0;
+    border-collapse: collapse;
+    font-size: var(--t-sm);
+  }
+  .post__conteudo :global(th),
+  .post__conteudo :global(td) {
+    padding: var(--e-3);
+    border: 1px solid var(--borda);
+    text-align: left;
+    vertical-align: top;
+  }
+  .post__conteudo :global(th) { background: var(--superficie); font-weight: 700; }
+  .post__relacionados {
+    margin-top: var(--e-12);
+    padding-top: var(--e-8);
+    border-top: 1px solid var(--borda);
+  }
+  .post__relacionados ul { display: grid; gap: var(--e-2); margin-top: var(--e-4); }
+  .post__relacionados a { font-weight: 600; color: var(--link); }
+</style>

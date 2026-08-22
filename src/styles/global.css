@@ -1,0 +1,599 @@
+/* art-direction · costura · eixos: luz/estado/média · orçamento: 0kb JS · 2026-08-21
+   O elemento que costura é o vórtice da marca. Ele nunca sai de cena: textura do
+   herói na home, selo no canto do card, marca da capa na vertical. A troca de
+   rota interpola o selo do card para a capa da página que abriu — View
+   Transitions cross-document, nativo, sem router e sem um byte de JS. */
+
+/* Tokens do Autogestor. Cores primitivas amostradas da própria logo (hexágono em
+   vórtice): azul #005CA6, azul profundo #002B74, laranja #E47A45.
+
+   Contraste é restrição de escolha, não checagem final. O laranja da marca com
+   texto BRANCO dá 2.93:1 e reprova em AA — com texto tinta dá 5.94:1 e passa.
+   Por isso o botão primário é laranja com texto escuro, e não laranja escurecido:
+   preserva a cor exata da logo sem quebrar acessibilidade. */
+
+:root {
+  /* Nada de `color-scheme` aqui: ele mora dentro do @supports de light-dark().
+     Anunciar os dois esquemas sem conseguir trocar as cores faria o navegador
+     escurecer <select> e barra de rolagem com a página ainda branca. */
+
+  /* --- primitivos: nunca usados direto em componente --- */
+  --azul-900: #002b74;
+  --azul-700: #004898;
+  --azul-600: #005ca6;
+  --azul-100: #e2ecf6;
+  --laranja-500: #e47a45;
+  /* Só para o olho sobre --superficie-marca: o -500 dá 4.49:1 e reprova AA
+     por uma casa decimal. O -400 dá 5.42:1 sem mudar a cor em nenhum outro lugar. */
+  --laranja-400: #eb8f68;
+  --laranja-600: #d26831;
+  --laranja-100: #fceee6;
+  --tinta: #0b1b2b;
+  --cinza-50: #f5f7fa;
+  --cinza-100: #e8edf3;
+  --cinza-200: #d3dbe5;
+  --cinza-400: #9aa8b8;
+  /* -400 dá 2.42:1 sobre branco — abaixo do 3:1 que WCAG 1.4.11 pede para o
+     contorno de um campo. -500 é o primeiro degrau da escala que passa. */
+  --cinza-500: #7d8b9d;
+  --cinza-600: #516275;
+  --cinza-800: #263544;
+
+  /* --- semânticos: é isto que os componentes leem --- */
+  --fundo: #ffffff;
+  --superficie: var(--cinza-50);
+  /* Superfície elevada (cartão, formulário, cabeçalho, barra fixa). No claro é
+     o mesmo branco do fundo — a borda é que separa. No escuro precisa ser um
+     degrau ACIMA do fundo: cartão mais escuro que a seção é o erro clássico
+     de dark mode, faz o conteúdo parecer afundado em vez de destacado. */
+  --superficie-alta: var(--fundo);
+  --superficie-marca: var(--azul-900);
+  --borda: var(--cinza-200);
+  --texto: var(--tinta);
+  --texto-suave: var(--cinza-600);
+  --texto-invertido: #ffffff;
+  --capa-topo: var(--azul-100);
+  --marca: var(--azul-600);
+  --marca-forte: var(--azul-900);
+  --acento: var(--laranja-500);
+  --acento-hover: var(--laranja-600);
+  --acento-texto: var(--tinta);
+  --foco: var(--azul-700);
+  /* Link em texto corrido. Era primitivo cru no seletor `a` — virou semântico
+     porque é o único ponto onde a cor precisa inverter no tema escuro. */
+  --link: var(--azul-700);
+  --link-hover: var(--azul-900);
+  /* Sobre --superficie-marca (azul-900). Hex direto porque são claros demais
+     para sair de um primitivo da escala de cinza sem virar cinza-azulado sujo. */
+  --texto-sobre-marca: #c8d6e6;
+  --texto-sobre-marca-suave: #9fb4cb;
+  --link-sobre-marca: #cfe1f3;
+  /* Estado do formulário. Vermelho e verde só aqui: cor nunca é o único sinal —
+     o aviso sempre carrega texto, e o campo recusado leva aria-invalid. */
+  --erro: #b3261e;
+  --erro-fundo: #fdeceb;
+  --erro-texto: #7a1c15;
+  --ok: #1a7f45;
+  --ok-fundo: #e7f4ec;
+  --ok-texto: #14532d;
+
+  /* --- gesto: o vórtice do herói e seu eco nos cards ---
+     Fixas nos dois temas (não passam por light-dark()) porque só existem
+     sobre --superficie-marca, cujo papel já é o mesmo escuro-sobre-claro nos
+     dois esquemas. --brasa é o acento do acento: só o gesto usa. 6.33:1 sobre
+     azul-900, 6.45:1 sobre #022c69 — nunca colocar sobre branco (2.93:1). */
+  --brasa: #fe9d41;
+  --lamina: #6ca4f9;
+
+  /* --- escala de espaço: base 4, nada entre os passos --- */
+  --e-1: 0.25rem;
+  --e-2: 0.5rem;
+  --e-3: 0.75rem;
+  --e-4: 1rem;
+  --e-6: 1.5rem;
+  --e-8: 2rem;
+  --e-12: 3rem;
+  --e-16: 4rem;
+  --e-24: 6rem;
+
+  /* --- tipografia --- */
+  --fonte: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Display: título e número grande. Corpo continua na stack de sistema —
+     o contraste vem do salto de peso/largura entre as duas, não de trocar
+     tudo. Eixo `wdth` só é usado onde o gesto pede (herói, provas, cards). */
+  --display: "Archivo", var(--fonte);
+  --t-sm: 0.875rem;
+  --t-base: 1rem;
+  --t-md: 1.125rem;
+  --t-lg: 1.25rem;
+  --t-xl: 1.5rem;
+  --t-2xl: 2rem;
+  --t-3xl: clamp(2rem, 1.4rem + 3vw, 2.75rem);
+
+  --r-1: 4px;
+  --r-2: 8px;
+  --r-3: 12px;
+  --r-4: 16px;
+  --r-full: 999px;
+
+  /* Sombra realista tem duas camadas: uma difusa ampla + uma curta densa. */
+  --sombra-sm: 0 1px 2px rgba(11, 27, 43, 0.06), 0 4px 12px rgba(11, 27, 43, 0.05);
+  --sombra-md: 0 2px 4px rgba(11, 27, 43, 0.08), 0 12px 28px rgba(11, 27, 43, 0.1);
+
+  --largura: 1120px;
+
+  /* Curva única do sistema: entrada com leve overshoot na saída, sem repique. */
+  --curva: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* --- tema escuro ---------------------------------------------------------
+   Rampa inteira derivada de #022C69 (H 216, S 96%, L 21%), variando só a
+   luminosidade. Por isso o escuro parece a MESMA marca com a luz apagada, e
+   não um segundo design: o azul da logo é o eixo, não um detalhe.
+
+   #022C69 fica onde estava a função dele no claro — o bloco de marca
+   (.secao--marca e rodapé). No claro esse bloco é a superfície mais ESCURA da
+   página; no escuro, a mais CLARA. A hierarquia inverte, o papel não.
+
+   Um valor por token, os dois temas lado a lado em light-dark(). A alternativa
+   (@media prefers-color-scheme + :root[data-tema] repetindo a lista) escreveria
+   cada cor escura duas vezes — e quem ajustasse uma esqueceria a outra.
+
+   O @supports não é adorno: sem light-dark(), a declaração fica inválida no
+   tempo de computação e `background: var(--fundo)` cai para transparente. Em
+   navegador antigo isso apagaria o fundo do botão laranja. Com a guarda, quem
+   não suporta simplesmente fica no claro de hoje, intacto.
+
+   Sem override de sombra: sobre fundo quase preto ela não separa nada. Quem
+   separa cartão de seção no escuro é a borda.
+
+   Os pares de contraste foram medidos, não estimados. Os apertados:
+   marca-forte sobre o chip de hover 5.61:1, borda de campo sobre o cartão
+   3.41:1 (WCAG 1.4.11 pede 3), laranja-400 sobre #022C69 5.53:1. */
+@supports (color: light-dark(#fff, #000)) {
+  :root {
+    /* Habilita light-dark() e faz <select>, barra de rolagem, autofill e
+       placeholder seguirem o tema sozinhos, sem CSS nosso. */
+    color-scheme: light dark;
+
+    /* Primitivos que os componentes leem direto. Trocados aqui em vez de nos
+       semânticos porque é o mesmo papel nos dois temas — superfície de chip,
+       de hover, contorno de campo — só que espelhado. */
+    --azul-100: light-dark(#e2ecf6, #19345d);   /* chip: WhatsApp, ícone do card, topo da capa */
+    --cinza-100: light-dark(#e8edf3, #162b4b);  /* hover: clareia sobre o cabeçalho, escurece sobre o chip */
+    --cinza-500: light-dark(#7d8b9d, #627693);  /* contorno de campo — 3.41:1 sobre o cartão */
+    --cinza-400: light-dark(#9aa8b8, #8f9bae);  /* marcador fraco das listas "o que fica de fora" */
+
+    /* Semânticos. Três degraus de superfície, do fundo à marca. */
+    --fundo: light-dark(#ffffff, #060d19);
+    --superficie: light-dark(#f5f7fa, #0b1728);
+    --superficie-alta: light-dark(#ffffff, #142339);
+    --superficie-marca: light-dark(#002b74, #022c69);
+    /* Topo do gradiente do herói. No claro é o azul-100 de sempre. No escuro
+       precisa ficar ABAIXO do cabeçalho (#142339): com --azul-100 (#19345d) o
+       herói saía mais claro que a barra acima dele, invertendo a ordem de
+       elevação que o resto deste arquivo mantém. */
+    --capa-topo: light-dark(#e2ecf6, #101d31);
+    --borda: light-dark(#d3dbe5, #3d5171);
+    /* Escuro não é branco puro: #fff sobre azul quase preto vibra. */
+    --texto: light-dark(#0b1b2b, #e9eef6);
+    --texto-suave: light-dark(#516275, #adbacd);
+    --marca: light-dark(#005ca6, #77abf8);
+    --marca-forte: light-dark(#002b74, #6ca4f9);
+    --link: light-dark(#004898, #77abf8);
+    --link-hover: light-dark(#002b74, #a9c8fb);
+    --foco: light-dark(#004898, #88b6fc);
+
+    /* Estado do formulário: fundo escuro tingido + texto claro da mesma
+       família. O par claro (#fdeceb) viraria um bloco branco dentro do card. */
+    --erro: light-dark(#b3261e, #e2685a);
+    --erro-fundo: light-dark(#fdeceb, #502521);
+    --erro-texto: light-dark(#7a1c15, #f3d1cd);
+    --ok: light-dark(#1a7f45, #51d68d);
+    --ok-fundo: light-dark(#e7f4ec, #1e4831);
+    --ok-texto: light-dark(#14532d, #cdf3df);
+  }
+
+  /* O seletor manual. `only` desliga o outro esquema para o UA inteiro, então
+     um clique reposiciona tanto os nossos tokens quanto os controles nativos.
+     Sem escolha salva, nenhum dos dois casa e o sistema operacional decide. */
+  :root[data-tema="claro"] { color-scheme: only light; }
+  :root[data-tema="escuro"] { color-scheme: only dark; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+body {
+  margin: 0;
+  font-family: var(--fonte);
+  font-size: var(--t-base);
+  line-height: 1.6;
+  color: var(--texto);
+  background: var(--fundo);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Archivo como display em todo título — a "fonte da marca própria" que
+   faltava. Só o eixo `wght` muda aqui; `wdth` condensado fica reservado para
+   o gesto (herói da home, números grandes, cards de solução). */
+h1, h2, h3 { font-family: var(--display); line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 var(--e-4); text-wrap: balance; }
+h1 { font-size: var(--t-3xl); font-variation-settings: "wght" 800; }
+h2 { font-size: var(--t-2xl); font-variation-settings: "wght" 700; }
+h3 { font-size: var(--t-lg); font-variation-settings: "wght" 700; }
+p { margin: 0 0 var(--e-4); text-wrap: pretty; }
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--link); text-underline-offset: 3px; }
+a:hover { color: var(--link-hover); }
+
+img, svg { max-width: 100%; height: auto; display: block; }
+
+/* Nunca `outline: none` sem substituto. Anel com 3:1 contra fundo e elemento. */
+:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+  border-radius: var(--r-1);
+}
+/* Sobre o azul-900 o anel azul dá 1.49:1 e some — e o rodapé sozinho tem 13
+   links. Sobre superfície de marca o anel é branco, que dá 15.5:1. */
+.rodape :focus-visible,
+.secao--marca :focus-visible {
+  outline-color: var(--texto-invertido);
+}
+
+.container { width: 100%; max-width: var(--largura); margin-inline: auto; padding-inline: var(--e-4); }
+
+.secao { padding-block: var(--e-16); }
+.secao--suave { background: var(--superficie); }
+.secao--marca { background: var(--superficie-marca); color: var(--texto-invertido); }
+.secao--marca h2, .secao--marca h3 { color: var(--texto-invertido); }
+.secao--marca a { color: var(--link-sobre-marca); }
+
+/* O cartão do LeadForm é uma superfície CLARA dentro do herói .secao--marca, e
+   as três regras de texto invertido acima vazavam para dentro dele: rótulo
+   branco sobre branco (1:1), link em --link-sobre-marca (1.25:1) e anel de foco
+   branco (invisível) — o formulário principal do site sem rótulo e sem foco
+   visível. A exceção mora aqui, colada nas regras que a causam, e não em .form:
+   quem herda o texto invertido é a seção, então é a seção que precisa parar. */
+.secao--marca .form { color: var(--texto); }
+.secao--marca .form a { color: var(--link); }
+.secao--marca .form :focus-visible { outline-color: var(--foco); }
+
+.olho {
+  display: block;
+  font-size: var(--t-sm);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--marca);
+  margin-bottom: var(--e-2);
+}
+.secao--marca .olho { color: var(--brasa); }
+
+.chamada { font-size: var(--t-md); color: var(--texto-suave); max-width: 62ch; }
+.secao--marca .chamada { color: var(--texto-sobre-marca); }
+
+/* --- botões --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--e-2);
+  /* 48px de alvo de toque: o tráfego é majoritariamente mobile. */
+  min-height: 48px;
+  padding: var(--e-3) var(--e-6);
+  border: 2px solid transparent;
+  border-radius: var(--r-2);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn--primario { background: var(--acento); color: var(--acento-texto); }
+.btn--primario:hover { background: var(--acento-hover); color: var(--acento-texto); }
+/* Travado por aria-disabled (e não por `disabled`, que jogaria o foco no body).
+   Sem opacidade: escurecer o laranja aqui derrubaria os 5.98:1 do rótulo. */
+.btn[aria-disabled="true"] { cursor: default; }
+.btn--primario[aria-disabled="true"]:hover { background: var(--acento); }
+.btn--contorno { background: transparent; border-color: currentColor; color: var(--marca-forte); }
+.btn--contorno:hover { background: var(--azul-100); color: var(--marca-forte); }
+.secao--marca .btn--contorno { color: var(--texto-invertido); }
+.secao--marca .btn--contorno:hover { background: rgba(255, 255, 255, 0.12); color: var(--texto-invertido); }
+.btn--bloco { width: 100%; }
+
+/* --- grades --- */
+.grade { display: grid; gap: var(--e-4); }
+.grade--2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+/* 260px dava 4 colunas em telas largas — 6 cards viram 4+2 (home) ou 4+1
+   órfão (verticais). 280px trava em 3. */
+.grade--3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+
+.cartao {
+  background: var(--superficie-alta);
+  border: 1px solid var(--borda);
+  border-radius: var(--r-3);
+  padding: var(--e-6);
+}
+
+.lista-limpa { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--e-3); }
+.lista-check { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--e-3); }
+.lista-check li { padding-left: var(--e-8); position: relative; }
+/* Marcador é decorativo: o significado está no texto do item, não no símbolo. */
+.lista-check li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.45em;
+  width: 1.1rem;
+  height: 0.55rem;
+  border-left: 3px solid var(--acento);
+  border-bottom: 3px solid var(--acento);
+  transform: rotate(-45deg);
+}
+
+/* Marca links que abrem em nova aba: só decorativo — o aviso que importa vai
+   no nome acessível, não neste símbolo. E para ele ficar mesmo fora desse nome
+   é preciso o texto alternativo vazio (`/ ""`); sem isso o leitor de tela lia
+   "WhatsApp — abre em nova aba seta". A primeira declaração é o que sobra em
+   navegador sem suporte à sintaxe de alt: lá o símbolo continua aparecendo. */
+.externo::after {
+  content: " ↗";
+  content: " ↗" / "";
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Primeiro elemento focável da página, escondido até receber foco.
+   -100px e não -60px: com 52px de altura o retângulo já saía da tela, mas a
+   sombra (`0 12px 28px`) continuava entrando ~32px e deixava um borrão cinza
+   no topo de toda página. Esconder o elemento é esconder a sombra junto. */
+.pular {
+  position: absolute;
+  left: var(--e-4);
+  top: -100px;
+  z-index: 100;
+  background: var(--superficie-alta);
+  color: var(--texto);
+  /* No escuro a sombra não separa nada de um fundo quase preto — a borda sim. */
+  border: 1px solid var(--borda);
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--r-2);
+  box-shadow: var(--sombra-md);
+  transition: top 120ms ease;
+}
+.pular:focus { top: var(--e-4); }
+
+/* Trilha do Base. Fundo transparente de propósito: a primeira seção logo abaixo
+   é branca (.secao) ou cinza (.topo), e pintar a trilha acertaria uma e erraria
+   a outra. Sem fundo, ela lê como respiro do cabeçalho nas duas. */
+.trilha {
+  padding-top: var(--e-6);
+  font-size: var(--t-sm);
+  color: var(--texto-suave);
+}
+.trilha ol {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+  margin: 0;
+  padding: 0;
+}
+.trilha li + li::before { content: "/"; margin-right: var(--e-2); }
+.trilha a { color: inherit; }
+.trilha a:hover { color: var(--link-hover); }
+
+/* Hero + fechamento das páginas de vertical: mesmo par de blocos em Vertical.astro,
+   seja-parceiro.astro e sobre.astro — vivia copiado nos três. */
+.topo { background: var(--superficie); padding-block: var(--e-12) var(--e-16); }
+.topo__grade { display: grid; gap: var(--e-8); align-items: start; }
+@media (min-width: 900px) {
+  .topo__grade { grid-template-columns: 1fr minmax(360px, 420px); gap: var(--e-12); }
+}
+.topo .chamada, .topo__texto .chamada { font-size: var(--t-lg); }
+.fechamento { display: grid; gap: var(--e-8); align-items: center; }
+@media (min-width: 900px) { .fechamento { grid-template-columns: 1fr minmax(360px, 440px); } }
+
+/* =========================================================================
+   COSTURA — o vórtice como elemento contínuo
+   ========================================================================= */
+
+/* Fallback de métrica casada para o título do herói. Sem ele o H1 de 80px
+   pinta primeiro na fonte do sistema — 12% mais larga que a Archivo condensada
+   —, e quando a Archivo chega o título reflui e empurra a página inteira: CLS
+   medido saltou de 0.0016 para 0.0412 por causa de um único elemento.
+
+   0.8901 é medido, não estimado: a mesma frase, no mesmo corpo, na Archivo em
+   `wdth 76 / wght 830` contra a pilha do sistema. Ascent e descent vêm da
+   Archivo (0.88 / 0.21 do em) divididos pelo mesmo fator, para a caixa de
+   linha bater junto com a largura.
+
+   `local()` só: zero byte na rede. Roboto primeiro porque o tráfego é
+   majoritariamente Android, onde Segoe UI e Helvetica não existem. */
+@font-face {
+  font-family: "Archivo capa";
+  src: local("Roboto"), local("Segoe UI"), local("Helvetica Neue"), local("Arial");
+  size-adjust: 89.01%;
+  ascent-override: 98.9%;
+  descent-override: 23.6%;
+  line-gap-override: 0%;
+}
+
+:root {
+  /* Janelas de movimento por camada. `--curva` já existia e continua sendo a
+     curva de UI (hover, botão); `--ease-cena` é a curva longa da coreografia:
+     80% da distância nos primeiros 30% do tempo. `ease-out` comum parece
+     software; esta parece intenção. */
+  --dur-instante: 100ms;
+  --dur-rapida: 160ms;
+  --dur-base: 240ms;
+  --dur-cena: 900ms;
+  --ease-cena: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-saida: cubic-bezier(0, 0, 0.2, 1);
+
+  /* Opacidade do selo por superfície. Teto medido, não estimado: sobre
+     --superficie-marca 0.2 mantém --texto-sobre-marca em 6.41:1; sobre
+     superfície clara o par lâmina/brasa é claro demais (brasa sobre branco dá
+     2.93:1), então lá o selo troca de tinta e cai para 0.14. */
+  --selo-op-marca: 0.2;
+  --selo-op-clara: 0.14;
+
+  /* Grão: gerado UMA vez e servido como data-uri. `feTurbulence` vivo pinta a
+     cada frame e está proibido — este é um tile de 240px que o navegador
+     desenha uma vez e repete. Custo em runtime: zero. É o que tira do bloco de
+     marca a cara de retângulo chapado de CSS. */
+  --grao: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* O selo. Uma classe, três escalas: textura do herói, carimbo do card, marca
+   da capa. A geometria (tamanho, posição, giro) é de quem chama; o que mora
+   aqui é a matéria — a marca recortando um gradiente da própria página, e não
+   um <img> com as cores congeladas dentro do arquivo.
+
+   `background`/`mask` só dentro do @supports: sem suporte a máscara o
+   gradiente pintaria um retângulo chapado por cima do herói. Sem ele, o selo
+   simplesmente não existe e a página continua composta — o fallback estático
+   é o próprio bloco de marca com o tipo grande, que já é composição. */
+.selo {
+  position: absolute;
+  z-index: 0;
+  aspect-ratio: 1;
+  pointer-events: none;
+  /* `rotate` e não `transform`: assim a camada de scroll pode animar `scale` e
+     `translate` sem sobrescrever o giro, e a de entrada pode animar `rotate`
+     sem sobrescrever a escala. Duas linhas do tempo no mesmo elemento, zero
+     conflito de propriedade. */
+  rotate: var(--giro, 0deg);
+  opacity: 0;
+}
+@supports ((-webkit-mask-image: url("/img/logo-mono.svg")) or (mask-image: url("/img/logo-mono.svg"))) {
+  .selo {
+    background: linear-gradient(210deg, var(--selo-a, var(--lamina)) 0%, var(--selo-b, var(--brasa)) 85%);
+    -webkit-mask: url("/img/logo-mono.svg") no-repeat center / contain;
+            mask: url("/img/logo-mono.svg") no-repeat center / contain;
+    opacity: var(--selo-op, var(--selo-op-marca));
+  }
+}
+/* Sobre superfície clara o par lâmina/brasa não serve: --brasa sobre branco dá
+   2.93:1 e vira um borrão bege. Aqui a marca vira marca-d'água de uma cor só —
+   azul sobre azul. Foi testado com o laranja na outra ponta e o resultado, a
+   14% sobre branco, não lia como a marca: lia como mancha de café. */
+.selo--claro {
+  --selo-a: var(--marca);
+  --selo-b: var(--marca-forte);
+  --selo-op: var(--selo-op-clara);
+}
+
+/* --- camada 1 · entrada -------------------------------------------------
+   O selo chega girando no próprio eixo e assenta. Anima só `rotate` e
+   `opacity` — `scale`/`translate` ficam livres para a camada de scroll. */
+@keyframes selo-assenta {
+  from { rotate: calc(var(--giro, 0deg) - 16deg); opacity: 0; }
+}
+/* O carimbo do card tem o próprio keyframe, e ele NÃO toca opacidade: uma
+   propriedade sob animação não obedece mais a declaração normal nenhuma, e a
+   camada de ponteiro precisa da opacidade livre para acender o selo no hover. */
+@keyframes selo-carimba {
+  from { rotate: calc(var(--giro, 0deg) - 22deg); scale: 0.72; }
+}
+@supports ((-webkit-mask-image: url("/img/logo-mono.svg")) or (mask-image: url("/img/logo-mono.svg"))) {
+  .selo--entra { animation: selo-assenta var(--dur-cena) var(--ease-cena) 120ms both; }
+}
+
+/* --- camada 2 · scroll --------------------------------------------------
+   O vórtice do herói encolhe e migra para o canto conforme a página desce,
+   chegando ao tamanho e ao lugar em que o carimbo do card já está. É esta
+   camada que faz a troca de rota parecer inevitável em vez de truque: quando
+   o clique acontece, o olho já viu a marca virar carimbo uma vez.
+
+   Medida em distância percorrida (62vh), nunca em ms — se a pessoa para de
+   rolar, o gesto para. Os valores saem de custom property para o celular
+   encurtar a migração sem redeclarar o keyframe. */
+@keyframes selo-migra {
+  to {
+    scale: var(--migra-escala, 0.22);
+    translate: var(--migra-x, 56vw) var(--migra-y, -34vh);
+  }
+}
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Duas linhas do tempo no mesmo elemento: a entrada roda no relógio, a
+       migração roda no scroll. A lista de `animation-timeline` casa item a
+       item com a de `animation`. */
+    .selo--migra {
+      animation:
+        selo-assenta var(--dur-cena) var(--ease-cena) 120ms both,
+        selo-migra linear both;
+      animation-timeline: auto, scroll(root block);
+      animation-range: normal, 0 62vh;
+    }
+  }
+}
+@media (max-width: 899px) {
+  /* No celular a capa é ~3x mais alta e o vórtice é maior em relação à tela:
+     56vw de migração jogaria o carimbo para fora do lado. */
+  .selo--migra { --migra-x: 34vw; --migra-y: -22vh; --migra-escala: 0.3; }
+}
+
+/* Revelação do carimbo do card: o mesmo gesto da entrada do herói, em
+   miniatura, quando o card cruza a viewport. Uma ideia, duas expressões. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .selo--revela {
+      animation: selo-carimba linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 35%;
+    }
+  }
+}
+
+/* --- camada 4 · transição de rota ---------------------------------------
+   Cross-document, nativo, 0kb. O selo do card e a capa da vertical carregam o
+   MESMO `view-transition-name` (montado do slug, inline em cada elemento), e o
+   navegador interpola posição, tamanho e forma sozinho. Não há keyframe nosso
+   aqui de propósito: o trabalho é escolher quem recebe o nome.
+
+   Regra dura: um nome é único por documento. Nenhuma página renderiza o mesmo
+   slug duas vezes (a vertical mostra as OUTRAS cinco), então não há colisão —
+   duas iguais abortariam a transição inteira, em silêncio. */
+@view-transition { navigation: auto; }
+
+::view-transition-group(*) {
+  animation-duration: 460ms;
+  animation-timing-function: var(--ease-cena);
+}
+::view-transition-old(root) { animation: sai-root var(--dur-base) var(--ease-saida) both; }
+::view-transition-new(root) { animation: entra-root var(--dur-base) var(--ease-cena) both; }
+@keyframes sai-root { to { opacity: 0; } }
+@keyframes entra-root { from { opacity: 0; } }
+
+/* A marca do cabeçalho atravessa TODA navegação sem se mexer: enquanto o resto
+   troca, ela é o ponto fixo. Custa uma linha. */
+.marca { view-transition-name: marca; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* O `animation-duration: 0.01ms !important` lá de cima não desliga animação
+     de linha do tempo de scroll — em timeline de progresso a duração vira
+     PROPORÇÃO, e 0.01ms grudaria o selo no estado final já no topo da página.
+     Aqui ele é desligado de verdade, e o que sobra é o estado final estático:
+     a capa composta, com o selo parado no lugar de onde ele teria partido. */
+  .selo { animation: none !important; scale: none !important; translate: none !important; }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+}

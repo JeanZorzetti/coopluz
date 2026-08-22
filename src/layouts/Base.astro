@@ -1,0 +1,234 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { ATENDIMENTO, EMPRESA, GA4 } from "../consts";
+import { AREA_SERVIDA } from "../data/solucoes";
+import "../styles/global.css";
+
+interface Props {
+  titulo: string;
+  descricao: string;
+  /** Nós extras do @graph (Service, FAQPage…). Um grafo único por página: nós
+   *  soltos em <script> separados duplicam a entidade Organization. */
+  schema?: Record<string, unknown>[];
+  trilha?: { nome: string; href: string }[];
+  ogImagem?: string;
+  /** Página sem conteúdo próprio de busca (recibo, erro). Fora do índice, mas
+   *  os links continuam sendo seguidos. */
+  noindex?: boolean;
+  /** Presente = a página é um artigo datado. Um prop só, porque og:type e as
+   *  duas datas do Open Graph são a mesma decisão: ou tudo, ou nada. */
+  artigo?: { publicado: Date; atualizado?: Date };
+  /** ISO (AAAA-MM-DD) da última revisão de uma página que não é artigo — uma
+   *  política, por exemplo. Vira `dateModified` do WebPage que já existe, em
+   *  vez de um segundo nó: schema.org não tem tipo para documento legal, e um
+   *  WebPage extra na mesma URL duplica a entidade em vez de descrevê-la. */
+  atualizado?: string;
+  /** Subtipo do WebPage ("AboutPage", "ContactPage"…) quando schema.org tem um
+   *  específico. Mesmo raciocínio do `atualizado` acima: estende o nó que já
+   *  existe em vez de criar um segundo "esta página é sobre X" na mesma URL. */
+  tipoPagina?: string | string[];
+}
+const {
+  titulo,
+  descricao,
+  schema = [],
+  trilha = [],
+  ogImagem = "/img/og.png",
+  noindex = false,
+  artigo,
+  atualizado,
+  tipoPagina = "WebPage",
+} = Astro.props;
+
+const site = Astro.site ?? new URL("https://coopluz.roilabs.com.br");
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/", site).href;
+const abs = (p: string) => new URL(p, site).href;
+
+// Só "Organization" (sem "InsuranceAgency" nem `identifier` de SUSEP): este
+// site é sobre energia por compensação, não sobre corretagem de seguros —
+// registro SUSEP é fato da vertical de seguros, não da Coopluz (spec
+// 002-coopluz-standalone-site, Clarifications).
+const grafo: Record<string, unknown>[] = [
+  {
+    "@type": "Organization",
+    "@id": abs("/#organizacao"),
+    name: EMPRESA.nome,
+    legalName: EMPRESA.nomeLegal,
+    url: abs("/"),
+    logo: { "@type": "ImageObject", "@id": abs("/#logo"), url: abs("/img/icon-512.png"), width: 512, height: 512 },
+    image: { "@id": abs("/#logo") },
+    foundingDate: EMPRESA.fundacao,
+    description:
+      "Parceira credenciada da cooperativa de energia Coopluz, responsável pela captação, cadastro e acompanhamento do associado. Atende a área de concessão da Equatorial Goiás, com sede em Goiânia (GO).",
+    telephone: EMPRESA.telefone,
+    email: EMPRESA.email,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: EMPRESA.endereco.rua,
+      addressLocality: EMPRESA.endereco.cidade,
+      addressRegion: EMPRESA.endereco.uf,
+      postalCode: EMPRESA.endereco.cep,
+      addressCountry: EMPRESA.endereco.pais,
+    },
+    geo: { "@type": "GeoCoordinates", latitude: EMPRESA.geo.lat, longitude: EMPRESA.geo.lon },
+    areaServed: AREA_SERVIDA.GO,
+    openingHoursSpecification: [ATENDIMENTO.horarioSchema],
+    sameAs: [...EMPRESA.redes],
+  },
+  {
+    "@type": "WebSite",
+    "@id": abs("/#site"),
+    url: abs("/"),
+    name: `${EMPRESA.nome} Energia`,
+    inLanguage: "pt-BR",
+    publisher: { "@id": abs("/#organizacao") },
+  },
+  {
+    "@type": tipoPagina,
+    "@id": `${canonical}#pagina`,
+    url: canonical,
+    name: titulo,
+    description: descricao,
+    inLanguage: "pt-BR",
+    isPartOf: { "@id": abs("/#site") },
+    about: { "@id": abs("/#organizacao") },
+    ...(atualizado ? { dateModified: atualizado } : {}),
+    ...(trilha.length ? { breadcrumb: { "@id": `${canonical}#trilha` } } : {}),
+  },
+  ...(trilha.length
+    ? [
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${canonical}#trilha`,
+          itemListElement: trilha.map((t, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: t.nome,
+            item: abs(t.href),
+          })),
+        },
+      ]
+    : []),
+  ...schema,
+];
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    {/* Antes de qualquer pintura: escolha salva vence o sistema operacional.
+         Rodando depois, a página piscaria no tema errado. `is:inline` para o
+         Astro não empacotar isto num módulo com defer, que é o que anula a
+         única razão de o script existir. try/catch porque localStorage lança
+         quando o armazenamento está bloqueado — e aí o erro mataria o resto. */}
+    <script is:inline>
+      try {
+        const t = localStorage.getItem("tema");
+        if (t === "claro" || t === "escuro") document.documentElement.dataset.tema = t;
+      } catch {}
+    </script>
+    <title>{titulo}</title>
+    <meta name="description" content={descricao} />
+    {/* Sem canonical quando a página está fora do índice: a tag existe para
+         dizer qual URL indexar, e /404 apontava para /404 — declarando como
+         canônica exatamente a página que o `noindex` da linha seguinte manda
+         ignorar. Duas instruções contraditórias na mesma <head>. */}
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    {/* SVG primeiro: nítido em qualquer densidade e troca de cor sozinho no
+        tema escuro. O PNG fica de reserva para quem não lê ícone vetorial. */}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    {/* Archivo variable (wdth+wght): a fonte de exibição dos títulos e dos
+         números grandes. `preconnect` para o handshake TLS não competir com o
+         CSS; Google já entrega só o subset "latin" (cobre ç/ã/õ) para quem lê
+         português — as outras ~176KB de vietnamese/latin-ext nem chegam a ser
+         pedidas, por `unicode-range`. */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet" />
+    <meta name="theme-color" content="#002b74" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#060d19" media="(prefers-color-scheme: dark)" />
+    {/* As duas <meta> acima seguem o sistema operacional de graça, sem JS —
+         mas só o sistema, não a escolha manual salva. Quem salvou "escuro"
+         num SO claro via a barra do navegador na cor errada até o script do
+         rodapé rodar. Mesmo `data-tema` que a página já tem, aplicado às
+         metas agora, antes da pintura. */}
+    <script is:inline>
+      try {
+        const t = document.documentElement.dataset.tema;
+        if (t) document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", t === "escuro" ? "#060d19" : "#002b74"));
+      } catch {}
+    </script>
+
+    {/* GA4. Só no build de produção: `astro dev` na máquina de quem edita
+        mandaria pageview de localhost para a mesma propriedade, e aí o número
+        que a decisão usa vira o tráfego do time somado ao do cliente.
+        `is:inline` para o Astro não empacotar o snippet num módulo com defer —
+        o gtag precisa existir antes de qualquer chamada. `set:html` no segundo
+        porque as chaves de `function gtag(){}` dentro de JSX seriam lidas como
+        expressão Astro. */}
+    {
+      import.meta.env.PROD && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA4}`} />
+          <script
+            is:inline
+            set:html={`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4}');`}
+          />
+        </>
+      )
+    }
+
+    <meta property="og:type" content={artigo ? "article" : "website"} />
+    {artigo && <meta property="article:published_time" content={artigo.publicado.toISOString()} />}
+    {artigo && <meta property="article:modified_time" content={(artigo.atualizado ?? artigo.publicado).toISOString()} />}
+    <meta property="og:site_name" content={EMPRESA.nome} />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={abs(ogImagem)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({ "@context": "https://schema.org", "@graph": grafo })} />
+  </head>
+  <body>
+    <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+    <Header />
+    <main id="conteudo" tabindex="-1">
+      {/* O BreadcrumbList do @graph acima descrevia uma trilha que não existia
+          na página. Agora os dois saem da mesma lista: o que o buscador lê é o
+          que o leitor vê. Último item não é link — é onde a pessoa já está. */}
+      {
+        trilha.length > 1 && (
+          <nav class="trilha" aria-label="Trilha de navegação">
+            <div class="container">
+              <ol>
+                {trilha.map((t, i) =>
+                  i === trilha.length - 1 ? (
+                    <li aria-current="page">{t.nome}</li>
+                  ) : (
+                    <li>
+                      <a href={t.href}>{t.nome}</a>
+                    </li>
+                  )
+                )}
+              </ol>
+            </div>
+          </nav>
+        )
+      }
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

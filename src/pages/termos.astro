@@ -1,0 +1,103 @@
+---
+import Legal from "../layouts/Legal.astro";
+import { ATENDIMENTO, EMPRESA } from "../consts";
+---
+
+<Legal
+  titulo="Termos de Uso | Autogestor Energia"
+  descricao="Regras de uso do site da Coopluz: o que a Autogestor faz e o que não faz, limites da energia por compensação, natureza das estimativas, prazo de resposta e responsabilidades."
+  h1="Termos de Uso"
+  chamada="O que você pode esperar deste site, o que a Autogestor faz de fato como parceira da Coopluz e onde estão os limites. Sem cláusula escondida em letra pequena — não há letra pequena aqui."
+  nome="Termos"
+  href="/termos"
+>
+  <h2 id="objeto">O que este site é</h2>
+  <p>
+    Este site apresenta a energia por compensação da cooperativa Coopluz e permite pedir associação por um
+    formulário de três campos. Usar o site significa concordar com as regras desta página.
+  </p>
+  <p>
+    A {EMPRESA.nomeLegal} atua neste site como <strong>parceira comercial credenciada</strong> da cooperativa de
+    energia Coopluz: faz a captação, o cadastro e o acompanhamento do associado. <strong>A Autogestor não é a
+    cooperativa Coopluz</strong>, não gera energia e não emite o contrato de associação — quem faz isso é a
+    própria Coopluz, em conjunto com o Sicoob Secovicred.
+  </p>
+
+  <h2 id="estimativas">Estimativa não é contrato</h2>
+  <p>
+    Valores, descontos e prazos apresentados neste site ou no atendimento são <strong>estimativas</strong> e não
+    substituem o termo de associação formal da Coopluz. Toda associação depende de análise e aceitação da
+    cooperativa, e pode sair em condição diferente da estimada conforme o consumo real da unidade.
+  </p>
+  <p>Cadastro, simulação e análise são gratuitos. Não há taxa de adesão nem multa de cancelamento — ao sair, paga-se apenas o saldo residual dos créditos já usados e não faturados.</p>
+
+  <h2 id="atendimento">Prazo de resposta</h2>
+  <p>
+    Pedidos enviados pelo formulário são respondidos por WhatsApp <strong>{ATENDIMENTO.prazo}</strong>. O
+    atendimento funciona {ATENDIMENTO.horario}; pedidos enviados fora desse horário, em fim de semana ou feriado
+    são respondidos no próximo dia útil. Esse prazo é de <strong>resposta</strong>, não de conclusão da
+    associação — o primeiro crédito na fatura costuma aparecer em até 90 dias, conforme o ciclo de leitura da
+    Equatorial Goiás.
+  </p>
+
+  <h2 id="limites">Limites da energia por compensação</h2>
+  <ul>
+    <li>
+      Vale apenas para imóveis atendidos pela <strong>Equatorial Goiás</strong>, no estado de Goiás, com consumo
+      médio acima de <strong>R$ 250 por mês</strong>. Abaixo disso, o desconto não compensa a operação.
+    </li>
+    <li>
+      Não é aceita a associação de quem tem <strong>Tarifa Social / Baixa Renda</strong>, produtor rural com
+      isenção ou desconto de ICMS, ou conta que não esteja no nome do titular presente no atendimento.
+    </li>
+    <li>
+      O primeiro crédito costuma aparecer em até <strong>90 dias</strong>, prazo que depende do ciclo de leitura
+      da distribuidora e não é controlado pela Autogestor nem pela Coopluz isoladamente.
+    </li>
+  </ul>
+
+  <h2 id="conteudo">Conteúdo do blog</h2>
+  <p>
+    Os textos publicados no blog têm caráter informativo e refletem regras vigentes na data indicada em cada
+    artigo. Regulação de energia e tributação mudam — antes de decidir com base em um artigo, confirme se ele
+    ainda está atualizado. Nada no blog constitui consultoria jurídica ou tributária.
+  </p>
+
+  <h2 id="uso">Uso aceitável</h2>
+  <p>Ao usar este site, você se compromete a:</p>
+  <ul>
+    <li>fornecer dados verdadeiros e que sejam seus, ou de quem autorizou você a informá-los;</li>
+    <li>não usar envio automatizado, raspagem em massa ou qualquer tentativa de sobrecarregar o serviço;</li>
+    <li>não tentar acessar áreas, dados ou sistemas que não estejam abertos ao público.</li>
+  </ul>
+  <p>
+    Pedidos identificados como automatizados ou fraudulentos podem ser descartados sem aviso.
+  </p>
+
+  <h2 id="propriedade">Propriedade intelectual</h2>
+  <p>
+    Marca, logotipo, textos, imagens e código deste site pertencem à Autogestor ou são usados sob autorização da
+    Coopluz. Citar um trecho com link para a fonte é permitido e bem-vindo; reproduzir a página inteira ou usar a
+    marca sem autorização escrita, não.
+  </p>
+
+  <h2 id="responsabilidade">Responsabilidade</h2>
+  <p>
+    A Autogestor responde pelo que faz: a captação, a orientação prestada e o encaminhamento do seu cadastro à
+    Coopluz. Não responde por indisponibilidade temporária do site, por decisão de aceitação da cooperativa, nem
+    pelo prazo de leitura da distribuidora, que estão fora do controle da Autogestor.
+  </p>
+
+  <h2 id="dados">Dados pessoais</h2>
+  <p>
+    O tratamento dos seus dados está descrito na <a href="/privacidade">Política de Privacidade</a>, que faz parte
+    destes termos.
+  </p>
+
+  <h2 id="foro">Alterações e foro</h2>
+  <p>
+    Estes termos podem mudar; a data de última atualização no topo indica a versão vigente. Aplica-se a legislação
+    brasileira, incluindo o Código de Defesa do Consumidor, e fica eleito o foro da comarca de Goiânia (GO),
+    ressalvado o direito do consumidor de acionar o foro do seu domicílio.
+  </p>
+</Legal>

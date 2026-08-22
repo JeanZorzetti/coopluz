@@ -1,0 +1,139 @@
+---
+import { ICONES } from "../data/solucoes";
+import { EMPRESA, whatsapp } from "../consts";
+import Logo from "./Logo.astro";
+
+const { pathname } = Astro.url;
+const atual = (href: string) => pathname === href || pathname === `${href}/`;
+
+// Site de 1 vertical: 3 links fixos em vez do `.map()` sobre `SOLUCOES` do
+// hub (que tem 6). Mesma decisão de "sem hambúrguer" do hub — a lista cabe.
+const NAV = [
+  { href: "/", rotulo: "Início" },
+  { href: "/parceiro", rotulo: "Seja parceiro" },
+  { href: "/blog", rotulo: "Blog" },
+];
+---
+
+<header class="cabecalho">
+  <div class="container cabecalho__linha">
+    <a href="/" class="marca" aria-label={`${EMPRESA.nome} Energia — página inicial`}>
+      <Logo size={40} />
+      <span class="marca__nome">Autogestor Energia</span>
+    </a>
+    <a class="cabecalho__zap externo" href={whatsapp("Olá! Vim pelo site da Coopluz.")} target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICONES.zap} />
+      WhatsApp
+      <span class="visualmente-oculto">— abre em nova aba</span>
+    </a>
+    <nav class="nav" aria-label="Navegação">
+      <ul class="nav__lista" role="list">
+        {
+          NAV.map((item) => (
+            <li>
+              <a href={item.href} aria-current={atual(item.href) ? "page" : undefined}>
+                {item.rotulo}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .cabecalho {
+    background: var(--superficie-alta);
+    border-bottom: 1px solid var(--borda);
+    z-index: 20;
+  }
+  @media (min-width: 900px) {
+    .cabecalho { position: sticky; top: 0; }
+  }
+  .cabecalho__linha {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--e-4);
+    padding-block: var(--e-3);
+  }
+  .marca {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    gap: var(--e-2);
+    text-decoration: none;
+    color: var(--marca-forte);
+  }
+  .marca__nome {
+    font-weight: 700;
+    font-size: var(--t-lg);
+    letter-spacing: -0.02em;
+  }
+  .cabecalho__zap {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--e-2);
+    min-height: 44px;
+    padding-inline: var(--e-4);
+    border-radius: var(--r-full);
+    background: var(--azul-100);
+    color: var(--marca-forte);
+    font-weight: 700;
+    font-size: var(--t-sm);
+    text-decoration: none;
+  }
+  .cabecalho__zap:hover { background: var(--cinza-100); }
+
+  /* 3 itens cabem numa linha mesmo no celular — sem o scroll horizontal que o
+     hub precisa para 6 verticais. */
+  .nav {
+    flex-basis: 100%;
+    border-top: 1px solid var(--borda);
+    background: var(--superficie);
+    margin-inline: calc(-1 * var(--e-4));
+    width: calc(100% + var(--e-8));
+  }
+  @media (min-width: 900px) {
+    .nav {
+      order: 2;
+      flex-basis: auto;
+      width: auto;
+      margin-inline: 0;
+      border-top: none;
+      background: none;
+    }
+    .cabecalho__zap { order: 3; }
+  }
+  .nav__lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--e-1) var(--e-2);
+    list-style: none;
+    margin-block: 0;
+    padding-inline: var(--e-4);
+    padding-block: var(--e-2);
+  }
+  @media (min-width: 900px) {
+    .nav__lista { padding: 0; }
+  }
+  .nav__lista a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--e-2) var(--e-3);
+    border-radius: var(--r-2);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    color: var(--texto-suave);
+    text-decoration: none;
+  }
+  .nav__lista a:hover { background: var(--cinza-100); color: var(--texto); }
+  .nav__lista a[aria-current="page"] {
+    color: var(--marca-forte);
+    background: var(--fundo);
+    box-shadow: inset 0 -3px 0 var(--acento);
+  }
+</style>

@@ -1,0 +1,82 @@
+---
+import Base from "../layouts/Base.astro";
+import { ATENDIMENTO, EMPRESA, whatsapp } from "../consts";
+
+// Renderizada no servidor porque precisa ler ?erro=1 do redirect do endpoint.
+// Se fosse estática, quem enviou sem JavaScript e errou o telefone leria
+// "pedido recebido" — a página mentiria para exatamente quem não foi atendido.
+export const prerender = false;
+
+const falhou = Astro.url.searchParams.has("erro");
+const campo = Astro.url.searchParams.get("erro");
+// Mesmas mensagens de src/lib/lead.mjs — o redirect sem JS carrega só o nome
+// do campo, não a mensagem inteira.
+const MOTIVO: Record<string, string> = {
+  nome: "Faltou o seu nome.",
+  whatsapp: "O WhatsApp não chegou completo — confira o DDD e os 9 dígitos.",
+  solucao: "A solução escolhida não foi reconhecida.",
+  contexto: "Faltou selecionar uma opção.",
+};
+const motivo = (campo && MOTIVO[campo]) || "Pode ter sido o WhatsApp com um dígito faltando, ou o nosso servidor fora do ar.";
+---
+
+<Base
+  titulo={falhou ? "Não conseguimos registrar seu pedido | Autogestor Energia" : "Pedido recebido | Autogestor Energia"}
+  descricao="Confirmação de envio do pedido de associação à Coopluz."
+  noindex
+>
+  <section class="secao">
+    <div class="container recibo">
+      {
+        falhou ? (
+          <>
+            <span class="olho">Não conseguimos registrar</span>
+            <h1>Seu pedido não chegou até nós</h1>
+            <p class="chamada">
+              {motivo} Chame no WhatsApp que a gente resolve na hora, sem formulário.
+            </p>
+          </>
+        ) : (
+          <>
+            <span class="olho">Pedido recebido</span>
+            <h1>Pronto. Agora é com a gente.</h1>
+            <p class="chamada">
+              Um consultor da Autogestor chama você no WhatsApp que você informou {ATENDIMENTO.prazo}. O
+              atendimento funciona {ATENDIMENTO.horario} — se você enviou fora disso, a resposta vem no próximo dia
+              útil. Se preferir adiantar, você mesmo pode puxar a conversa agora.
+            </p>
+          </>
+        )
+      }
+
+      <p class="acoes">
+        <a
+          class="btn btn--primario externo"
+          href={whatsapp(
+            falhou
+              ? "Olá! Tentei enviar um pedido pelo site da Coopluz e deu erro."
+              : "Olá! Acabei de enviar um pedido pelo site da Coopluz."
+          )}
+          target="_blank"
+          rel="noopener"
+        >
+          Chamar no WhatsApp {EMPRESA.telefoneExibicao}
+          <span class="visualmente-oculto">— abre em nova aba</span>
+        </a>
+        <a class="btn btn--contorno" href="/">Voltar ao início</a>
+      </p>
+
+      <h2 class="mais">Já que está aqui</h2>
+      <ul class="lista-check" role="list">
+        <li><a href="/parceiro">Programa de parceiros da energia</a> — indique e ganhe comissão de ativação mais recorrente sobre a carteira</li>
+        <li><a href="/blog">Blog</a> — entenda a conta da Equatorial Goiás e o Fio B antes de decidir</li>
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .recibo { max-width: 70ch; }
+  .acoes { display: flex; flex-wrap: wrap; gap: var(--e-3); margin-block: var(--e-8) var(--e-16); }
+  .mais { font-size: var(--t-lg); }
+</style>

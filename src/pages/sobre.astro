@@ -1,0 +1,139 @@
+---
+import Base from "../layouts/Base.astro";
+import Faq from "../components/Faq.astro";
+import BarraAcao from "../components/BarraAcao.astro";
+import { COOPLUZ } from "../data/solucoes";
+import { EMPRESA, enderecoLinha, whatsapp } from "../consts";
+
+const perguntas = [
+  {
+    p: "Desde quando a Autogestor existe?",
+    r: "Desde 2004, em Goiânia. Começou como corretora de seguros e foi somando frentes conforme os mesmos clientes pediam — entre elas, a parceria com a cooperativa de energia Coopluz. Hoje o atendimento da energia é feito por WhatsApp, com foco na área de concessão da Equatorial Goiás.",
+  },
+  {
+    p: "A Autogestor é a Coopluz?",
+    r: "Não. A Coopluz é uma cooperativa de energia independente, com sede em Goiânia, que opera em parceria com o Sicoob Secovicred. A Autogestor é parceira comercial credenciada: faz a captação, o cadastro e o acompanhamento do associado — quem emite o contrato de associação é a própria Coopluz.",
+  },
+  {
+    p: "Onde fica o escritório?",
+    r: `${enderecoLinha}. O atendimento acontece majoritariamente por WhatsApp, e a visita presencial fica disponível para quem prefere.`,
+  },
+  {
+    p: "A Autogestor faz outras coisas além de energia?",
+    r: "Sim, a Autogestor também atua em seguros, viagens, financiamento, consórcio e repasse de veículos, através de outros canais do grupo. Este site é dedicado à energia da Coopluz.",
+  },
+];
+
+const schema = [
+  {
+    "@type": "FAQPage",
+    "@id": new URL("/sobre#faq", Astro.site ?? "https://coopluz.roilabs.com.br").href,
+    mainEntity: perguntas.map((q) => ({
+      "@type": "Question",
+      name: q.p,
+      acceptedAnswer: { "@type": "Answer", text: q.r },
+    })),
+  },
+];
+---
+
+<Base
+  titulo="Sobre a Autogestor Energia — parceira credenciada da Coopluz desde 2004"
+  descricao="A Autogestor é parceira comercial credenciada da cooperativa de energia Coopluz em Goiás, responsável pela captação, cadastro e acompanhamento do associado."
+  schema={schema}
+  tipoPagina={["WebPage", "AboutPage"]}
+  trilha={[
+    { nome: "Início", href: "/" },
+    { nome: "Sobre", href: "/sobre" },
+  ]}
+>
+  <section class="topo">
+    <div class="container">
+      <span class="olho">Quem somos</span>
+      <h1>Parceira credenciada da Coopluz, no ar desde 2004</h1>
+      <p class="chamada">
+        A Autogestor nasceu em 2004 em Goiânia como corretora de serviços e hoje representa a cooperativa de energia
+        Coopluz na área de concessão da Equatorial Goiás — cuidando de todo o relacionamento com o associado, do
+        primeiro contato ao acompanhamento do desconto na fatura.
+      </p>
+    </div>
+  </section>
+
+  <section class="secao" id="quem-e-quem" tabindex="-1">
+    <div class="container">
+      <span class="olho">Divisão de papéis</span>
+      <h2>Quem faz o quê</h2>
+      <div class="grade grade--2">
+        <div class="cartao">
+          <h3>Coopluz</h3>
+          <p>
+            Cooperativa de energia por compensação, independente, com sede em Goiânia. Opera em parceria com o
+            Sicoob Secovicred. É quem gera a energia (em fazendas solares cooperadas) e quem emite o contrato de
+            associação.
+          </p>
+        </div>
+        <div class="cartao">
+          <h3>Autogestor</h3>
+          <p>
+            Parceira comercial credenciada da Coopluz. É com a Autogestor que o futuro associado fala primeiro: faz
+            o cadastro, tira dúvidas, acompanha o processo até o primeiro crédito aparecer na fatura, e segue
+            disponível depois disso.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao secao--marca">
+    <div class="container">
+      <span class="olho">O que nos diferencia</span>
+      <h2>Duas décadas de atendimento antes de a Coopluz existir</h2>
+      <p class="chamada">
+        Tempo de casa é diferencial verificável num mercado onde o concorrente típico é uma landing page de seis
+        meses de idade. A Autogestor atende famílias e empresas em Goiânia desde 2004 — a parceria com a Coopluz
+        aproveita essa mesma estrutura de atendimento, sem começar do zero.
+      </p>
+    </div>
+  </section>
+
+  <section class="secao">
+    <div class="container contato">
+      <div>
+        <span class="olho">Atendimento</span>
+        <h2>Onde encontrar a gente</h2>
+        <address class="endereco">
+          {enderecoLinha}<br />
+          WhatsApp <a href={`tel:${EMPRESA.telefone}`}>{EMPRESA.telefoneExibicao}</a><br />
+          <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a>
+        </address>
+        <p>
+          <a class="btn btn--primario externo" href={whatsapp("Olá! Vim pelo site da Coopluz.")} target="_blank" rel="noopener">
+            Falar no WhatsApp
+            <span class="visualmente-oculto">— abre em nova aba</span>
+          </a>
+        </p>
+      </div>
+      <div>
+        <h3>Ir direto para a oferta</h3>
+        <ul class="lista-check" role="list">
+          <li><a href="/">{COOPLUZ.nome}</a> — {COOPLUZ.resumo}</li>
+          <li><a href="/parceiro">Seja parceiro</a> — comissão de ativação e renda recorrente</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao secao--suave">
+    <div class="container">
+      <Faq perguntas={perguntas} />
+    </div>
+  </section>
+
+  <BarraAcao mensagem="Olá! Vim pelo site da Coopluz." alvo="quem-e-quem" rotulo="Ver a oferta" />
+</Base>
+
+<style>
+  .topo { padding-block: var(--e-16); }
+  .contato { display: grid; gap: var(--e-8); grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .endereco { font-style: normal; line-height: 1.8; margin-bottom: var(--e-6); }
+</style>

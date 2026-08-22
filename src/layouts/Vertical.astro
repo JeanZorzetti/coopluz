@@ -1,0 +1,102 @@
+---
+import Base from "./Base.astro";
+import LeadForm from "../components/LeadForm.astro";
+import Faq from "../components/Faq.astro";
+import type { Pergunta } from "../components/Faq.astro";
+import BarraAcao from "../components/BarraAcao.astro";
+import { AREA_SERVIDA, type Solucao } from "../data/solucoes";
+import { ATENDIMENTO, EMPRESA } from "../consts";
+
+interface Props {
+  solucao: Solucao;
+  h1: string;
+  chamada: string;
+  perguntas: readonly Pergunta[];
+  /** Tipo de nó schema.org que melhor descreve a vertical. */
+  tipoServico?: string;
+  tituloForm?: string;
+  rotuloBarra?: string;
+}
+const {
+  solucao,
+  h1,
+  chamada,
+  perguntas,
+  tipoServico = "Service",
+  tituloForm = "Peça sua cotação",
+  rotuloBarra = "Pedir cotação",
+} = Astro.props;
+const site = Astro.site ?? new URL("https://coopluz.roilabs.com.br");
+// Solução única do site: URL é a própria home, não "/coopluz".
+const url = new URL("/", site).href;
+
+const schema = [
+  {
+    "@type": tipoServico,
+    "@id": `${url}#servico`,
+    name: solucao.nome,
+    description: solucao.descricao,
+    url,
+    // Coopluz é quem presta o serviço; a Autogestor é representante credenciada
+    // (broker), não a prestadora.
+    provider: solucao.provedor ? { name: solucao.provedor } : { "@id": new URL("/#organizacao", site).href },
+    ...(solucao.provedor && { broker: { "@id": new URL("/#organizacao", site).href } }),
+    areaServed: AREA_SERVIDA[solucao.abrangencia],
+  },
+  {
+    "@type": "FAQPage",
+    "@id": `${url}#faq`,
+    mainEntity: perguntas.map((q) => ({
+      "@type": "Question",
+      name: q.p,
+      acceptedAnswer: { "@type": "Answer", text: q.r.replace(/<[^>]+>/g, "") },
+    })),
+  },
+];
+---
+
+<Base titulo={solucao.titulo} descricao={solucao.descricao} schema={schema}>
+  <section class="topo">
+    <div class="container topo__grade">
+      <div class="topo__texto">
+        <span class="olho">{solucao.nome}</span>
+        <h1>{h1}</h1>
+        <p class="chamada">{chamada}</p>
+        <slot name="hero" />
+      </div>
+      <div class="topo__form">
+        <LeadForm solucao={solucao} titulo={tituloForm} instancia="topo" />
+      </div>
+    </div>
+  </section>
+
+  <slot />
+
+  <section class="secao secao--suave">
+    <div class="container">
+      <Faq perguntas={perguntas} />
+    </div>
+  </section>
+
+  <section class="secao" id="pedir" tabindex="-1">
+    <div class="container fechamento">
+      <div>
+        <span class="olho">Próximo passo</span>
+        <h2>{solucao.fechamento}</h2>
+        <p class="chamada">
+          {/* Sem SUSEP aqui: a Autogestor é parceira credenciada da Coopluz
+               nesta vertical, não corretora de seguros (Clarifications da
+               spec 002-coopluz-standalone-site). */}
+          Um consultor da Autogestor responde no seu WhatsApp {ATENDIMENTO.prazo}. Parceira credenciada da Coopluz
+          desde {EMPRESA.fundacao}, com sede em {EMPRESA.endereco.cidade}, atendendo a área de concessão da
+          Equatorial Goiás.
+        </p>
+      </div>
+      <LeadForm solucao={solucao} titulo={tituloForm} destaque instancia="fim" />
+    </div>
+  </section>
+
+  {/* Sem a seção "Outras soluções do hub": este site tem 1 vertical só. */}
+
+  <BarraAcao solucao={solucao} rotulo={rotuloBarra} />
+</Base>
