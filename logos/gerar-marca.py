@@ -59,6 +59,12 @@ BASE_Y = 78.5           # primeira barra da base, logo abaixo do anel
 BASE_PASSO = 7.0
 BASE_LARG = (18.0, 11.5)
 
+# viewBox recortado na bbox real do desenho (anel + base + folha), medida por
+# amostragem dos arcos/curvas acima, com 2 de margem. Sem isto o desenho usa
+# so 69.5% da largura e 89.7% da altura de um viewBox "0 0 100 100" cru — a
+# marca lia pequena mesmo em caixas grandes porque sobrava moldura invisivel.
+VB_X, VB_Y, VB_W, VB_H = 13.0, 4.9, 74.0, 93.7
+
 
 def pt(r, th, cx=CX, cy=CY):
     """Polar -> cartesiano no sistema do SVG (y para baixo)."""
@@ -184,7 +190,8 @@ def marca(fill, stroke_extra=""):
 
 def svg(interno, extra_defs=""):
     return (
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" '
+        '<svg xmlns="http://www.w3.org/2000/svg" '
+        f'viewBox="{f(VB_X)} {f(VB_Y)} {f(VB_W)} {f(VB_H)}" '
         'role="img" aria-label="Coopluz">'
         f"{extra_defs}{interno}</svg>"
     )
@@ -244,7 +251,7 @@ const {{ size = 40, class: klass }} = Astro.props;
   class:list={{["logo", klass]}}
   width={{size}}
   height={{size}}
-  viewBox="0 0 100 100"
+  viewBox="{f(VB_X)} {f(VB_Y)} {f(VB_W)} {f(VB_H)}"
   role="img"
   aria-label="Coopluz"
   focusable="false"
