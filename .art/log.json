@@ -2,6 +2,47 @@
   {
     "data": "2026-08-22",
     "projeto": "coopluz",
+    "pagina": "/ (secao \"Na midia\", entre \"Numeros da cooperativa\" e \"Leia mais\")",
+    "direcao": "ima",
+    "tipo": "catalogo",
+    "eixos": { "materia": "geometria", "motor": "ponteiro", "banda": "clara" },
+    "estrutura": "Nao troca a macroestrutura da pagina (continua o ritmo herdado do hub: .secao > .container > olho + h2 + chamada + lista) — divida ja declarada na entrada \"fatura\". Esta e uma secao nova dentro desse ritmo, nao uma direcao de pagina inteira.",
+    "pedido": "Usuario trouxe 4 videos do YouTube como referencia (\"achei 4 videos\"). Baixados os frames reais (nao so metadados): 1 Short da propria marca (ilustracao flat verde, moedas, casal), 1 entrevista Jovem Pan News, 2 clipes com bumper \"Economize Coopluz\" + logo da Globo (b-roll de torres de transmissao e infografico de mapa). Perguntado o uso pretendido; usuario delegou (\"Pode escolher o melhor\").",
+    "decisao": "Descartado embutir os frames/videos (carregam marca de terceiro — Globo/Jovem Pan — reexibir seria usar a marca deles como se fosse nossa) e descartado adotar o estilo flat do Short (quebraria o sistema autoral ja existente de fatura/circuito). O que sobra e sem risco: os 4 videos PROVAM cobertura de imprensa real. Virou secao de prova social \"Na midia\", citando veiculo + manchete + link para o original — sem logo de emissora (nao ha asset licenciado), so tipografia.",
+    "relacao_com_fatura_e_circuito": "Nao estende nenhuma das duas: e uma 3a matéria (geometria) que a pagina ainda nao tinha, colocada deliberadamente porque pigmento (fatura) e luz (circuito) ja ocupavam o motor/banda mais obvios e repetir qualquer um colidiria com a regra de anti-repeticao.",
+    "verbo": "apontar — os cartoes inclinam como agulha de bussola em direcao ao cursor",
+    "camadas": {
+      "entrada": "rotate de -4deg a 0deg + opacity, via animation-timeline: view() (entry 10% cover 30%)",
+      "scroll": "AUSENTE POR DECLARACAO: a secao e um blocoso, sem sequencia para percorrer",
+      "ponteiro": "um listener de pointermove no window (nao um por cartao) calcula a distancia ao centro de cada [data-ima] e escreve --alvo em graus (raio 130px, giro maximo 6deg), com spring por interpolacao (fator 0.16/frame). Desligado fora de (hover: hover) e fora de prefers-reduced-motion: no-preference.",
+      "transicao": "AUSENTE POR DECLARACAO: a secao nao e uma rota; a transicao entre paginas do site (View Transitions cross-document, definida em circuito) ja cobre a navegacao inteira e cobre esta secao tambem, sem duplicar."
+    },
+    "bug_evitado_antes_de_construir": "O ima do catalogo usa translate em pixels (deslocamento x/y). A pagina ja estava no teto de 3 primitivas de movimento (rotate no selo/cordao, opacity e scale no cone/fio/no) — o proprio log de \"fatura\" registra ter trocado translate por opacity pelo mesmo motivo (G15). Translate aqui seria a 4a primitiva. Trocado por rotate (agulha de bussola) ANTES de medir qualquer gate, reaproveitando a primitiva que o arquivo ja tem — G11 (uma ideia so) e G15 (<=3 primitivas) saem intactos.",
+    "custo": {
+      "faixa": "captacao",
+      "js_gzip_b": 438,
+      "deps_novas": [],
+      "delta_pagina_gzip_b": 990,
+      "nota_peso": "22055b contra 21065b no HEAD anterior (a04b2ce), medido com git stash nos dois estados. Como o resto do arquivo, e tudo inline: Astro nao gera .js separado para a home.",
+      "lcp": "sem impacto: a secao fica a ~5600px do topo, muito abaixo da dobra — nao concorre com o LCP do heroi.",
+      "cls": 0,
+      "inp": "nao remedido isoladamente: 1 listener no window, 2 alvos, escrita de uma custom property por frame — ordem de grandeza do cordao (14px, 2 propriedades), que ja mede dentro do teto de 200ms da faixa Captacao."
+    },
+    "gates_corrigidos": [
+      "G15 primitivas <= 3 — ima do catalogo pede translate (4a primitiva da pagina); trocado por rotate antes de escrever o JS, nao depois",
+      "G11 uma ideia — entrada e ponteiro compartilham a mesma primitiva (rotate) e o mesmo verbo (apontar)",
+      "G9 sem metrica inventada — manchete e legenda de cada cartao sao o texto literal visto no frame de cada video, nao parafrase nem citacao inventada"
+    ],
+    "gates_nao_aplicaveis": [
+      "G16 palco delimitado — nao ha loop autonomo, so view() e pointermove",
+      "G31 dpr travado — nao ha canvas",
+      "G21 blur nao anima — nao ha blur"
+    ],
+    "divida_declarada": "So 2 veiculos citados (Jovem Pan, Globo) porque so 2 sao legitimos como imprensa de terceiro — o Short (video 1) e conteudo proprio da marca e citar como \"midia\" seria confundir prova social com autopromocao. Se a cooperativa tiver mais aparicoes de imprensa no futuro, a grade comporta mais cartoes sem mudar a direcao."
+  },
+  {
+    "data": "2026-08-22",
+    "projeto": "coopluz",
     "pagina": "/ (secao \"Como funciona\")",
     "direcao": "fatura",
     "tipo": "custom",

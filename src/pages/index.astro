@@ -152,6 +152,45 @@ const perguntas = [
 
   <section class="secao">
     <div class="container">
+      <span class="olho">Na mídia</span>
+      <h2>Energia por assinatura também virou notícia</h2>
+      <p class="chamada">
+        Antes deste site, o modelo de compensação por assinatura já tinha passado pela Jovem Pan News e pela Rede
+        Globo — sem a Coopluz pagar pelo espaço.
+      </p>
+      <ul class="imprensa lista-limpa" role="list">
+        <li>
+          <a
+            class="imprensa__item externo"
+            href="https://www.youtube.com/watch?v=AajbB7OHUR0"
+            target="_blank"
+            rel="noopener"
+            data-ima
+          >
+            <span class="imprensa__veiculo">Jovem Pan News</span>
+            <span class="imprensa__manchete">Brasileiro já pode assinar luz em casa ou comércio</span>
+            <span class="imprensa__legenda">Fonte solar pode garantir desconto de 15% ao consumidor</span>
+          </a>
+        </li>
+        <li>
+          <a
+            class="imprensa__item externo"
+            href="https://www.youtube.com/watch?v=_pZob1Y9smI"
+            target="_blank"
+            rel="noopener"
+            data-ima
+          >
+            <span class="imprensa__veiculo">Rede Globo</span>
+            <span class="imprensa__manchete">Energia solar por assinatura: entenda como funciona</span>
+            <span class="imprensa__legenda">Cobertura sobre economizar na conta de luz sem instalar placa</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="secao">
+    <div class="container">
       <span class="olho">Leia mais</span>
       <h2>Entenda a conta de luz antes de decidir</h2>
       <ul class="lista-limpa" role="list">
@@ -203,6 +242,70 @@ const perguntas = [
 </Vertical>
 
 <style>
+  /* art-direction · ímã · eixos: geometria/ponteiro/clara · orçamento: ~1kb JS · 2026-08-22
+     Prova social de imprensa (Jovem Pan, Globo). Matéria geometria — os cartões
+     são tipo puro, sem foto: os vídeos de origem carregam bumper e marca da
+     própria emissora, reusar o frame seria reexibir a marca deles como se
+     fosse nossa. A citação (veículo + manchete + link para o original) é o
+     que se pode reaproveitar sem isso. Card inteiro é o link (G27: nada some
+     sem JS, só o deslocamento é enriquecimento) e reage à aproximação do
+     cursor com o mesmo --ease-mola que já existe no arquivo — sem token novo. */
+  .imprensa {
+    display: grid;
+    gap: var(--e-4);
+    margin-top: var(--e-6);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  .imprensa__item {
+    display: block;
+    background: var(--superficie-alta);
+    border: 1px solid var(--borda);
+    border-radius: var(--r-3);
+    padding: var(--e-6);
+    text-decoration: none;
+    color: inherit;
+  }
+  .imprensa__veiculo {
+    display: block;
+    font-size: var(--t-sm);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--marca);
+    margin-bottom: var(--e-2);
+  }
+  .imprensa__manchete {
+    display: block;
+    font-family: var(--display);
+    font-size: var(--t-md);
+    font-variation-settings: "wght" 700;
+    color: var(--texto);
+    letter-spacing: -0.01em;
+  }
+  .imprensa__item:hover .imprensa__manchete { color: var(--marca-forte); }
+  .imprensa__legenda {
+    display: block;
+    margin-top: var(--e-2);
+    font-size: var(--t-sm);
+    color: var(--texto-suave);
+  }
+  /* Entrada e ímã usam a MESMA primitiva do resto do arquivo: `rotate`. A
+     página já está no teto de 3 primitivas de movimento (rotate no selo e no
+     cordão, opacity e scale no cone/fio/nó) — `translate` em pixels, como o
+     catálogo de Ímã propõe, seria a 4ª. O gesto vira "apontar": o cartão
+     inclina como agulha de bússola em direção ao cursor, em vez de deslizar. */
+  .imprensa__item { rotate: 0deg; }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .imprensa__item {
+        animation: imprensa-entra var(--dur-cena) var(--ease-cena) both;
+        animation-timeline: view();
+        animation-range: entry 10% cover 30%;
+      }
+    }
+  }
+  @keyframes imprensa-entra { from { opacity: 0; rotate: -4deg; } }
+
   /* O bloco de prova. `--t-3xl` no algarismo (o mesmo corpo do H1) porque é
      a única seção da página em que o dado, e não a frase, é o argumento. */
   .numeros {
@@ -319,3 +422,49 @@ const perguntas = [
     letter-spacing: 0.06em;
   }
 </style>
+
+<script>
+  // Ímã dos cartões de imprensa. Um listener no window para todos os
+  // alvos (não um por cartão) e só liga com ponteiro real + sem preferência
+  // por movimento reduzido: os links já funcionam sem isto, a inclinação
+  // é enriquecimento puro. Gira em torno de `rotate`, a mesma primitiva do
+  // selo e do cordão — o cartão aponta para o cursor, não desliza até ele.
+  const alvos = [...document.querySelectorAll<HTMLElement>("[data-ima]")].map((el) => ({
+    el,
+    alvo: 0,
+    atual: 0,
+    raf: 0,
+  }));
+
+  if (
+    alvos.length &&
+    matchMedia("(hover: hover)").matches &&
+    matchMedia("(prefers-reduced-motion: no-preference)").matches
+  ) {
+    const RAIO = 130;
+    const GIRO_MAX = 6;
+
+    function passo(a: (typeof alvos)[number]) {
+      a.atual += (a.alvo - a.atual) * 0.16;
+      a.el.style.rotate = `${a.atual.toFixed(2)}deg`;
+      const parado = Math.abs(a.alvo - a.atual) < 0.05;
+      a.raf = parado ? 0 : requestAnimationFrame(() => passo(a));
+    }
+
+    addEventListener(
+      "pointermove",
+      (e) => {
+        for (const a of alvos) {
+          const r = a.el.getBoundingClientRect();
+          const dx = e.clientX - (r.left + r.width / 2);
+          const dy = e.clientY - (r.top + r.height / 2);
+          const d = Math.hypot(dx, dy);
+          const f = d < RAIO ? 1 - d / RAIO : 0;
+          a.alvo = Math.sign(dx) * f * GIRO_MAX;
+          if (!a.raf) a.raf = requestAnimationFrame(() => passo(a));
+        }
+      },
+      { passive: true },
+    );
+  }
+</script>
