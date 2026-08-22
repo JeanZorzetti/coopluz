@@ -43,6 +43,7 @@ const PARES = {
     ["erro-texto / erro-fundo", "#7a1c15", "#fdeceb", 4.5],
     ["ok-texto / ok-fundo", "#14532d", "#e7f4ec", 4.5],
     ["destaque: verde-700 / verde-100", "#1d7a45", "#e4f5ea", 4.5],
+    ["número da prova: verde-700 / superficie", "#1d7a45", "#f4f7f7", 3],
     ["destaque: texto-suave / verde-100", "#4c5f5e", "#e4f5ea", 4.5],
   ],
   escuro: [
@@ -68,6 +69,7 @@ const PARES = {
     ["erro-texto / erro-fundo", "#f3d5d1", "#4e2622", 4.5],
     ["ok-texto / ok-fundo", "#cdf3df", "#17452e", 4.5],
     ["destaque: verde-700 / verde-100 escuro", "#63c08a", "#153a2a", 4.5],
+    ["número da prova: verde-700 / superficie escura", "#63c08a", "#0a1e25", 3],
     ["destaque: texto-suave / verde-100 escuro", "#a9bcbc", "#153a2a", 4.5],
     ["borda do destaque / verde-100 escuro", "#40ac68", "#153a2a", 1],
   ],

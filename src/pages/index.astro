@@ -154,18 +154,26 @@ const perguntas = [
     <div class="container">
       <span class="olho">Números da cooperativa</span>
       <h2>De 380 para 3.865 associados em quatro meses</h2>
-      <ul class="beneficios__grade" role="list">
+      {/* Grade própria, e não a `beneficios__grade` do herói: aqui o número
+           É o argumento. Reusar o cartão de benefício deixava "3.865" no mesmo
+           corpo de um rótulo de card, e o dado que sustenta a página inteira
+           passava despercebido. A unidade sai do número e vira linha de baixo,
+           para o algarismo ficar sozinho na primeira linha. */}
+      <ul class="numeros" role="list">
         <li>
-          <strong>3.865 associados</strong>
+          <strong>3.865</strong>
+          <b>associados</b>
           <span>recebendo crédito hoje, em Goiás</span>
         </li>
         <li>
-          <strong>10x em 4 meses</strong>
+          <strong>10&times;</strong>
+          <b>em quatro meses</b>
           <span>crescimento de dez/25 a mar/26</span>
         </li>
         <li>
-          <strong>1,66 milhão kWh</strong>
-          <span>compensados em março/2026</span>
+          <strong>1,66 mi</strong>
+          <b>kWh compensados</b>
+          <span>no mês de março/2026</span>
         </li>
       </ul>
       <p class="nota">
@@ -188,10 +196,10 @@ const perguntas = [
   <section class="secao secao--suave">
     <div class="container">
       <span class="olho">Quem está por trás</span>
-      <h2>Uma cooperativa de energia, uma de crédito e um parceiro credenciado</h2>
+      <h2>Uma cooperativa de energia, uma de crédito e um representante autorizado</h2>
       <p class="chamada">
         A Coopluz é uma cooperativa independente com sede em Goiânia e opera em parceria com o Sicoob Secovicred.
-        A Autogestor é parceira comercial credenciada: é com a gente que você fala e é a Coopluz que emite o
+        A Autogestor é representante autorizado: é com a gente que você fala e é a Coopluz que emite o
         contrato de associação. Nenhuma das três consulta SPC ou Serasa para associar você.
       </p>
       <p class="chamada">
@@ -237,6 +245,45 @@ const perguntas = [
   }
   @media (max-width: 899px) {
     .secao--marca .selo { width: 78vw; left: -30%; bottom: -8%; }
+  }
+
+  /* O bloco de prova. `--t-3xl` no algarismo (o mesmo corpo do H1) porque é
+     a única seção da página em que o dado, e não a frase, é o argumento. */
+  .numeros {
+    list-style: none;
+    margin: var(--e-8) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--e-6);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .numeros li {
+    border-top: 3px solid var(--verde-500);
+    padding-top: var(--e-4);
+  }
+  .numeros strong {
+    display: block;
+    font-family: var(--display);
+    font-variation-settings: "wght" 800;
+    font-size: var(--t-3xl);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--verde-700);
+    /* Algarismo de largura fixa: sem isto, "3.865" e "1,66" desalinham entre
+       si e a linha de números perde a leitura de tabela. */
+    font-variant-numeric: tabular-nums;
+  }
+  .numeros b {
+    display: block;
+    margin-top: var(--e-2);
+    font-size: var(--t-md);
+    font-weight: 700;
+  }
+  .numeros span {
+    display: block;
+    margin-top: var(--e-1);
+    font-size: var(--t-sm);
+    color: var(--texto-suave);
   }
 
   .beneficios { margin-top: var(--e-6); }

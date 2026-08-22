@@ -38,10 +38,14 @@ const schema = [
     description: solucao.descricao,
     url,
     // Coopluz é quem presta o serviço; a Autogestor é representante autorizado
-    // (broker), não a prestadora. O `@id` é o mesmo nó `#operadora` que o
-    // Base.astro declara — apontar para um `@id` que não existe no grafo
-    // deixa a referência pendurada e o buscador descarta o nó inteiro.
-    provider: solucao.provedor ? { name: solucao.provedor } : { "@id": new URL("/#operadora", site).href },
+    // (broker), não a prestadora. Os dois entram por `@id` nos nós que o
+    // Base.astro já declara: `{ name: "Coopluz" }` criava um SEGUNDO nó anônimo
+    // com o nome da cooperativa no mesmo grafo que já tem `#cooperativa` — duas
+    // entidades para a mesma organização, que é exatamente a duplicação que o
+    // grafo único existe para evitar.
+    provider: solucao.provedor
+      ? { "@id": new URL("/#cooperativa", site).href }
+      : { "@id": new URL("/#operadora", site).href },
     ...(solucao.provedor && { broker: { "@id": new URL("/#operadora", site).href } }),
     areaServed: AREA_SERVIDA[solucao.abrangencia],
   },

@@ -43,9 +43,9 @@ const dataBR = new Date(`${LEGAL_ATUALIZADO}T12:00:00Z`).toLocaleDateString("pt-
         <h2 id="contato">Como falar com a gente</h2>
         <p>
           {/* Sem SUSEP aqui: é registro da vertical de seguros, não desta —
-               a Autogestor é parceira credenciada da Coopluz, não corretora
+               a Autogestor é representante autorizado da Coopluz, não corretora
                de energia (spec 002-coopluz-standalone-site, Clarifications). */}
-          {EMPRESA.nomeLegal}, parceira credenciada da Coopluz desde {EMPRESA.fundacao}. {enderecoLinha}.
+          {EMPRESA.nomeLegal}, representante autorizado da Coopluz desde {EMPRESA.fundacao}. {enderecoLinha}.
           E-mail <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a>, WhatsApp
           <a class="externo" href={whatsapp(`Olá! Tenho uma dúvida sobre ${nome.toLowerCase()}.`)} target="_blank" rel="noopener">
             {EMPRESA.telefoneExibicao}<span class="visualmente-oculto"> — abre em nova aba</span>
