@@ -6,8 +6,12 @@ import { escopoDeCabecalho } from "./src/lib/tabela.mjs";
 
 // URL base vem do ambiente pelo mesmo motivo do hub autogestor (origem deste
 // arquivo): canonical e sitemap saem daqui — errar isso publica canonical
-// apontando para o domínio de preview.
-const site = process.env.SITE_URL ?? "https://coopluz.roilabs.com.br";
+// apontando para o domínio de preview. SITE_URL vazia ou sem esquema derrubava
+// o build inteiro ("site: Invalid url"); cair no domínio de produção é o pior
+// caso aceitável, build quebrado não é.
+const site = URL.canParse(process.env.SITE_URL ?? "")
+  ? process.env.SITE_URL
+  : "https://coopluz.roilabs.com.br";
 
 export default defineConfig({
   site,
