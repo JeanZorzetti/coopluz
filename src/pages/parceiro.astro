@@ -81,6 +81,10 @@ const schema = [
   ]}
 >
   <section class="topo">
+    {/* O facho. Fundo pintado por CSS no primeiro frame — nunca é o elemento
+         de LCP, que é o <h1> dentro dele. `aria-hidden` porque não acrescenta
+         informação nenhuma a quem lê por leitor de tela. */}
+    <span class="cone" aria-hidden="true"></span>
     <span class="selo selo--claro selo--entra" aria-hidden="true"></span>
     <div class="container topo__grade">
       <div class="topo__texto">

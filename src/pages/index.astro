@@ -308,7 +308,14 @@ const perguntas = [
     border-color: var(--verde-500);
   }
   .beneficios__item--acento strong { color: var(--verde-700); }
-  .beneficios__item--acento span { color: var(--cinza-600); }
+  /* --texto-suave, e não --cinza-600: o primitivo é um hex fixo que NÃO
+     inverte no tema escuro, e o fundo deste card inverte (--verde-100 vira
+     #153a2a). O par ficava cinza-escuro sobre verde-escuro, 1.86:1 — medido em
+     pixel renderizado, não estimado. O semântico resolve para exatamente o
+     mesmo #4c5f5e no claro, então nada muda lá, e para #a9bcbc no escuro:
+     5.97:1. Bug anterior a esta direção; corrigido aqui porque estava na
+     página que ela entrega. */
+  .beneficios__item--acento span { color: var(--texto-suave); }
   .etapas {
     display: grid;
     gap: var(--e-6);

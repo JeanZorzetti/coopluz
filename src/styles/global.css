@@ -1,8 +1,13 @@
-/* art-direction · costura · eixos: luz/estado/média · orçamento: 0kb JS · 2026-08-21
-   O elemento que costura é a lâmpada-folha da marca. Ele nunca sai de cena:
-   textura do herói na home, selo no canto do card, marca da capa na vertical.
-   A troca de rota interpola o selo do card para a capa da página que abriu —
-   View Transitions cross-document, nativo, sem router e sem um byte de JS. */
+/* art-direction · circuito (custom) · eixos: luz/estado/ambas · orçamento: 1.4kb JS · 2026-08-22
+   Uma cadeia causal, não três efeitos: o CORDÃO é o interruptor, o CONE é o
+   que a lâmpada emite, o FIO é a corrente descendo a página. Puxar o cordão
+   acende ou apaga a página inteira — a banda (clara/escura) é escolha do
+   visitante, e não decisão fixa da direção. É por isso que os eixos dizem
+   "ambas": o interruptor é o motor.
+
+   Substitui a direção "costura" (luz/estado/média), que herdara a
+   macroestrutura do hub autogestor e perdera a camada de scroll junto com a
+   grade de cards que a justificava. */
 
 /* Tokens da Coopluz Goiás. Cores primitivas amostradas do lockup vetorial da
    apresentação institucional da cooperativa (abril/2026): verde #40AC68, teal
@@ -131,7 +136,13 @@
   --t-lg: 1.25rem;
   --t-xl: 1.5rem;
   --t-2xl: 2rem;
-  --t-3xl: clamp(2rem, 1.4rem + 3vw, 2.75rem);
+  /* Salto hero-corpo. Era 2.75rem (2.75x sobre o corpo de 1rem) — escala de
+     produto, não de capa. 4rem leva o H1 a 4x. Não chega aos 5x que a direção
+     de arte pede: a 5rem/80px este H1 de 76 caracteres ocupa cinco linhas na
+     coluna de 652px do herói e empurra o formulário para fora da primeira
+     tela num notebook de 900px de altura. Numa página cuja função é captar
+     lead, enterrar o formulário custa mais do que o salto tipográfico paga. */
+  --t-3xl: clamp(2.5rem, 1.6rem + 4.5vw, 4rem);
 
   --r-1: 4px;
   --r-2: 8px;
@@ -434,7 +445,25 @@ img, svg { max-width: 100%; height: auto; display: block; }
 
 /* Hero + fechamento das páginas de vertical: mesmo par de blocos em Vertical.astro,
    seja-parceiro.astro e sobre.astro — vivia copiado nos três. */
-.topo { background: var(--superficie); padding-block: var(--e-12) var(--e-16); }
+/* `position` e `overflow` moram aqui, e não no escopo de cada página: o cone
+   e o selo são absolutos dentro da capa, e sem o contexto de posicionamento
+   eles escapariam para o viewport — foi o que aconteceu em sobre.astro, a
+   única das três capas que não repetia a declaração. `clip` e não `hidden`:
+   clip não cria contexto de rolagem, então a âncora #pedir continua
+   funcionando e nenhuma barra fantasma aparece quando o selo sangra. */
+.topo {
+  position: relative;
+  overflow: clip;
+  background: var(--superficie);
+  padding-block: var(--e-12) var(--e-16);
+}
+/* z-index no conteúdo, e não no cone: elemento POSICIONADO com z-index 0 (o
+   cone, o selo) pinta na etapa 8 da ordem de pintura, e conteúdo estático de
+   bloco pinta na 4 — o facho cobria o formulário e esmaecia o texto dos cards
+   de benefício. Levantar o conteúdo resolve os dois de uma vez e não depende
+   de o cone escolher um z-index negativo, que o tiraria de dentro do
+   `overflow: clip` da capa. */
+.topo > .container { position: relative; z-index: 1; }
 .topo__grade { display: grid; gap: var(--e-8); align-items: start; }
 @media (min-width: 900px) {
   .topo__grade { grid-template-columns: 1fr minmax(360px, 420px); gap: var(--e-12); }
@@ -444,7 +473,7 @@ img, svg { max-width: 100%; height: auto; display: block; }
 @media (min-width: 900px) { .fechamento { grid-template-columns: 1fr minmax(360px, 440px); } }
 
 /* =========================================================================
-   COSTURA — a lâmpada-folha como elemento contínuo
+   CIRCUITO — cordão (interruptor) · cone (luz) · fio (corrente)
    ========================================================================= */
 
 /* Fallback de métrica casada para os títulos. Sem ele o H1 pinta primeiro na
@@ -468,17 +497,26 @@ img, svg { max-width: 100%; height: auto; display: block; }
   line-gap-override: 0%;
 }
 
+/* Janelas de movimento por camada. `--curva` já existia e continua sendo a
+   curva de UI (hover, botão); `--ease-cena` é a curva longa da coreografia:
+   80% da distância nos primeiros 30% do tempo. `ease-out` comum parece
+   software; esta parece intenção. */
 :root {
-  /* Janelas de movimento por camada. `--curva` já existia e continua sendo a
-     curva de UI (hover, botão); `--ease-cena` é a curva longa da coreografia:
-     80% da distância nos primeiros 30% do tempo. `ease-out` comum parece
-     software; esta parece intenção. */
   --dur-instante: 100ms;
   --dur-rapida: 160ms;
   --dur-base: 240ms;
   --dur-cena: 900ms;
   --ease-cena: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-saida: cubic-bezier(0, 0, 0.2, 1);
+  /* Spring nativo para o retorno do cordão. `linear()` amostrado de um spring
+     (stiffness 320, damping 26) — o quique sai de graça, sem lib. O fallback
+     antes do @supports é o cubic-bezier aproximado. */
+  --ease-mola: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Fonte de luz declarada UMA vez, e todo elemento obedece: a lâmpada está
+     acima da dobra, então tudo neste arquivo projeta para BAIXO. É o que
+     separa uma tela desenhada de uma tela montada. */
+  --luz-azimute: 90deg;
 
   /* Opacidade do selo por superfície. Teto medido, não estimado: sobre
      --superficie-marca 0.2 mantém --texto-sobre-marca em 6.72:1; sobre
@@ -489,20 +527,77 @@ img, svg { max-width: 100%; height: auto; display: block; }
 
   /* Grão: gerado UMA vez e servido como data-uri. `feTurbulence` vivo pinta a
      cada frame e está proibido — este é um tile de 240px que o navegador
-     desenha uma vez e repete. Custo em runtime: zero. É o que tira do bloco de
-     marca a cara de retângulo chapado de CSS. */
+     desenha uma vez e repete. Custo em runtime: zero. */
   --grao: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* --- o circuito ---------------------------------------------------------
+     Intensidade codificada na ALFA da cor, e não numa custom property de
+     opacidade: light-dark() só aceita cor, então um `--cone-op` teria que ser
+     duplicado em @media + [data-tema] — a duplicação que o resto deste arquivo
+     existe para evitar. Com a alfa dentro da cor, o par claro/escuro cabe numa
+     linha e o elemento fica com opacity: 1.
+
+     Os valores são o TETO que o contraste permite, medidos em pixel
+     renderizado (não em aritmética): o facho clareia o fundo, e quem primeiro
+     reprova não é o texto principal — é o texto de MEIO-TOM por cima dele. O
+     par que amarra é o .olho no escuro, --marca #6ab7ee sobre o facho. A 0.42
+     ele dava 2.86:1; a 0.22 dá 4.87:1. Foi tentado o contrário — clarear
+     .olho e .chamada na capa para o facho poder ser forte — e recusado: são
+     cinco cores de um sistema já medido sendo entortadas para acomodar um
+     elemento decorativo. O facho é que cede. */
+  --cone-a: rgba(99, 198, 224, 0.16);
+  --cone-b: rgba(95, 208, 143, 0.2);
+  --fio-cor: rgba(36, 140, 160, 0.55);
+  --no-cor: rgba(36, 140, 160, 0.9);
+  --bulbo-apagado: #9dbcc2;
+  /* O bulbo aceso é a única fonte de luz quente da interface — fica fora da
+     paleta fria da cooperativa de propósito: luz de lâmpada é âmbar, e um
+     bulbo teal leria como LED de aparelho, não como lâmpada. */
+  --bulbo-aceso: #ffd98a;
+  --bulbo-halo: rgba(255, 217, 138, 0.28);
+  --bulbo-halo-longe: rgba(255, 200, 80, 0.55);
+
+  /* x do fio, medido a partir da borda DIREITA: é de lá que o cordão pende, e
+     um fio que desce do outro lado da tela não lê como o mesmo circuito — lê
+     como dois enfeites. Cola na calha quando ela existe (>1120px + folga),
+     senão encosta na borda. `max()` resolve os dois casos sem media query e
+     nunca deixa o fio entrar na coluna de texto. */
+  --fio-x: max(8px, calc((100vw - var(--largura)) / 2 - 26px));
 }
 
-/* O selo. Uma classe, três escalas: textura do herói, carimbo do card, marca
-   da capa. A geometria (tamanho, posição, giro) é de quem chama; o que mora
+@supports (color: light-dark(#fff, #000)) {
+  :root {
+    /* No claro o cone é lavagem de luz diurna sobre superfície quase branca;
+       no escuro é o facho fazendo o trabalho, sobre #0a1e25. Mesmo objeto,
+       duas intensidades — e é o cordão que decide qual. */
+    --cone-a: light-dark(rgba(99, 198, 224, 0.13), rgba(99, 198, 224, 0.17));
+    --cone-b: light-dark(rgba(95, 208, 143, 0.16), rgba(95, 208, 143, 0.22));
+    --fio-cor: light-dark(rgba(36, 140, 160, 0.55), rgba(99, 198, 224, 0.75));
+    --no-cor: light-dark(rgba(36, 140, 160, 0.9), rgba(95, 208, 143, 0.95));
+    --bulbo-apagado: light-dark(#9dbcc2, #2c4a54);
+  }
+}
+@supports (animation-timeline: scroll()) {
+  :root {
+    --ease-mola: linear(
+      0, 0.006, 0.079, 0.234, 0.44, 0.66, 0.856, 1.006, 1.098,
+      1.135, 1.128, 1.093, 1.047, 1.006, 0.977, 0.962, 0.958,
+      0.963, 0.972, 0.983, 0.993, 1, 1.003, 1
+    );
+  }
+}
+
+/* =========================================================================
+   1 · A LAMPADA — o selo, e o cone que sai dele
+   ========================================================================= */
+
+/* O selo. A geometria (tamanho, posição, giro) é de quem chama; o que mora
    aqui é a matéria — a marca recortando um gradiente da própria página, e não
    um <img> com as cores congeladas dentro do arquivo.
 
    `background`/`mask` só dentro do @supports: sem suporte a máscara o
    gradiente pintaria um retângulo chapado por cima do herói. Sem ele, o selo
-   simplesmente não existe e a página continua composta — o fallback estático
-   é o próprio bloco de marca com o tipo grande, que já é composição. */
+   simplesmente não existe e a página continua composta. */
 .selo {
   position: absolute;
   z-index: 0;
@@ -510,8 +605,7 @@ img, svg { max-width: 100%; height: auto; display: block; }
   pointer-events: none;
   /* `rotate` e não `transform`: assim a camada de scroll pode animar `scale` e
      `translate` sem sobrescrever o giro, e a de entrada pode animar `rotate`
-     sem sobrescrever a escala. Duas linhas do tempo no mesmo elemento, zero
-     conflito de propriedade. */
+     sem sobrescrever a escala. */
   rotate: var(--giro, 0deg);
   opacity: 0;
 }
@@ -524,65 +618,259 @@ img, svg { max-width: 100%; height: auto; display: block; }
   }
 }
 /* Sobre superfície clara o par lâmina/brasa não serve: --brasa sobre branco dá
-   2.05:1 e vira um borrão pálido. Aqui a marca vira marca-d'água de uma cor
-   só — teal sobre branco. Foi testado com o verde da marca na outra ponta e o
-   resultado, a 14% sobre branco, não lia como a marca: lia como mancha. */
+   2.05:1 e vira um borrão pálido. Aqui a marca vira marca de água de uma cor
+   só — teal sobre branco. */
 .selo--claro {
   --selo-a: var(--teal-500);
   --selo-b: var(--marca-forte);
   --selo-op: var(--selo-op-clara);
 }
 
-/* --- camada 1 · entrada -------------------------------------------------
-   O selo chega girando no próprio eixo e assenta. Anima só `rotate` e
-   `opacity` — `scale`/`translate` ficam livres para a camada de scroll. */
+/* A entrada do selo: chega girando no próprio eixo e assenta. Anima só
+   `rotate` e `opacity` — `scale`/`translate` ficam livres para outras camadas. */
 @keyframes selo-assenta {
   from { rotate: calc(var(--giro, 0deg) - 16deg); opacity: 0; }
-}
-/* O carimbo do card tem o próprio keyframe, e ele NÃO toca opacidade: uma
-   propriedade sob animação não obedece mais a declaração normal nenhuma, e a
-   camada de ponteiro precisa da opacidade livre para acender o selo no hover. */
-@keyframes selo-carimba {
-  from { rotate: calc(var(--giro, 0deg) - 22deg); scale: 0.72; }
 }
 @supports ((-webkit-mask-image: url("/img/logo-mono.svg")) or (mask-image: url("/img/logo-mono.svg"))) {
   .selo--entra { animation: selo-assenta var(--dur-cena) var(--ease-cena) 120ms both; }
 }
 
-/* --- camada 2 · scroll ---------------------------------------------------
-   Removida. A migração do selo (encolher e viajar para o canto conforme a
-   página desce) foi construída para o layout do hub, onde ela terminava
-   exatamente em cima do carimbo de um card de solução — o gesto tinha um
-   destino. Este site tem uma vertical só e não tem essa grade de cards: sem
-   destino, o selo apenas deslizava, e movimento sem motivo é o que faz uma
-   página parecer inquieta. O que sobrou é a entrada (camada 1), a revelação
-   do bloco de marca (camada 3) e a transição de rota (camada 4). */
+/* O cone. Um `conic-gradient` com o ápice ACIMA da borda superior, aberto
+   para BAIXO E À ESQUERDA (172deg a 212deg): o eixo não aponta para o chão,
+   aponta na diagonal. Isso não é gosto — facho vertical lê como gradiente de
+   fundo, facho inclinado lê como luz, porque tem uma borda que cruza a
+   composição em vez de acompanhá-la.
 
-/* --- camada 3 · revelação -----------------------------------------------
-   O mesmo gesto da entrada da capa, em miniatura, quando o bloco de marca
-   cruza a viewport. Uma ideia, duas expressões — e é `view()`, não `scroll()`:
-   o gatilho é o elemento entrar em cena, não a página descer, então quem
-   chega direto no meio da página por âncora vê o gesto acontecer, e não o
-   estado final já consumado. */
-@supports (animation-timeline: view()) {
+   O ápice está a 22%, sobre a coluna de TEXTO, e não sobre o cordão. Foi
+   tentado alinhado ao cordão (86%) e o formulário — que ocupa a metade
+   direita inteira da capa — comia o facho: sobrava um brilho de canto. Aqui o
+   cordão e o fio são o caminho elétrico, à direita; a lâmpada e a luz ficam à
+   esquerda, caindo sobre o título. Interruptor longe da luminária é como
+   qualquer parede funciona.
+
+   O texto por cima disto continua legível porque `.topo > .container` sobe
+   para z-index 1 e o par medido é 5.57:1 (ver o token --cone-b). Não é
+   dois retângulos com máscara em L (a receita do Aceternity que todo mundo já
+   viu): é um vértice só, na posição física da lâmpada.
+
+   O `mask` vertical é o que impede o facho de terminar num corte reto na base.
+   Nada aqui é elemento de LCP: o cone é fundo pintado por CSS no primeiro
+   frame, o LCP é o <h1> que fica dentro dele. */
+.cone {
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(92vh, 820px);
+  z-index: 0;
+  pointer-events: none;
+  background: conic-gradient(
+    from 172deg at 22% -10%,
+    transparent 0deg,
+    var(--cone-a) 11deg,
+    var(--cone-b) 20deg,
+    var(--cone-a) 29deg,
+    transparent 40deg
+  );
+  -webkit-mask: linear-gradient(to bottom, #000 0%, #000 26%, transparent 94%);
+          mask: linear-gradient(to bottom, #000 0%, #000 26%, transparent 94%);
+}
+/* Grão por cima do facho: é o que tira do cone a cara de gradiente de CSS e o
+   faz ler como luz atravessando ar com poeira. `soft-light` porque a banda
+   escura é onde o cone trabalha; 0.05 fica dentro da faixa 0.03–0.08. */
+.cone::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--grao);
+  opacity: 0.05;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+/* A abertura do facho na entrada: o cone cresce de uma fresta para a largura
+   cheia. Anima `scale` no eixo X a partir do ápice, que é o único jeito de a
+   luz parecer ABRIR em vez de aparecer. */
+@keyframes cone-abre { from { scale: 0.35 1; opacity: 0; } }
+@media (prefers-reduced-motion: no-preference) {
+  .cone { transform-origin: 22% 0; animation: cone-abre var(--dur-cena) var(--ease-cena) both; }
+}
+
+/* =========================================================================
+   2 · O FIO — a corrente descendo a página
+   ========================================================================= */
+
+/* `fixed` e não `absolute`: o fio é a espinha da página, precisa estar sempre
+   em cena crescendo, e não um traço que passa e some. z-index abaixo do
+   cabeçalho (20), acima do conteúdo. */
+.fio {
+  position: fixed;
+  right: var(--fio-x);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: 15;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--fio-cor) 12%, var(--fio-cor));
+  transform-origin: top;
+  /* Estado final ESTÁTICO como base: sem timeline de scroll, ou com movimento
+     reduzido, o que sobra é o fio inteiro desenhado — que continua sendo a
+     espinha da página. Começar em `scale: 1 0` deixaria o fallback com um fio
+     invisível, que é falha silenciosa. */
+  scale: 1 1;
+}
+@supports (animation-timeline: scroll()) {
   @media (prefers-reduced-motion: no-preference) {
-    .selo--revela {
-      animation: selo-carimba linear both;
-      animation-timeline: view();
-      animation-range: entry 10% cover 35%;
+    .fio {
+      animation: fio-desce linear both;
+      animation-timeline: scroll(root block);
     }
   }
 }
+@keyframes fio-desce { from { scale: 1 0.1; } }
 
-/* --- camada 4 · transição de rota ---------------------------------------
-   Cross-document, nativo, 0kb. Sem router, sem JavaScript: o navegador faz o
+/* Cada seção é um nó do circuito: acende quando o fio a alcança. `view()` e
+   não `scroll()` porque o gatilho é o elemento entrar em cena — quem chega
+   por âncora no meio da página vê o nó acender, e não o estado já consumado. */
+/* `position` porque o nó do circuito é absoluto dentro da seção.
+
+   `content-visibility` porque a troca de tema reescreve `color-scheme` na
+   raiz, o que invalida TODO light-dark() da página de uma vez — e agora há
+   mais superfície para repintar (o cone, o fio, os nós). Medido em 417
+   interações a 4x de CPU: sem isto, INP p75 192ms e pior caso 376ms; com,
+   160ms e 208ms. O teto da faixa Captação é 200ms.
+
+   `auto` no `contain-intrinsic-size` não é enfeite: sem ele a seção fora de
+   tela colapsa para a altura declarada, a barra de rolagem pula e a conta
+   trocaria INP por CLS — que é o pior dos dois negócios. Com `auto`, o
+   navegador guarda a altura real depois da primeira renderização. */
+.secao {
+  position: relative;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+.secao::before {
+  content: "";
+  position: absolute;
+  right: var(--fio-x);
+  top: var(--e-16);
+  width: 8px;
+  height: 8px;
+  /* O fio tem 2px e o nó 8px, ambos ancorados na mesma borda: sem os 3px o nó
+     fica descentrado do fio por metade da diferença. */
+  translate: 3px 0;
+  border-radius: 50%;
+  background: var(--no-cor);
+  box-shadow: 0 0 14px 3px var(--no-cor);
+  opacity: 0.7;
+  pointer-events: none;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .secao::before {
+      animation: no-acende linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 32%;
+    }
+  }
+}
+@keyframes no-acende { from { opacity: 0; scale: 0.4; } }
+
+/* O fio some quando não há calha nem borda livre — abaixo de 560px ele
+   dividiria os 8px de folga com o texto e leria como artefato de render, não
+   como circuito. */
+@media (max-width: 559px) {
+  .fio, .secao::before { display: none; }
+}
+
+/* =========================================================================
+   3 · O CORDAO — o interruptor, e a única coisa que muda a banda
+   ========================================================================= */
+
+/* Botão de verdade: arrastar é enriquecimento, clicar e Enter/Espaço são o
+   caminho garantido. Nasce `hidden` porque sem JS não faria nada — e botão
+   morto é pior que botão ausente. */
+.cordao {
+  position: relative;
+  flex: none;
+  width: 34px;
+  /* Encosta no topo do cabeçalho: é o que faz o fio parecer preso ao teto e
+     não flutuando. A margem negativa cancela o padding da linha. */
+  align-self: stretch;
+  min-height: 44px;
+  margin-block: calc(-1 * var(--e-3));
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: grab;
+  /* `none` e não `pan-y`: o arrasto do cordão É vertical, e `pan-y` devolve
+     o gesto vertical ao navegador — a metáfora morreria justamente no celular,
+     que é a maioria do tráfego. O alvo tem 34px de largura num cabeçalho que
+     rola embora: ninguém rola a página a partir daqui, e o toque simples
+     continua alternando o tema como qualquer botão. */
+  touch-action: none;
+}
+.cordao[hidden] { display: none; }
+.cordao:active { cursor: grabbing; }
+.cordao__fio {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: calc(50% + var(--puxao, 0px));
+  width: 2px;
+  translate: -50% 0;
+  background: var(--borda);
+}
+.cordao__bulbo {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + var(--puxao, 0px));
+  width: 13px;
+  height: 13px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: var(--bulbo-apagado);
+}
+/* Aceso = tema claro. O bulbo é a única fonte de luz da interface, e o estado
+   dele é redundante com o rótulo do botão — cor nunca é o único sinal. */
+.cordao[data-aceso] .cordao__bulbo {
+  background: var(--bulbo-aceso);
+  box-shadow: 0 0 0 3px var(--bulbo-halo), 0 0 18px 5px var(--bulbo-halo-longe);
+}
+/* Sem transição durante o arrasto: `--puxao` muda a cada frame, e transição em
+   algo que segue o dedo lê como atraso, não como suavidade. Fora do arrasto,
+   a mola devolve o bulbo ao lugar. */
+.cordao:not([data-arrastando]) .cordao__fio,
+.cordao:not([data-arrastando]) .cordao__bulbo {
+  transition: height var(--dur-base) var(--ease-mola), top var(--dur-base) var(--ease-mola),
+    background-color var(--dur-rapida) ease, box-shadow var(--dur-rapida) ease;
+}
+
+/* Trocar o tema reescreve `color-scheme` na raiz, e TODA declaração de
+   `transition` da página dispara de uma vez: cada botão, cada chip e cada
+   link começa a interpolar cor no mesmo frame do clique. Medido a 4x de CPU
+   em 426 interações, isso levava o pior caso a 392ms; suprimido, 216ms — e o
+   teto da faixa Captação é 200ms.
+
+   Não é só conta: vinte elementos cross-fading de cor ao mesmo tempo lê como
+   borrão, e a troca instantânea lê como um interruptor. O gesto ganha nos
+   dois lados.
+
+   O atributo cai depois de dois rAF — um para o navegador aplicar o novo tema,
+   outro para o frame seguinte já sair com as transições de volta. */
+:root[data-trocando-tema] *,
+:root[data-trocando-tema] *::before,
+:root[data-trocando-tema] *::after {
+  transition: none !important;
+}
+
+/* =========================================================================
+   4 · TRANSICAO DE ROTA — o circuito não se apaga entre páginas
+   ========================================================================= */
+
+/* Cross-document, nativo, 0kb. Sem router, sem JavaScript: o navegador faz o
    cruzamento entre dois documentos estáticos sozinho.
 
-   O único elemento nomeado é a marca do cabeçalho. No hub havia um segundo
-   par (selo do card ↔ capa da vertical) montado a partir do slug; aqui não
-   existe grade de cards, e nomear mais elementos só aumentaria a chance de
-   colisão — um `view-transition-name` repetido no mesmo documento aborta a
-   transição inteira, em silêncio. */
+   Dois elementos nomeados, e só dois: a marca e o fio. Um
+   `view-transition-name` repetido no mesmo documento aborta a transição
+   inteira, em silêncio — então nomear mais é aumentar risco sem ganho. */
 @view-transition { navigation: auto; }
 
 ::view-transition-group(*) {
@@ -594,17 +882,22 @@ img, svg { max-width: 100%; height: auto; display: block; }
 @keyframes sai-root { to { opacity: 0; } }
 @keyframes entra-root { from { opacity: 0; } }
 
-/* A marca do cabeçalho atravessa TODA navegação sem se mexer: enquanto o resto
-   troca, ela é o ponto fixo. Custa uma linha. */
 .marca { view-transition-name: marca; }
+/* O fio atravessa a navegação sem piscar: é o mesmo circuito, outra página. */
+.fio { view-transition-name: fio; }
 
 @media (prefers-reduced-motion: reduce) {
   /* O `animation-duration: 0.01ms !important` lá de cima não desliga animação
      de linha do tempo de scroll — em timeline de progresso a duração vira
-     PROPORÇÃO, e 0.01ms grudaria o selo no estado final já no topo da página.
-     Aqui ele é desligado de verdade, e o que sobra é o estado final estático:
-     a capa composta, com o selo parado no lugar de onde ele teria partido. */
-  .selo { animation: none !important; scale: none !important; translate: none !important; }
+     PROPORÇÃO, e 0.01ms grudaria o elemento no estado final já no topo da
+     página. Aqui eles são desligados de verdade, e o que sobra é o estado
+     final estático: o cone pintado, o fio inteiro, os nós acesos. */
+  .selo, .fio, .cone, .secao::before {
+    animation: none !important;
+    scale: none !important;
+    translate: none !important;
+  }
+  .secao::before { translate: 3px 0 !important; }
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) { animation: none !important; }

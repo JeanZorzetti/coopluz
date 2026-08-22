@@ -40,6 +40,18 @@ const NAV = [
       WhatsApp
       <span class="visualmente-oculto">— abre em nova aba</span>
     </a>
+
+    {/* O interruptor da página. Nasce `hidden`: sem JS não faria nada, e botão
+         morto é pior que botão ausente — o script revela, e só se light-dark()
+         existir (sem ela o tema escuro nem chega a ser aplicado).
+         É um <button> de verdade: o arrasto é enriquecimento, o clique e o
+         Enter/Espaço são o caminho garantido. O estado vai em aria-pressed, e
+         o rótulo muda junto com ele — o brilho do bulbo nunca é o único sinal. */}
+    <button class="cordao" type="button" aria-pressed="false" hidden>
+      <span class="cordao__fio" aria-hidden="true"></span>
+      <span class="cordao__bulbo" aria-hidden="true"></span>
+      <span class="visualmente-oculto cordao__rotulo">Apagar a página (tema escuro)</span>
+    </button>
     <nav class="nav" aria-label="Navegação">
       <ul class="nav__lista" role="list">
         {
@@ -66,12 +78,22 @@ const NAV = [
     .cabecalho { position: sticky; top: 0; }
   }
   .cabecalho__linha {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--e-4);
     padding-block: var(--e-3);
+  }
+  /* Preso ao topo da primeira linha, sempre — `height` fixa e não `bottom: 0`
+     porque no celular esta caixa contém TAMBÉM a linha da navegação, e o
+     cordão só pende da primeira. 56px = padding-block (12) + alvo (44). */
+  .cordao {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 56px;
   }
   .marca {
     display: inline-flex;
@@ -115,6 +137,9 @@ const NAV = [
     text-decoration: none;
   }
   .cabecalho__zap:hover { background: var(--cinza-100); }
+  /* Reserva o corredor do cordão. Ele é absoluto e não empurra ninguém, então
+     sem esta margem ele cairia em cima da pílula do WhatsApp a 360px. */
+  .cabecalho__zap { margin-right: 42px; }
 
   /* 3 itens cabem numa linha mesmo no celular — sem o scroll horizontal que o
      hub precisa para 6 verticais. */
@@ -166,3 +191,104 @@ const NAV = [
     box-shadow: inset 0 -3px 0 var(--acento);
   }
 </style>
+
+<script>
+  const cordao = document.querySelector<HTMLButtonElement>(".cordao");
+
+  // Mesma guarda do seletor que ele substitui: sem light-dark() o tema escuro
+  // está atrás de @supports e nem é aplicado, então o botão prometeria e não
+  // entregaria.
+  if (cordao && CSS.supports("color", "light-dark(#fff, #000)")) {
+    const raiz = document.documentElement;
+    const rotulo = cordao.querySelector<HTMLElement>(".cordao__rotulo")!;
+    const escuroDoSistema = matchMedia("(prefers-color-scheme: dark)");
+    const estaEscuro = () => (raiz.dataset.tema ? raiz.dataset.tema === "escuro" : escuroDoSistema.matches);
+
+    const sincronizar = () => {
+      const escuro = estaEscuro();
+      // Aceso = página clara. Três sinais para o mesmo estado: o brilho (visual),
+      // o aria-pressed (programático) e o rótulo (texto).
+      cordao.toggleAttribute("data-aceso", !escuro);
+      cordao.setAttribute("aria-pressed", String(escuro));
+      rotulo.textContent = escuro ? "Acender a página (tema claro)" : "Apagar a página (tema escuro)";
+      const cor = escuro ? "#051419" : "#0b3d47";
+      document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", cor));
+    };
+
+    const alternar = () => {
+      // Trava as transições durante a troca: sem isso, todo botão e chip da
+      // página interpola cor no mesmo frame do clique. Ver o comentário em
+      // global.css — vale INP e vale nitidez.
+      raiz.dataset.trocandoTema = "";
+      raiz.dataset.tema = estaEscuro() ? "claro" : "escuro";
+      try {
+        localStorage.setItem("tema", raiz.dataset.tema);
+      } catch {}
+      sincronizar();
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => delete raiz.dataset.trocandoTema)
+      );
+    };
+
+    cordao.hidden = false;
+    sincronizar();
+
+    let suprimirClique = false;
+    cordao.addEventListener("click", () => {
+      // Um arrasto que passou do limiar já alternou, e o navegador dispara um
+      // clique logo depois — sem esta trava ele alternaria de volta e o gesto
+      // não faria nada. Bandeira em vez de stopImmediatePropagation porque a
+      // ordem entre listeners do mesmo elemento depende da ordem de registro,
+      // e depender disso é o tipo de sutileza que quebra em silêncio.
+      if (suprimirClique) {
+        suprimirClique = false;
+        return;
+      }
+      alternar();
+    });
+
+    escuroDoSistema.addEventListener("change", () => {
+      if (!raiz.dataset.tema) sincronizar();
+    });
+
+    // --- camada de ponteiro: puxar o cordão -------------------------------
+    // Enriquecimento puro. Nada aqui é alcançável só por arrasto.
+    const LIMIAR = 18;
+    const MAX = 34;
+    let inicioY: number | null = null;
+    let arrastou = false;
+
+    cordao.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      inicioY = e.clientY;
+      arrastou = false;
+      cordao.setPointerCapture(e.pointerId);
+    });
+
+    cordao.addEventListener("pointermove", (e) => {
+      if (inicioY === null) return;
+      const dy = Math.max(0, Math.min(MAX, e.clientY - inicioY));
+      if (dy > 4) {
+        arrastou = true;
+        cordao.setAttribute("data-arrastando", "");
+      }
+      // Escreve numa custom property e deixa o CSS desenhar: o fio estica e o
+      // bulbo desce lendo o mesmo --puxao, sem o JS tocar em geometria.
+      cordao.style.setProperty("--puxao", dy + "px");
+    });
+
+    const soltar = (e: PointerEvent) => {
+      if (inicioY === null) return;
+      const dy = Math.max(0, e.clientY - inicioY);
+      inicioY = null;
+      cordao.removeAttribute("data-arrastando");
+      // Devolve o controle da geometria ao CSS, que agora tem a mola ligada.
+      cordao.style.removeProperty("--puxao");
+      if (arrastou) suprimirClique = true;
+      if (dy >= LIMIAR) alternar();
+    };
+
+    cordao.addEventListener("pointerup", soltar);
+    cordao.addEventListener("pointercancel", soltar);
+  }
+</script>

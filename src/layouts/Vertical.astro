@@ -63,6 +63,10 @@ const schema = [
 
 <Base titulo={solucao.titulo} descricao={solucao.descricao} schema={schema}>
   <section class="topo">
+    {/* O facho. Fundo pintado por CSS no primeiro frame — nunca é o elemento
+         de LCP, que é o <h1> dentro dele. `aria-hidden` porque não acrescenta
+         informação nenhuma a quem lê por leitor de tela. */}
+    <span class="cone" aria-hidden="true"></span>
     {/* A marca vira textura da capa: o mesmo símbolo do cabeçalho, grande,
          recortando um gradiente da própria página. `aria-hidden` porque não
          acrescenta informação — quem lê por leitor de tela já ouviu a marca no

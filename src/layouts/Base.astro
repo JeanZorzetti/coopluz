@@ -188,7 +188,7 @@ const grafo: Record<string, unknown>[] = [
          eixo `wght`: a Outfit não tem `wdth`, o que também corta bytes. */}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=optional" rel="stylesheet" />
     <meta name="theme-color" content="#0b3d47" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#051419" media="(prefers-color-scheme: dark)" />
     {/* As duas <meta> acima seguem o sistema operacional de graça, sem JS —
@@ -244,6 +244,12 @@ const grafo: Record<string, unknown>[] = [
   </head>
   <body>
     <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+    {/* A corrente. Cresce com o scroll via `animation-timeline` nativo —
+         0kb de JS — e atravessa a troca de rota sem piscar, porque carrega um
+         `view-transition-name`. Sem suporte a timeline de scroll, ou com
+         movimento reduzido, ele aparece inteiro e parado: continua sendo a
+         espinha da página, nunca some. */}
+    <span class="fio" aria-hidden="true"></span>
     <Header />
     <main id="conteudo" tabindex="-1">
       {/* O BreadcrumbList do @graph acima descrevia uma trilha que não existia

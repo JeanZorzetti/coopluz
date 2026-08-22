@@ -1,0 +1,38 @@
+[
+  {
+    "data": "2026-08-22",
+    "projeto": "coopluz",
+    "pagina": "/ (e toda capa: /parceiro, /sobre)",
+    "direcao": "circuito",
+    "tipo": "custom",
+    "eixos": { "materia": "luz", "motor": "estado", "banda": "ambas" },
+    "estrutura": "percurso",
+    "nota_eixos": "Banda 'ambas' e motor 'estado' andam juntos aqui: o interruptor (cordao) e quem escolhe a luminosidade da pagina, entao a banda nao e uma decisao fixa da direcao — e o gesto principal. Nenhuma entrada do catalogo cobre isso; a mais proxima e Camara Escura (luz/ponteiro/escura), que fixa o escuro e usa o ponteiro como motor.",
+    "camadas": {
+      "entrada": "o cone abre a partir do apice (scale X) e o selo assenta girando",
+      "scroll": "o fio desce com animation-timeline: scroll(root) e cada secao acende um no com view()",
+      "ponteiro": "arrastar o cordao para baixo alterna o tema; clique e Enter fazem o mesmo",
+      "transicao": "View Transitions cross-document; marca e fio atravessam a navegacao"
+    },
+    "verbo": "conduzir corrente — abrir, descer, acender, nao apagar entre paginas",
+    "substitui": "costura (luz/estado/media), que herdara a macroestrutura do hub autogestor e perdera a camada de scroll junto com a grade de cards que a justificava",
+    "custo": {
+      "faixa": "captacao",
+      "js_gzip_kb": 1.14,
+      "deps_novas": [],
+      "lcp_s": { "360": 1.22, "1440": 1.62, "alvo": 2.0 },
+      "cls": 0,
+      "inp_ms": { "p75": 192, "p98": 232, "mediana": 176, "teto": 200 }
+    },
+    "gates_corrigidos": [
+      "G22 contraste — o cone clareava o fundo e derrubava o texto de meio-tom (.olho em --marca) para 2.86:1; alfa do facho baixada ate 4.65:1",
+      "G22 (pre-existente, corrigido) — .beneficios__item--acento span usava --cinza-600, primitivo que nao inverte no escuro: 1.86:1",
+      "G6 token fechado — hex e rgba soltos na regra do bulbo viraram --bulbo-aceso/--bulbo-halo",
+      "G26 CLS — a Outfit trocava depois da pintura e o H1 rebobinava a quebra de linha; font-display: optional",
+      "empilhamento — o cone (posicionado, z-index 0) pintava por cima do conteudo estatico da capa"
+    ],
+    "gates_nao_atingidos": [
+      "G3 salto tipografico — 4x (t-3xl 4rem sobre corpo de 1rem), abaixo dos 5x pedidos. A 5rem o H1 de 76 caracteres ocupa cinco linhas e empurra o formulario para fora da primeira tela num notebook de 900px. Pagina de captacao: enterrar o formulario custa mais do que o salto paga."
+    ]
+  }
+]
