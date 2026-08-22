@@ -63,7 +63,10 @@ const schema = [
     author: { "@id": abs("/#operadora") },
     publisher: { "@id": abs("/#operadora") },
     mainEntityOfPage: { "@id": `${url}#pagina` },
-    about: { "@id": abs(`/${solucao.slug}#servico`) },
+    // Mesmo motivo do link no corpo, abaixo: o Service mora em `/#servico`
+    // (Vertical.astro), então `/coopluz#servico` era referência pendurada —
+    // um @id que nenhum nó do grafo define.
+    about: { "@id": abs("/#servico") },
   },
   ...(perguntas.length
     ? [
@@ -95,7 +98,10 @@ const schema = [
   <article class="secao post">
     <div class="container post__grade">
       <div class="post__corpo">
-        <p class="olho"><a href={`/${solucao.slug}`}>{solucao.nome}</a></p>
+        {/* `/` e não `/${solucao.slug}`: neste site a vertical mora na home
+             (ver Vertical.astro) — `/coopluz` é o caminho do hub autogestor, de
+             onde este repositório foi forkado, e aqui devolve 404. */}
+        <p class="olho"><a href="/">{solucao.nome}</a></p>
         <h1>{post.data.titulo}</h1>
         {/* A regra do Fio B muda todo janeiro: sem data na tela, quem lê em
              2027 não tem como saber se o número ainda vale. */}

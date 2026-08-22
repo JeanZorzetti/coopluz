@@ -39,4 +39,4 @@ Podem participar residências, comércios e pequenas indústrias atendidos pela 
 
 Não. A Equatorial Goiás continua sendo sua distribuidora, a fatura continua chegando no seu nome e a titularidade da conta não muda — o que muda é só o valor, com os créditos de compensação entrando como desconto. Não há taxa de adesão nem multa para cancelar; ao sair, você paga apenas o saldo residual dos créditos já usados e ainda não faturados.
 
-Quer saber se a sua conta se qualifica para o desconto de 20%? [Peça uma análise gratuita da sua fatura](/coopluz).
+Quer saber se a sua conta se qualifica para o desconto de 20%? [Peça uma análise gratuita da sua fatura](/).

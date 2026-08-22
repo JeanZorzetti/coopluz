@@ -41,4 +41,4 @@ Dá, associando-se a uma cooperativa de energia por compensação em vez de inst
 
 Também pesa, e é um custo separado do Fio B: a ANEEL define mensalmente uma bandeira — verde, amarela ou vermelha — que adiciona um valor por kWh consumido conforme o custo de geração de energia no país naquele mês, e essa cobrança incide sobre qualquer consumidor, com ou sem geração própria. Quem está numa cooperativa de compensação com desconto fixo sente menos esse efeito, porque a bandeira incide sobre uma fatura que já chega menor.
 
-Quer um desconto que não muda com a tabela do Fio B? [Peça a análise da sua conta de luz](/coopluz).
+Quer um desconto que não muda com a tabela do Fio B? [Peça a análise da sua conta de luz](/).
