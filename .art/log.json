@@ -5,8 +5,12 @@
     "pagina": "/ (e toda capa: /parceiro, /sobre)",
     "direcao": "circuito",
     "tipo": "custom",
-    "eixos": { "materia": "luz", "motor": "estado", "banda": "ambas" },
-    "estrutura": "percurso",
+    "eixos": {
+      "materia": "luz",
+      "motor": "estado",
+      "banda": "ambas"
+    },
+    "estrutura": "inalterada (a pilha de .secao herdada do hub)",
     "nota_eixos": "Banda 'ambas' e motor 'estado' andam juntos aqui: o interruptor (cordao) e quem escolhe a luminosidade da pagina, entao a banda nao e uma decisao fixa da direcao — e o gesto principal. Nenhuma entrada do catalogo cobre isso; a mais proxima e Camara Escura (luz/ponteiro/escura), que fixa o escuro e usa o ponteiro como motor.",
     "camadas": {
       "entrada": "o cone abre a partir do apice (scale X) e o selo assenta girando",
@@ -18,11 +22,21 @@
     "substitui": "costura (luz/estado/media), que herdara a macroestrutura do hub autogestor e perdera a camada de scroll junto com a grade de cards que a justificava",
     "custo": {
       "faixa": "captacao",
-      "js_gzip_kb": 1.14,
+      "js_gzip_kb": 1.22,
       "deps_novas": [],
-      "lcp_s": { "360": 1.22, "1440": 1.62, "alvo": 2.0 },
+      "lcp_s": {
+        "360": 1.22,
+        "1440": 1.62,
+        "alvo": 2
+      },
       "cls": 0,
-      "inp_ms": { "p75": 192, "p98": 232, "mediana": 176, "teto": 200 }
+      "inp_ms": {
+        "p75": 192,
+        "p98": 232,
+        "mediana": 176,
+        "teto": 200
+      },
+      "nota_peso": "Delta de peso TOTAL da pagina (HTML + CSS e JS inlinados) contra o HEAD anterior: 18259b vs 17013b gzip. Nao e so JS — o Astro inlinou os scripts, entao nao ha .js separado para pesar."
     },
     "gates_corrigidos": [
       "G22 contraste — o cone clareava o fundo e derrubava o texto de meio-tom (.olho em --marca) para 2.86:1; alfa do facho baixada ate 4.65:1",
@@ -32,7 +46,9 @@
       "empilhamento — o cone (posicionado, z-index 0) pintava por cima do conteudo estatico da capa"
     ],
     "gates_nao_atingidos": [
-      "G3 salto tipografico — 4x (t-3xl 4rem sobre corpo de 1rem), abaixo dos 5x pedidos. A 5rem o H1 de 76 caracteres ocupa cinco linhas e empurra o formulario para fora da primeira tela num notebook de 900px. Pagina de captacao: enterrar o formulario custa mais do que o salto paga."
-    ]
+      "G3 salto tipografico — 4x (t-3xl 4rem sobre corpo de 1rem), abaixo dos 5x pedidos. A 5rem o H1 de 76 caracteres ocupa cinco linhas e empurra o formulario para fora da primeira tela num notebook de 900px. Pagina de captacao: enterrar o formulario custa mais do que o salto paga.",
+      "G33 estrutura-nao-repete — a macroestrutura e a mesma do hub e a mesma da direcao anterior. Corrigir isso exige reescrever o HTML das paginas (a estrutura Percurso proposta como direcao C), que nao foi feito nesta entrega."
+    ],
+    "nota_estrutura": "A macroestrutura NAO foi trocada. O ritmo de secoes continua identico ao do hub autogestor: .secao / .secao--marca / .secao / .secao--suave, com .grade auto-fit e .cartao. O que mudou foi materia (luz), coreografia (as 4 camadas) e banda (o interruptor). O fio da a pagina um eixo continuo, que e o gesto do Percurso, mas sem reescrever os blocos ele nao e a estrutura Percurso — e uma costura por cima da estrutura antiga."
   }
 ]
