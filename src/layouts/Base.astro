@@ -42,7 +42,11 @@ const {
 } = Astro.props;
 
 const site = Astro.site ?? new URL("https://coopluz.roilabs.com.br");
-const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/", site).href;
+// `trailingSlash: "never"` no astro.config.mjs também vale pra home: sem o
+// `.replace` final, `new URL("/", site)` sempre devolve barra ("https://x/"),
+// que diverge do sitemap.xml e do resto do site (todas as outras páginas já
+// saem sem barra, porque o path delas não é "/").
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/", site).href.replace(/\/$/, "");
 const abs = (p: string) => new URL(p, site).href;
 
 // Duas organizações, papéis diferentes e explícitos (spec 003, FR-014):
