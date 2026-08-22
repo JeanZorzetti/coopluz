@@ -24,10 +24,12 @@ const perguntas = [
   },
 ];
 
+const site = Astro.site ?? new URL("https://coopluz.roilabs.com.br");
+
 const schema = [
   {
     "@type": "FAQPage",
-    "@id": new URL("/sobre#faq", Astro.site ?? "https://coopluz.roilabs.com.br").href,
+    "@id": new URL("/sobre#faq", site).href,
     mainEntity: perguntas.map((q) => ({
       "@type": "Question",
       name: q.p,
