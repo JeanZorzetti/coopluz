@@ -117,7 +117,7 @@ padroes = [
   { re: /zerar (sua |a )?conta/i,     motivo: "FR-012: promessa fora do bloco de parceiro" },
 ]
 
-excecoes = [ { arquivo, trecho, motivo } ]   // 6 entradas, cada uma citando o FR
+excecoes = [ { arquivo, trecho, motivo } ]   // 7 entradas, cada uma citando o FR
 ```
 
 A falha imprime arquivo, linha e motivo — quem tropeçar nela em um PR futuro lê
