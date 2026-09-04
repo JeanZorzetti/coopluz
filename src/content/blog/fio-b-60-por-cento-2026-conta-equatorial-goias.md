@@ -35,7 +35,7 @@ Sim, para quem está na regra GD II: o percentual sobe todo mês de janeiro até
 
 ## Dá pra escapar desse aumento sem instalar sistema próprio?
 
-Dá, associando-se a uma cooperativa de energia por compensação em vez de instalar geração própria: a cooperativa já absorve essa complexidade regulatória e entrega um desconto fixo, sem o proprietário precisar recalcular a economia a cada janeiro. É o [modelo que a Coopluz opera em Goiás](/blog/reduzir-conta-equatorial-sem-placa-solar), com 20% de desconto todo mês, sem obra e sem equipamento no imóvel.
+Dá, aderindo a uma cooperativa de energia por compensação em vez de instalar geração própria: a cooperativa já absorve essa complexidade regulatória e entrega um desconto fixo, sem o proprietário precisar recalcular a economia a cada janeiro. É o [modelo que a Coopluz opera em Goiás](/blog/reduzir-conta-equatorial-sem-placa-solar), com 20% de desconto todo mês, sem obra e sem equipamento no imóvel.
 
 ## O sistema de bandeiras tarifárias também pesa na conta?
 

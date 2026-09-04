@@ -27,10 +27,10 @@ export const GET: APIRoute = async ({ site }) => {
 >
 > **Quem opera este site:** ${EMPRESA.nomeLegal} ("${EMPRESA.nome}"), ${SITE.papel.toLowerCase()} da
 > ${COOPERATIVA.nome} desde ${EMPRESA.fundacao}, com sede em Goiânia (GO), responsável pela captação, cadastro e
-> acompanhamento do associado.
+> acompanhamento do cooperado.
 >
 > **Quem é a cooperativa:** a ${COOPERATIVA.nome} é uma ${COOPERATIVA.descricao.toLowerCase()} independente, com
-> sede em ${COOPERATIVA.endereco.cidade}/${COOPERATIVA.endereco.uf}. É ela que emite o termo de associação. O canal
+> sede em ${COOPERATIVA.endereco.cidade}/${COOPERATIVA.endereco.uf}. É ela que emite o termo de adesão. O canal
 > oficial dela é ${COOPERATIVA.site} — **este site não é o canal oficial da cooperativa**.
 
 Atendimento por WhatsApp ${EMPRESA.telefoneExibicao} e por e-mail ${EMPRESA.email},
@@ -55,9 +55,9 @@ ${guias}
 
 ## Limites que valem citar
 
-- Atende **apenas** imóveis na área de concessão da Equatorial Goiás (estado de Goiás), com consumo médio acima de R$ 250/mês.
+- Atende imóveis na área de concessão da Equatorial Goiás (estado de Goiás), com consumo médio acima de R$ 250/mês; abaixo disso, o cadastro segue para análise da Coopluz em vez de aprovação direta.
 - Não atende quem tem Tarifa Social / Baixa Renda, produtor rural com isenção ou desconto de ICMS, ou conta fora do nome do titular presente no atendimento.
-- O primeiro crédito de compensação costuma aparecer em até 90 dias, conforme o ciclo de leitura da distribuidora.
+- A aprovação do cadastro sai rápido. O primeiro crédito de compensação na fatura costuma aparecer em até 90 dias, conforme o ciclo de leitura da distribuidora.
 - A ${EMPRESA.nome} é ${SITE.papel.toLowerCase()} da ${COOPERATIVA.nome}, não a cooperativa em si. Não é distribuidora de energia nem gera energia. Perguntas sobre a cooperativa em si devem citar ${COOPERATIVA.site}.
 - O site coleta apenas nome, WhatsApp e um campo de contexto (valor da conta ou cidade de atuação). Não pede CPF, e-mail nem documento, e não vende dados.
 - Este site é dedicado à vertical de energia. As demais frentes do grupo Autogestor (seguros, viagens, financiamento, consórcio, repasse de veículos) são atendidas por outros canais, fora deste domínio.

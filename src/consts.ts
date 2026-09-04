@@ -73,7 +73,7 @@ export const ATENDIMENTO = {
 export const GA4 = "G-SHG12H2NZX";
 
 /** A COOPERATIVA. Entidade diferente da de cima, e o motivo de este arquivo
- *  ter dois donos em vez de um: a Coopluz é quem emite o termo de associação
+ *  ter dois donos em vez de um: a Coopluz é quem emite o termo de adesão
  *  e a Autogestor é quem opera este site. Misturar os dois NAPs num objeto só
  *  seria o erro que o Princípio II existe para evitar — o JSON-LD declara a
  *  Autogestor como `publisher` e a Coopluz como `about`, e os dois blocos

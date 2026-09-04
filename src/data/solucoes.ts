@@ -32,7 +32,7 @@ export const COOPLUZ: Solucao = {
   resumo: "20% de desconto na conta da Equatorial Goiás, sem obra e sem placa no telhado.",
   titulo: "20% de desconto na conta de luz da Equatorial Goiás | Coopluz Goiás",
   descricao:
-    "Associe-se à Coopluz e pague 20% menos na conta da Equatorial Goiás. Sem instalar placa solar, sem obra, sem taxa de adesão e sem multa para sair.",
+    "Torne-se cooperado da Coopluz e pague 20% menos na conta da Equatorial Goiás. Sem instalar placa solar, sem obra, sem taxa de adesão e sem multa para sair.",
   abrangencia: "GO",
   provedor: "Coopluz",
   campo: {
@@ -41,7 +41,7 @@ export const COOPLUZ: Solucao = {
     opcoes: ["Até R$ 250", "R$ 251 a R$ 500", "R$ 501 a R$ 1.000", "Acima de R$ 1.000"],
     avisoPara: {
       opcao: "Até R$ 250",
-      texto: "Abaixo de R$ 250 o desconto não compensa a operação — a gente prefere dizer isso antes de você preencher o resto.",
+      texto: "Abaixo de R$ 250 o seu pedido segue para análise da Coopluz em vez de aprovação direta — a gente prefere dizer isso antes de você preencher o resto.",
     },
   },
   cta: "Quero pagar 20% menos",

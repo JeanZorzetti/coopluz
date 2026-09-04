@@ -223,9 +223,9 @@ const id = `lead-${solucao.slug}-${instancia}`;
       else el.removeAttribute("aria-describedby");
     };
 
-    // Aviso não-bloqueante: a opção escolhida provavelmente não compensa (ex.:
-    // conta de luz abaixo do mínimo da Coopluz), mas a pessoa decide se envia
-    // mesmo assim — isto só antecipa a ressalva que já está no FAQ.
+    // Aviso não-bloqueante: a opção escolhida entra em análise da Coopluz em vez
+    // de seguir direto (ex.: conta de luz abaixo do mínimo), mas a pessoa decide
+    // se envia mesmo assim — isto só antecipa a ressalva que já está no FAQ.
     const select = form.querySelector<HTMLSelectElement>("select[data-aviso-opcao]");
     if (select) {
       select.addEventListener("change", () => {

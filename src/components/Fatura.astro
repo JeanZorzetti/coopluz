@@ -40,7 +40,7 @@ const rubricas = [
 ];
 
 /* Histórico de créditos, em kWh. Os três primeiros meses são zero de
-   propósito: é a unidade ANTES de se associar. A subida a partir do quarto mês
+   propósito: é a unidade ANTES da adesão. A subida a partir do quarto mês
    é o passo 2 acontecendo dentro do próprio documento. Altura em % do maior. */
 const historico = [
   { mes: "abr", kwh: 0 }, { mes: "mai", kwh: 0 }, { mes: "jun", kwh: 0 },
@@ -52,9 +52,9 @@ const teto = Math.max(...historico.map((m) => m.kwh));
 
 const passos = [
   {
-    titulo: "Você se associa",
+    titulo: "Você faz a adesão",
     texto:
-      "Cadastro digital com uma fatura recente em mãos. Sem visita técnica, sem análise de crédito e sem consulta ao SPC ou Serasa. A sua unidade consumidora passa a constar como associada.",
+      "Cadastro digital com uma fatura recente em mãos. Sem visita técnica, sem análise de crédito e sem consulta ao SPC ou Serasa. A sua unidade consumidora passa a constar como vinculada à cooperativa.",
   },
   {
     titulo: "A fazenda gera",
@@ -94,7 +94,7 @@ const passos = [
               Fatura de energia<br />
               <span>unidade consumidora · exemplo · ref. 03/2026</span>
             </p>
-            <p class="folha__carimbo">Unidade<br />associada</p>
+            <p class="folha__carimbo">Unidade<br />vinculada</p>
           </div>
 
           <div class="folha__historico">

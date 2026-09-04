@@ -16,15 +16,15 @@ const perguntas = [
   },
   {
     p: "Quem pode participar?",
-    r: "Residências, comércios e pequenas indústrias atendidos pela Equatorial Goiás com consumo médio acima de R$ 250 por mês. Abaixo desse valor o desconto não compensa a operação, e a gente diz isso antes de você assinar.",
+    r: "Residências, comércios e pequenas indústrias atendidos pela Equatorial Goiás com consumo médio acima de R$ 250 por mês. Abaixo desse valor o cadastro segue para análise da Coopluz, e a gente diz isso antes de você assinar.",
   },
   {
     p: "Em quanto tempo o desconto aparece na fatura?",
-    r: "O primeiro crédito costuma aparecer em até 90 dias. O prazo depende do ciclo de leitura da distribuidora e do processo de vinculação da unidade consumidora à cooperativa.",
+    r: "A aprovação do cadastro sai rápido. Já o primeiro crédito na fatura costuma aparecer em até 90 dias, porque depende do ciclo de leitura da distribuidora e do processo de vinculação da unidade consumidora à cooperativa.",
   },
   {
     p: "Meu nome está negativado. Posso participar?",
-    r: "Pode. A associação à Coopluz não passa por consulta ao SPC ou ao Serasa e não há análise de crédito: você não está contratando financiamento nem comprando equipamento, só recebendo créditos de energia na fatura que já é sua. O que impede a adesão é a conta estar em nome de outra pessoa, ter Tarifa Social ou isenção de ICMS de produtor rural, ou estar com irregularidade junto à distribuidora.",
+    r: "Pode. A adesão à Coopluz não passa por consulta ao SPC ou ao Serasa e não há análise de crédito: você não está contratando financiamento nem comprando equipamento, só recebendo créditos de energia na fatura que já é sua. O que impede a adesão é a conta estar em nome de outra pessoa, ter Tarifa Social ou isenção de ICMS de produtor rural, ou estar com irregularidade junto à distribuidora.",
   },
   {
     p: "Tem taxa de adesão, fidelidade ou multa para sair?",
@@ -44,7 +44,7 @@ const perguntas = [
 <Vertical
   solucao={solucao}
   h1="Pague 20% menos na conta da Equatorial Goiás, sem obra e sem placa no telhado"
-  chamada="A Coopluz é uma cooperativa de energia por compensação. Você se associa, recebe créditos de fazendas solares cooperadas e o desconto entra direto na sua fatura. Sem instalar nada, sem trocar de distribuidora e sem taxa de adesão."
+  chamada="A Coopluz é uma cooperativa de energia por compensação. Você se torna cooperado, recebe créditos de fazendas solares cooperadas e o desconto entra direto na sua fatura. Sem instalar nada, sem trocar de distribuidora e sem taxa de adesão."
   perguntas={perguntas}
   tituloForm="Veja se você se qualifica"
   rotuloBarra="Ver meu desconto"
@@ -105,12 +105,11 @@ const perguntas = [
           <h3>Ainda não serve se…</h3>
           <ul class="lista-limpa fora" role="list">
             <li>O imóvel fica fora da área da Equatorial Goiás</li>
-            <li>A conta média está abaixo de R$ 250 — o desconto não compensa a operação</li>
             <li>Você já tem geração própria compensando 100% do consumo</li>
           </ul>
           <p class="nota">
-            Nesses casos a gente diz na primeira conversa, antes de qualquer assinatura. Vender associação que não
-            economiza só gera cancelamento.
+            Conta média abaixo de R$ 250? Ainda dá para pedir — o cadastro segue para análise da Coopluz em vez de
+            aprovação direta, e a gente diz isso na primeira conversa, antes de qualquer assinatura.
           </p>
         </div>
       </div>
@@ -206,7 +205,7 @@ const perguntas = [
       <p class="chamada">
         A Coopluz é uma cooperativa independente com sede em Goiânia e opera em parceria com o Sicoob Secovicred.
         A Autogestor é representante autorizado: é com a gente que você fala e é a Coopluz que emite o
-        contrato de associação. Nenhuma das três consulta SPC ou Serasa para associar você.
+        termo de adesão. Nenhuma das três consulta SPC ou Serasa para o seu cadastro.
       </p>
       <p class="chamada">
         No material institucional da própria Coopluz, a Autogestor aparece listada como Representante Autorizado,
@@ -234,8 +233,9 @@ const perguntas = [
       <h2>Dá para ganhar com a Coopluz, e não só economizar</h2>
       <p class="chamada">
         Se você tem rede de contatos em Goiás, a Autogestor credencia parceiros para apresentar essa mesma economia:
-        comissão na ativação de cada conta e renda recorrente sobre a carteira, sem investimento e com treinamento
-        gratuito. <a href="/parceiro">Veja como funciona o programa de parceiros da energia</a>.
+        comissão na ativação de cada conta e renda recorrente sobre a carteira — o suficiente, com carteira formada,
+        para zerar a própria conta de luz de quem indica. Sem investimento e com treinamento gratuito.{" "}
+        <a href="/parceiro">Veja como funciona o programa de parceiros da energia</a>.
       </p>
     </div>
   </section>

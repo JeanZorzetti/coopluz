@@ -54,7 +54,7 @@ const abs = (p: string) => new URL(p, site).href;
 //   Autogestor  — `publisher` do WebSite. Quem opera ESTE site, faz a captação
 //                 e atende no WhatsApp. É a dona do domínio.
 //   Coopluz     — `about` de cada página. A cooperativa sobre a qual o site
-//                 fala e que emite o termo de associação. NUNCA aparece como
+//                 fala e que emite o termo de adesão. NUNCA aparece como
 //                 autora ou publicadora: este site não é o canal oficial dela,
 //                 e `sameAs` aponta para onde o canal oficial está.
 //
@@ -77,7 +77,7 @@ const grafo: Record<string, unknown>[] = [
     image: { "@id": abs("/#logo") },
     foundingDate: EMPRESA.fundacao,
     description:
-      "Representante autorizado da cooperativa de energia Coopluz, responsável pela captação, cadastro e acompanhamento do associado. Atende a área de concessão da Equatorial Goiás, com sede em Goiânia (GO).",
+      "Representante autorizado da cooperativa de energia Coopluz, responsável pela captação, cadastro e acompanhamento do cooperado. Atende a área de concessão da Equatorial Goiás, com sede em Goiânia (GO).",
     telephone: EMPRESA.telefone,
     email: EMPRESA.email,
     address: {
