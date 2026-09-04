@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-04
 
-**Status**: Draft — aguarda `speckit-clarify`
+**Status**: Clarified — pronto para `speckit-plan`
 
 **Input**: User description: "Aplicar a auditoria 1 na parte que não é troca de
 frase: a terminologia `associado` → `cooperado`, a regra dos R$ 250 e as
@@ -37,36 +37,36 @@ no mesmo domínio — a falha que o Princípio II existe para evitar.
 
 ## Clarifications
 
-### Session 2026-09-04 — pendentes
+### Session 2026-09-04
 
-Nenhuma foi resolvida. Todas dependem de documento ou decisão do dono, e cinco
-delas mudam o que o site **promete**, não como ele escreve.
+Sete perguntas, sete respostas do dono do projeto. Nenhuma pendência.
 
-- Q1: Qual é o termo do documento que a Coopluz emite — "termo de associação",
-  "contrato de ativação" ou "termo de admissão"? A auditoria usa os três em
-  blocos diferentes (itens 4, 11 e 12). O site precisa usar o mesmo do papel
-  que a pessoa assina. → **[NEEDS CLARIFICATION: exige o contrato vigente da
-  Coopluz, não a memória do atendimento]**
-- Q2: O desconto entra na **próxima fatura após aprovação** (item 1) ou o
-  primeiro crédito aparece **em até 90 dias** (itens 13 e 14)? A própria
-  auditoria afirma as duas coisas. → **[NEEDS CLARIFICATION]**
-- Q3: "Abaixo de R$ 250 o cadastro entra para análise da Coopluz" (item 14)
-  substitui a desqualificação em todos os 7 lugares, inclusive o argumento que
-  o parceiro usa para não gastar relacionamento com indicação que volta? →
-  **[NEEDS CLARIFICATION]**
-- Q4: "Dá para zerar sua conta de energia" (item 5) é oferta real de alguma
-  faixa de consumo ou força de expressão? Todo o resto do site promete 20%. →
-  **[NEEDS CLARIFICATION: promessa de resultado é risco de CDC, art. 37]**
-- Q5: "Totalmente gratuito sua adesão" (item 1) convive com o que os termos já
-  dizem — sem taxa de adesão, sem multa, mas **com saldo residual dos créditos
-  já usados e não faturados** na saída. Gratuito se refere só à entrada? →
-  **[NEEDS CLARIFICATION]**
-- Q6: O Sicoob Secovicred sai do cartão da Coopluz (item 9) e do fecho dos
-  termos (item 11), mas continua na faixa "quem está por trás" (item 4). É
-  remoção deliberada? → **[NEEDS CLARIFICATION]**
-- Q7: O slug `cancelar-associacao-cooperativa-energia-goias` é renomeado para
-  acompanhar a terminologia, ao custo de um 301 numa URL já indexada, ou fica
-  como está? → **[NEEDS CLARIFICATION]**
+- Q: Qual o nome do documento que a Coopluz emite — a auditoria usa três
+  (itens 4, 11 e 12)? → A: **"Termo de adesão"**, em todas as páginas,
+  substituindo "termo de associação" e "contrato de ativação/admissão".
+- Q: O desconto entra na próxima fatura após aprovação (item 1) ou o primeiro
+  crédito aparece em até 90 dias (itens 13 e 14)? → A: **Os dois, na ordem
+  certa** — a aprovação sai rápido, o primeiro crédito depende do ciclo de
+  leitura da Equatorial e continua em até 90 dias. O site não promete prazo que
+  a distribuidora controla.
+- Q: A faixa abaixo de R$ 250 continua sendo recusa ou passa a análise? → A:
+  **Entra para análise da Coopluz**, nos 7 pontos onde a regra aparece —
+  inclusive no argumento do parceiro, que precisa ser reescrito.
+- Q: "Dá para zerar sua conta de energia" (item 5) é promessa de produto? → A:
+  **Não, é sobre o parceiro**: a comissão da carteira pode cobrir a própria
+  conta de luz de quem indica. O bloco é de captação de parceiro e deve dizer
+  isso com todas as letras — sem a condição escrita, a frase vira promessa de
+  resultado ao cooperado.
+- Q: "Totalmente gratuito" (item 1) convive com o saldo residual devido na
+  saída? → A: **Sim, adotar a frase da auditoria** nas páginas de produto; a
+  cláusula do residual permanece nos termos de uso, onde já está. Decisão do
+  dono, ciente de que a condição não aparece na mesma tela da promessa.
+- Q: O Sicoob Secovicred sai do cartão da Coopluz e do fecho dos termos? → A:
+  **Não — mantido nos três lugares.** A parceria continua válida; o sumiço em
+  dois blocos da auditoria foi corte de redação, não decisão.
+- Q: O slug `cancelar-associacao-cooperativa-energia-goias` é renomeado? → A:
+  **Não.** URL é endereço, não vocabulário: o texto do post troca de palavra, a
+  URL fica, e nenhum 301 novo é criado.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -170,11 +170,16 @@ divergência sobre quem emite o quê, nem sobre quem participa.
   Trocar por "ativação" ali muda o sentido de uma cláusula legal, não de uma
   chamada de marketing.
 - **Slug indexado.** `cancelar-associacao-cooperativa-energia-goias` tem o termo
-  na URL. Renomear exige 301 e devolve parte da autoridade acumulada; manter
-  deixa a URL falando a língua antiga. Não há terceira opção.
+  na URL. Decidido manter (FR-016): o texto do post fala a língua nova e a URL
+  continua sendo endereço. Consequência aceita: quem lê a URL na SERP vê o
+  vocabulário antigo.
 - **Contradição interna da auditoria.** O item 1 promete desconto na próxima
   fatura após aprovação; os itens 13 e 14 mantêm 90 dias para o primeiro
-  crédito. Aplicar os dois publica as duas promessas na mesma sessão de leitura.
+  crédito. Resolvida em FR-010: aprovação rápida, crédito em até 90 dias.
+- **Gratuidade sem a ressalva na mesma tela.** FR-013 mantém o saldo residual
+  nos termos, não nas páginas de produto. É decisão consciente do dono; o link
+  para os termos precisa continuar alcançável de qualquer página, senão a
+  condição deixa de existir para quem decide.
 - **O parceiro vende o critério de recusa.** O FAQ de `/parceiro` usa a recusa
   abaixo de R$ 250 como argumento ("para você não gastar seu relacionamento com
   uma indicação que vai voltar"). Mudar a regra sem reescrever o argumento
@@ -193,8 +198,8 @@ divergência sobre quem emite o quê, nem sobre quem participa.
 - **FR-001**: O site MUST usar um único termo para a pessoa que se cadastra, em
   todas as páginas, no formulário, no `llms.txt`, no JSON-LD e nos posts do
   blog.
-- **FR-002**: O site MUST usar um único nome para o documento emitido pela
-  Coopluz. **[NEEDS CLARIFICATION: qual — Q1]**
+- **FR-002**: O documento emitido pela Coopluz MUST ser chamado de **"termo de
+  adesão"** em todas as páginas, no `llms.txt` e nos comentários do JSON-LD.
 - **FR-003**: Os trechos de valor jurídico da página de privacidade MUST manter
   o termo que descreve corretamente o vínculo tratado, e cada divergência
   deliberada em relação ao termo de marketing MUST estar justificada em
@@ -206,9 +211,10 @@ divergência sobre quem emite o quê, nem sobre quem participa.
 
 **Regra de qualificação**
 
-- **FR-006**: O tratamento da faixa abaixo de R$ 250 MUST ser idêntico nos 7
-  pontos onde a regra aparece hoje. **[NEEDS CLARIFICATION: qual tratamento —
-  Q3]**
+- **FR-006**: A faixa abaixo de R$ 250 MUST ser descrita como **encaminhada
+  para análise da Coopluz**, com o mesmo tratamento nos 7 pontos onde a regra
+  aparece hoje. Nenhuma página MUST continuar dizendo que "o desconto não
+  compensa a operação".
 - **FR-007**: O aviso da faixa no formulário MUST continuar informativo e não
   bloqueante — a pessoa MUST poder enviar o pedido.
 - **FR-008**: O texto do FAQ de `/parceiro` MUST descrever a mesma regra das
@@ -219,31 +225,34 @@ divergência sobre quem emite o quê, nem sobre quem participa.
 
 **Declarações e promessas**
 
-- **FR-010**: O prazo até o primeiro crédito na fatura MUST ser o mesmo em
-  todas as páginas. **[NEEDS CLARIFICATION: próxima fatura ou até 90 dias —
-  Q2]**
+- **FR-010**: O prazo MUST ser declarado em dois tempos, iguais em todas as
+  páginas: a aprovação sai rápido e o **primeiro crédito na fatura aparece em
+  até 90 dias**, conforme o ciclo de leitura da Equatorial Goiás. Nenhum texto
+  MUST prometer desconto na próxima fatura como se fosse o prazo de ativação.
 - **FR-011**: O percentual de desconto anunciado MUST ser o mesmo em todas as
   páginas, incluindo títulos, CTAs e `llms.txt`.
-- **FR-012**: Nenhum texto MUST prometer resultado que dependa de condição não
-  declarada na mesma tela — em especial "zerar a conta". **[NEEDS
-  CLARIFICATION: Q4]**
-- **FR-013**: Qualquer afirmação de gratuidade MUST conviver, na mesma página,
-  com a informação do saldo residual devido na saída. **[NEEDS CLARIFICATION:
-  Q5]**
-- **FR-014**: A menção ao Sicoob Secovicred MUST ser consistente entre os
-  blocos que descrevem a mesma relação. **[NEEDS CLARIFICATION: manter ou
-  remover — Q6]**
+- **FR-012**: "Zerar a conta" MUST aparecer somente no bloco de captação de
+  parceiro e MUST vir com a condição escrita — é a comissão da carteira que
+  pode cobrir a própria conta de luz de quem indica, não um resultado oferecido
+  ao cooperado. Nenhuma página de produto MUST prometer conta zerada.
+- **FR-013**: As páginas de produto MUST descrever a adesão como gratuita
+  ("sem taxa de adesão, sem multa para cancelar"), e a cláusula do saldo
+  residual devido na saída MUST permanecer nos termos de uso, acessível a
+  partir de qualquer página.
+- **FR-014**: O Sicoob Secovicred MUST continuar citado nos três blocos onde
+  aparece hoje — faixa "quem está por trás", cartão da Coopluz na Sobre e fecho
+  dos termos.
 - **FR-015**: A declaração de papéis exigida pela spec 003 (FR-012 a FR-015)
   MUST permanecer intacta: cabeçalho, rodapé e JSON-LD continuam nomeando a
   Autogestor como operadora e a Coopluz como entidade descrita.
 
 **URLs e busca**
 
-- **FR-016**: Se o slug do post com o termo antigo for renomeado, a URL
-  original MUST responder 301 para a nova. **[NEEDS CLARIFICATION: renomear ou
-  não — Q7]**
-- **FR-017**: O `sitemap.xml` e o `llms.txt` MUST refletir a decisão do FR-016
-  sem listar URL que responda 301.
+- **FR-016**: Nenhuma URL MUST ser renomeada por causa do vocabulário — o slug
+  `cancelar-associacao-cooperativa-energia-goias` permanece como está, e o
+  corpo do post troca de palavra normalmente.
+- **FR-017**: A feature MUST terminar sem nenhum 301 novo e sem alterar o
+  `sitemap.xml`.
 
 **Guarda**
 
@@ -275,13 +284,13 @@ divergência sobre quem emite o quê, nem sobre quem participa.
   verificável lendo os 7 trechos lado a lado.
 - **SC-003**: Uma única promessa de prazo e uma única promessa de percentual em
   todo o site, incluindo `llms.txt` e JSON-LD.
-- **SC-004**: Zero URLs respondendo 404 em consequência da feature; toda URL
-  renomeada responde 301 para o destino exato.
+- **SC-004**: Zero URLs alteradas e zero 301 novos — o `sitemap.xml` gerado
+  depois da feature é idêntico ao de antes.
 - **SC-005**: `npm test` e `npm run build` passam, com a verificação de
   vocabulário do FR-018 incluída na suíte.
-- **SC-006**: As sete perguntas desta spec estão respondidas antes de qualquer
-  linha de código — nenhuma `[NEEDS CLARIFICATION]` sobrevive ao
-  `speckit-plan`.
+- **SC-006**: A expressão "zerar a conta" aparece em no máximo um bloco do
+  site, e nele a condição (comissão da carteira do parceiro) está na mesma
+  frase.
 - **SC-007**: A declaração de papéis do Princípio VI continua alcançável em
   cabeçalho, rodapé e JSON-LD depois da mudança.
 
