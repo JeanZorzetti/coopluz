@@ -15,7 +15,7 @@ Dá, sim: aderindo a uma cooperativa de energia por compensação, que injeta cr
 
 ## Como funciona a compensação de energia por cooperativa
 
-O mecanismo é o mesmo instituído pela Lei 14.300/2022, o marco legal da geração distribuída — só que a geração acontece longe do seu imóvel, numa fazenda solar cooperada, em vez de no seu telhado. Você faz a adesão à cooperativa, ela aloca créditos de geração para a sua unidade consumidora proporcionalmente ao seu consumo médio, e a Equatorial reconhece esses créditos direto na fatura que você já recebe todo mês. Não existe uma segunda conta para controlar: o desconto chega embutido na mesma fatura de sempre.
+O mecanismo é o mesmo instituído pela Lei 14.300/2022, o marco legal da geração distribuída — só que a geração acontece longe do seu imóvel, numa fazenda solar cooperada, em vez de no seu telhado. Você faz a adesão à cooperativa, ela aloca créditos de geração para a sua unidade consumidora proporcionalmente ao seu consumo médio, e a Equatorial reconhece esses créditos direto na fatura que você já recebe todo mês. A Coopluz emite o termo de adesão e a fatura do cooperado; a Equatorial continua emitindo a fatura de consumo, já com o desconto aplicado.
 
 ## Cooperativa de energia é a mesma coisa que energia solar própria?
 
