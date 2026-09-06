@@ -20,8 +20,6 @@ const EXCECOES = [
   { arquivo: "pages/privacidade.astro", trecho: "Responder ao seu pedido de associação", motivo: "FR-003: termo jurídico da base legal LGPD (art. 7º, V)" },
   { arquivo: "pages/privacidade.astro", trecho: "Pedidos que não viraram associação", motivo: "FR-003: finalidade do tratamento" },
   { arquivo: "pages/privacidade.astro", trecho: "Pedidos que viraram associação", motivo: "FR-003: prazo de retenção" },
-  { arquivo: "pages/index.astro", trecho: "3.865 associados", motivo: "FR-004: dado de terceiro, legenda igual à fonte" },
-  { arquivo: "pages/index.astro", trecho: "<b>associados</b>", motivo: "FR-004: dado de terceiro, legenda igual à fonte" },
   { arquivo: "pages/parceiro.astro", trecho: "Associações, sindicatos e entidades", motivo: "FR-001: entidade prospectada, não vínculo do cliente" },
   { arquivo: "pages/parceiro.astro", trecho: "Base associada", motivo: "FR-001: entidade prospectada, não vínculo do cliente" },
 ];
