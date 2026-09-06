@@ -84,6 +84,13 @@ const passos = [
       </p>
     </div>
 
+    {/* O PERCURSO. Contêiner PRÓPRIO para palco+passos, e não os dois soltos
+         no grid externo: o `sticky` da folha usa este elemento como limite —
+         ele "solta" a folha assim que os passos acabam. Antes, com a nota
+         final (`.fatura__outras`) na mesma grade, o limite só chegava no fim
+         DELA, e a folha ficava presa por cima da nota inteira até o último
+         pixel do scroll (bug real do "cobre a última frase"). */}
+    <div class="fatura__percurso">
     {/* A COLUNA PRESA. O wrapper é quem gruda; a folha dentro dele fica livre
         para receber `rotate` e `translate` sem brigar com o `sticky`. */}
     <div class="fatura__palco">
@@ -165,11 +172,12 @@ const passos = [
         </li>
       ))}
     </ol>
+    </div>
 
-    {/* FORA do palco preso, de propósito: no celular tudo que fica dentro do
+    {/* FORA do percurso preso, de propósito: no celular tudo que fica dentro do
          bloco grudado ocupa altura de tela o tempo todo, e esta nota empurrava
          a folha para cima do texto dos passos. É rodapé da seção — o lugar
-         dela é no fim, depois da leitura. */}
+         dela é no fim, depois da leitura, e fora do contêiner do `sticky`. */}
     <p class="fatura__outras">
       Sua conta é outra? <b>R$ 450</b> viram R$ 90 de desconto &middot; <b>R$ 700</b> viram
       R$ 140 &middot; <b>R$ 1.200</b> viram R$ 240. Sempre 20%, todo mês.
@@ -208,24 +216,20 @@ const passos = [
   .fatura .chamada { color: var(--texto-sobre-marca); }
   .fatura h2 { color: var(--texto-invertido); }
 
+  /* O contêiner do `sticky`. Só palco+passos moram aqui — a nota final
+     (`.fatura__outras`) é irmã DESTE elemento, não filha, então o limite que
+     "solta" a folha nunca inclui a altura dela. */
+  .fatura__percurso { display: grid; gap: var(--e-8); }
+
   @media (min-width: 900px) {
-    .fatura__grade {
+    .fatura__percurso {
       /* 480px e não 400: a folha é a IMAGEM que esta seção existe para
          mostrar. A 400px ela virava um cartãozinho boiando num vão de 1440 —
          medido em frame, não suposto. */
       grid-template-columns: minmax(340px, 480px) 1fr;
-      grid-template-areas:
-        "intro  intro"
-        "palco  passos"
-        "notas  notas";
       column-gap: var(--e-12);
-      row-gap: var(--e-8);
       align-items: start;
     }
-    .fatura__intro { grid-area: intro; }
-    .fatura__palco { grid-area: palco; }
-    .fatura__passos { grid-area: passos; }
-    .fatura__outras { grid-area: notas; }
     /* 68px = altura do cabeçalho preso (padding-block 12+12 + alvo de 44).
        O respiro extra centra a folha na tela em vez de encostá-la no topo com
        um vão de 400px embaixo. */
