@@ -73,10 +73,11 @@ const { solucao, rotulo = "Pedir cotação", alvo = "pedir", mensagem = `Olá! Q
 </style>
 
 <script>
-  // Some enquanto qualquer formulário ou o par de CTAs do herói está na tela:
-  // parada aí, a barra cobriria o botão de enviar ou o próprio CTA que repete.
+  // Some enquanto qualquer formulário, o par de CTAs do herói ou a nota final
+  // da Fatura está na tela: parada aí, a barra cobriria o botão de enviar, o
+  // próprio CTA que repete, ou a última frase do bloco "Como funciona".
   const barra = document.querySelector<HTMLElement>(".barra");
-  const alvos = [...document.querySelectorAll(".form, .capa__acoes")];
+  const alvos = [...document.querySelectorAll(".form, .capa__acoes, .fatura__outras")];
 
   if (barra && alvos.length) {
     const visiveis = new Set<Element>();

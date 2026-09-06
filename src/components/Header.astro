@@ -13,6 +13,8 @@ const NAV = [
   { href: "/parceiro", rotulo: "Seja parceiro" },
   { href: "/blog", rotulo: "Blog" },
 ];
+
+const HUB = "https://autogestor.roilabs.com.br/";
 ---
 
 <header class="cabecalho">
@@ -63,6 +65,14 @@ const NAV = [
             </li>
           ))
         }
+        {/* Volta para o hub do grupo. Fora do `.map()` porque não é uma página
+             deste site — é saída de domínio, e por isso carrega `.externo`
+             como o resto do site já faz para esse tipo de link. */}
+        <li>
+          <a class="externo" href={HUB} target="_blank" rel="noopener">
+            ← Autogestor<span class="visualmente-oculto"> — site do grupo, abre em nova aba</span>
+          </a>
+        </li>
       </ul>
     </nav>
   </div>
