@@ -1,5 +1,7 @@
 import type { APIRoute } from "astro";
+import { waitUntil } from "@vercel/functions";
 import { parseLead } from "../../lib/lead.mjs";
+import { avisar, avisoDeLead } from "../../lib/aviso.mjs";
 import { dbOn, gravarLead } from "../../lib/db";
 import { COOPLUZ, PARCEIRO_COOPLUZ } from "../../data/solucoes";
 
@@ -76,6 +78,12 @@ export const POST: APIRoute = async ({ request, clientAddress, redirect }) => {
       referer: request.headers.get("referer")?.slice(0, 300) ?? null,
       ip: clientAddress ?? null,
     });
+    // Aviso no Telegram (spec 027) sem atrasar a resposta. O waitUntil segura a função viva até ele
+    // terminar: uma promise solta pode congelar junto com a função. Duplicado não avisa.
+    if (created) {
+      const pagina = TODAS.find((s) => s.slug === r.lead.solucao)?.nome ?? r.lead.solucao;
+      waitUntil(avisar(avisoDeLead(r.lead, pagina)));
+    }
     return form ? redirect("/obrigado", 303) : json({ ok: true, duplicado: !created }, 200);
   } catch (e) {
     console.error("falha ao gravar lead", e);
