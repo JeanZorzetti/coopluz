@@ -2,6 +2,20 @@
   {
     "data": "2026-10-02",
     "projeto": "coopluz",
+    "pagina": "/ (seção \"O problema\") — revisão da bandeira",
+    "direcao": "bandeira-faixa",
+    "tipo": "mutação de bandeira",
+    "eixos": { "materia": "pigmento", "motor": "scroll", "banda": "escura" },
+    "pedido": "Dona achou a seção com informação demais. 1ª folha mexia na capa: recusada ('não quero que mude o início'). 2ª folha só da seção: A uma frase / B título no pano / C faixa curta → escolheu C pedindo para manter o texto de explicação melhorado.",
+    "estrutura": "Linha: bandeirinha (176px) + olho/h2/1 frase. Abaixo, duas colunas de texto puro: 'A saída conhecida' (apagada) x 'Com a Coopluz' (acesa). Borda de 4 cores de ponta a ponta no pé da seção.",
+    "camadas": { "entrada": "AUSENTE (igual à anterior)", "scroll": "o mesmo script de antes troca data-bandeira 0-3; agora acende o segmento da borda em vez da régua", "ponteiro": "AUSENTE", "transicao": "pano tremula com scale" },
+    "custo": { "js_gzip_b": 300, "deps_novas": [], "cls": 0 },
+    "texto": "de 129 para ~75 palavras; nenhuma afirmação nova, só reorganizada",
+    "recusadas": ["capa A Edição / B Cartão único / C Faixa (escopo errado)", "seção A uma frase, B título no pano"]
+  },
+  {
+    "data": "2026-10-02",
+    "projeto": "coopluz",
     "pagina": "/ (seção \"O problema\", logo abaixo da capa)",
     "direcao": "bandeira",
     "tipo": "derivada",
