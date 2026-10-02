@@ -53,36 +53,39 @@ const perguntas = [
        e vermelha 2 enquanto ela atravessa a tela. Sem JS fica na vermelha 2 —
        o estado que o texto descreve. */}
   <section class="secao secao--bandeira" data-bandeira="3">
-    <div class="container bandeira__grade">
-      <div>
-        <span class="olho">O problema</span>
-        <h2>A conta de luz subiu e não tem como consumir menos</h2>
-        <p class="chamada">
-          Bandeira tarifária, reajuste anual, calor de Goiás no ar-condicionado. Em residências e comércios da região,
-          a energia virou uma das três maiores despesas fixas do mês — e cortar consumo já não resolve, porque o que
-          subiu foi o preço do kWh, não o seu uso.
-        </p>
-        <p class="chamada">
-          A saída conhecida era investir em um sistema solar próprio, com obra, projeto e anos de retorno. A
-          compensação de energia resolve o mesmo problema sem o investimento: em vez de gerar no seu telhado, você
-          usa a energia de uma fazenda solar da Coopluz.
-        </p>
-      </div>
-      <div class="bandeira" aria-hidden="true">
-        <span class="bandeira__mastro"></span>
-        <div class="bandeira__pano">
-          <strong data-passo="0">Bandeira verde<small>sem cobrança extra</small></strong>
-          <strong data-passo="1">Bandeira amarela<small>mais caro</small></strong>
-          <strong data-passo="2">Vermelha 1<small>mais caro ainda</small></strong>
-          <strong data-passo="3">Vermelha 2<small>a mais cara</small></strong>
+    <div class="container">
+      <div class="bandeira__linha">
+        <div class="bandeira" aria-hidden="true">
+          <span class="bandeira__mastro"></span>
+          <div class="bandeira__pano">
+            <strong data-passo="0">Verde<small>sem cobrança extra</small></strong>
+            <strong data-passo="1">Amarela<small>mais caro</small></strong>
+            <strong data-passo="2">Vermelha 1<small>mais caro ainda</small></strong>
+            <strong data-passo="3">Vermelha 2<small>a mais cara</small></strong>
+          </div>
         </div>
-        <ol class="bandeira__regua">
-          <li data-passo="0">verde</li>
-          <li data-passo="1">amarela</li>
-          <li data-passo="2">vermelha 1</li>
-          <li data-passo="3">vermelha 2</li>
-        </ol>
+        <div>
+          <span class="olho">O problema</span>
+          <h2>A conta de luz subiu e não tem como consumir menos</h2>
+          <p class="chamada">
+            Bandeira tarifária, reajuste anual e o calor de Goiás fizeram da luz uma das três maiores despesas fixas do
+            mês. O que subiu foi o preço do kWh, não o seu uso — por isso apagar a luz não resolve.
+          </p>
+        </div>
       </div>
+      <div class="bandeira__saidas">
+        <p class="bandeira__antes">
+          <span>A saída conhecida</span>
+          Placa solar no próprio telhado: obra, projeto e anos até o investimento voltar.
+        </p>
+        <p class="bandeira__agora">
+          <span>Com a Coopluz</span>
+          Você usa a energia de uma fazenda solar da cooperativa. Sem obra e sem investimento.
+        </p>
+      </div>
+    </div>
+    <div class="bandeira__borda" aria-hidden="true">
+      <span data-passo="0"></span><span data-passo="1"></span><span data-passo="2"></span><span data-passo="3"></span>
     </div>
   </section>
 
@@ -367,16 +370,21 @@ const perguntas = [
   .secao--bandeira .olho { color: #f6f3ea; opacity: 0.85; }
   .secao--bandeira h2 { color: #f6f3ea; }
   .secao--bandeira .chamada { color: #d4dddb; }
-  .bandeira__grade {
-    display: grid;
-    grid-template-columns: 6fr 5fr;
-    gap: var(--e-12);
+  /* Faixa curta (folha de 02/10, opção C): bandeirinha + título numa linha;
+     embaixo, as duas saídas lado a lado; as quatro cores viram a borda de
+     baixo da seção, de ponta a ponta. */
+  .secao--bandeira { padding-bottom: 0; }
+  .bandeira__linha {
+    display: flex;
     align-items: center;
+    gap: var(--e-8);
   }
-  .bandeira { position: relative; height: 300px; }
+  .bandeira__linha h2 { margin-bottom: 0; }
+  .bandeira__linha .chamada { margin: var(--e-3) 0 0; max-width: 62ch; }
+  .bandeira { position: relative; flex: none; width: 176px; height: 112px; }
   .bandeira__mastro {
     position: absolute;
-    left: 30px;
+    left: 0;
     top: 0;
     bottom: 0;
     width: 6px;
@@ -385,22 +393,23 @@ const perguntas = [
   }
   .bandeira__pano {
     position: absolute;
-    left: 36px;
-    top: 14px;
-    width: 74%;
-    height: 150px;
+    left: 6px;
+    top: 8px;
+    width: 164px;
+    height: 72px;
     display: grid;
     place-items: center;
     background: var(--bandeira-pano);
-    border-radius: 0 10px 10px 0;
-    clip-path: polygon(0 0, 100% 6%, 96% 50%, 100% 94%, 0 100%);
+    border-radius: 0 8px 8px 0;
+    clip-path: polygon(0 0, 100% 6%, 95% 50%, 100% 94%, 0 100%);
     transform-origin: left center;
     transition: background-color 900ms var(--ease-cena);
   }
   .bandeira__pano strong {
     grid-area: 1 / 1;
     font-family: var(--display);
-    font-size: var(--t-xl);
+    font-size: var(--t-md);
+    line-height: 1.15;
     color: #fff;
     text-align: center;
     letter-spacing: -0.01em;
@@ -409,48 +418,42 @@ const perguntas = [
   }
   /* Branco sobre o amarelo dá 2.6:1; ali o texto vira tinta (6.6:1). */
   .bandeira__pano strong[data-passo="1"] { color: #0b1f1c; }
-  .bandeira__pano small { display: block; font-size: var(--t-sm); font-weight: 600; opacity: 0.9; }
-  .bandeira__regua {
-    position: absolute;
-    left: 48px;
-    right: 0;
-    bottom: 20px;
+  .bandeira__pano small { display: block; font-size: 0.75rem; font-weight: 600; opacity: 0.9; }
+
+  /* As duas saídas: a conhecida apagada, a da Coopluz acesa. Texto puro,
+     sem cartão nem ícone — a bandeira já é a figura da seção. */
+  .bandeira__saidas {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--e-6) var(--e-12);
+    margin-top: var(--e-12);
+    padding: var(--e-8) 0 var(--e-12);
+    border-top: 1px solid rgba(246, 243, 234, 0.18);
+  }
+  .bandeira__saidas p { margin: 0; max-width: 46ch; }
+  .bandeira__saidas span {
+    display: block;
+    margin-bottom: var(--e-2);
     font-size: var(--t-sm);
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
-  .bandeira__regua li { padding-top: 16px; position: relative; }
-  .bandeira__regua li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    height: 10px;
-    border-radius: 999px;
-    opacity: 0.35;
-    transition: opacity 400ms;
-  }
-  .bandeira__regua li:nth-child(1)::before { background: #23804a; }
-  .bandeira__regua li:nth-child(2)::before { background: #c99a1c; }
-  .bandeira__regua li:nth-child(3)::before { background: #c94a24; }
-  .bandeira__regua li:nth-child(4)::before { background: #b3202a; }
+  .bandeira__antes { color: #c9c2b8; }
+  .bandeira__antes span { color: #c9c2b8; }
+  .bandeira__agora { color: #f6f3ea; font-size: var(--t-md); }
+  .bandeira__agora span { color: #f2c14e; }
+
+  .bandeira__borda { display: grid; grid-template-columns: repeat(4, 1fr); height: 10px; }
+  .bandeira__borda span { opacity: 0.4; transition: opacity 400ms; }
+  .bandeira__borda span:nth-child(1) { background: #23804a; }
+  .bandeira__borda span:nth-child(2) { background: #c99a1c; }
+  .bandeira__borda span:nth-child(3) { background: #c94a24; }
+  .bandeira__borda span:nth-child(4) { background: #b3202a; }
   .secao--bandeira[data-bandeira="0"] [data-passo="0"],
   .secao--bandeira[data-bandeira="1"] [data-passo="1"],
   .secao--bandeira[data-bandeira="2"] [data-passo="2"],
   .secao--bandeira[data-bandeira="3"] [data-passo="3"] { opacity: 1; }
-  .secao--bandeira[data-bandeira="0"] li[data-passo="0"]::before,
-  .secao--bandeira[data-bandeira="1"] li[data-passo="1"]::before,
-  .secao--bandeira[data-bandeira="2"] li[data-passo="2"]::before,
-  .secao--bandeira[data-bandeira="3"] li[data-passo="3"]::before {
-    opacity: 1;
-    box-shadow: 0 0 0 3px rgba(246, 243, 234, 0.6);
-  }
   /* O pano tremula só com `scale`, primitiva que a página já usa — nada de
      skew, que seria a quarta. */
   @keyframes bandeira-tremula { 50% { scale: 0.97 1.02; } }
@@ -458,13 +461,13 @@ const perguntas = [
     .bandeira__pano { animation: bandeira-tremula 3.2s ease-in-out infinite; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .secao--bandeira, .bandeira__pano, .bandeira__pano strong, .bandeira__regua li::before { transition: none; }
+    .secao--bandeira, .bandeira__pano, .bandeira__pano strong, .bandeira__borda span { transition: none; }
   }
   @media (max-width: 860px) {
-    .bandeira__grade { grid-template-columns: 1fr; gap: var(--e-6); }
-    .bandeira { height: 250px; }
-    .bandeira__pano { height: 130px; }
-    .bandeira__regua { font-size: 0.75rem; }
+    .bandeira__linha { flex-direction: column; align-items: flex-start; gap: var(--e-4); }
+    .bandeira { width: 150px; height: 96px; }
+    .bandeira__pano { width: 140px; height: 62px; }
+    .bandeira__saidas { grid-template-columns: 1fr; margin-top: var(--e-8); padding-top: var(--e-6); }
   }
 
   .fora li { padding-left: var(--e-6); position: relative; color: var(--texto-suave); }
