@@ -6,6 +6,11 @@ import type { Pergunta } from "../components/Faq.astro";
 import BarraAcao from "../components/BarraAcao.astro";
 import { AREA_SERVIDA, type Solucao } from "../data/solucoes";
 import { ATENDIMENTO, EMPRESA } from "../consts";
+import { faixaDaConta } from "../lib/regua.mjs";
+// Humaaans (Pablo Stanley, CC0), montado a partir das partes do pacote npm e
+// repintado para ler sobre os dois fundos da capa. Embutido via ?raw: 5kb
+// crus, sem requisição.
+import consultora from "../assets/capa/consultora.svg?raw";
 
 interface Props {
   solucao: Solucao;
@@ -29,6 +34,15 @@ const {
 const site = Astro.site ?? new URL("https://coopluz.roilabs.com.br");
 // Solução única do site: URL é a própria home, não "/coopluz".
 const url = new URL("/", site).href;
+
+// A régua. O valor inicial é o que o servidor já pinta — sem JS a capa mostra
+// esta conta de exemplo inteira, não números vazios.
+const REGUA = { min: 150, max: 2000, passo: 10, inicial: 600, desconto: 0.2 };
+const reais = (v: number) => `R$ ${Math.round(v).toLocaleString("pt-BR")}`;
+// A faixa do <select> já sai marcada do servidor, coerente com o valor de
+// exemplo da régua: é o que permite o CSS esconder o <select> desde o
+// primeiro frame sem nunca mandar o campo vazio.
+const faixaInicial = faixaDaConta(REGUA.inicial, solucao.campo.opcoes);
 
 const schema = [
   {
@@ -62,27 +76,91 @@ const schema = [
 ---
 
 <Base titulo={solucao.titulo} descricao={solucao.descricao} schema={schema}>
-  <section class="topo">
-    {/* O facho. Fundo pintado por CSS no primeiro frame — nunca é o elemento
-         de LCP, que é o <h1> dentro dele. `aria-hidden` porque não acrescenta
-         informação nenhuma a quem lê por leitor de tela. */}
-    <span class="cone" aria-hidden="true"></span>
-    {/* A marca vira textura da capa: o mesmo símbolo do cabeçalho, grande,
-         recortando um gradiente da própria página. `aria-hidden` porque não
-         acrescenta informação — quem lê por leitor de tela já ouviu a marca no
-         cabeçalho. Tudo atrás de @supports em global.css: sem máscara ou sem
-         timeline de scroll, ele simplesmente não existe e a capa continua
-         composta. */}
-    <span class="selo selo--claro selo--entra" aria-hidden="true"></span>
-    <div class="container topo__grade">
-      <div class="topo__texto">
-        <span class="olho">{solucao.nome}</span>
-        <h1>{h1}</h1>
-        <p class="chamada">{chamada}</p>
-        <slot name="hero" />
+  {/* A capa. Nasce à noite (data-luz="noite"); a lâmpada no fim da frase é o
+       interruptor que leva ao dia. Tudo que muda entre os dois é token neste
+       elemento — nenhuma regra abaixo repete cor por estado. */}
+  <section
+    class="capa"
+    data-art="jl"
+    data-luz="noite"
+    data-regua-min={REGUA.min}
+    data-regua-max={REGUA.max}
+    data-desconto={REGUA.desconto}
+    aria-labelledby="capa-titulo"
+  >
+    <span class="capa__brilho" aria-hidden="true"></span>
+    <span class="capa__gigante" aria-hidden="true"></span>
+
+    <div class="container capa__conteudo capa__grade">
+      <div class="capa__texto">
+        <span class="olho capa__olho">{solucao.nome} · Goiás</span>
+        <p class="capa__grito">
+          Sua conta de luz <em>20% menor.</em>
+          {/* Invisível até o script ligar: sem JS o botão não faria nada, e botão
+               morto é pior que botão nenhum. */}
+          <button class="capa__interruptor" type="button" aria-pressed="false" data-espera>
+            <span class="visualmente-oculto">Capa em modo dia</span>
+          </button>
+        </p>
+        <h1 id="capa-titulo">{h1}</h1>
+        <p class="capa__chamada">{chamada}</p>
+
+        <div class="regua">
+          <label class="regua__rotulo" for="conta-luz">Quanto vem a sua conta de luz, em média?</label>
+          <input
+            id="conta-luz"
+            class="regua__controle"
+            type="range"
+            min={REGUA.min}
+            max={REGUA.max}
+            step={REGUA.passo}
+            value={REGUA.inicial}
+            aria-valuetext={`${reais(REGUA.inicial)} por mês`}
+          />
+          <div class="regua__escala" aria-hidden="true">
+            <span>{reais(REGUA.min)}</span><span>{reais(REGUA.max)}+</span>
+          </div>
+
+          {/* <p> e não <output>: output é região viva, e arrastar a régua
+               anunciaria cada passo de R$ 10. Quem usa leitor de tela ouve o
+               valor pelo aria-valuetext do próprio controle. */}
+          <div class="regua__resultado">
+            <p class="regua__hoje">
+              Hoje <s data-regua-hoje>{reais(REGUA.inicial)}</s>
+              <strong data-regua-com>{reais(REGUA.inicial * (1 - REGUA.desconto))}</strong> com a Coopluz
+            </p>
+            <p class="regua__ano">
+              <span data-regua-ano>{reais(REGUA.inicial * REGUA.desconto * 12)}</span>
+              <small>por ano que voltam para o seu bolso</small>
+            </p>
+          </div>
+          <p class="regua__ressalva">
+            Estimativa com 20% de desconto sobre a conta. O valor exato sai da análise da sua fatura, sem custo.
+          </p>
+          <ul class="capa__provas" role="list">
+            <li>Sem taxa de adesão</li>
+            <li>Sem consulta ao SPC ou Serasa</li>
+            <li>Nada no telhado</li>
+          </ul>
+        </div>
       </div>
-      <div class="topo__form">
-        <LeadForm solucao={solucao} titulo={tituloForm} instancia="topo" />
+
+      <div class="capa__lado">
+        <span class="capa__pessoa" set:html={consultora} />
+        <p class="capa__fala">Um consultor da Autogestor responde no seu WhatsApp {ATENDIMENTO.prazo}.</p>
+        <LeadForm
+          solucao={solucao}
+          titulo={tituloForm}
+          instancia="topo"
+          contextoInicial={faixaInicial}
+          subtitulo="Sem robô e sem ligação de telemarketing. Só o seu nome e o WhatsApp."
+        >
+          <p class="capa__resumo" slot="resumo">
+            <span>Conta média</span>
+            <b data-regua-resumo>{reais(REGUA.inicial)}</b>
+            <a href="#conta-luz">trocar</a>
+          </p>
+        </LeadForm>
       </div>
     </div>
   </section>
@@ -118,25 +196,459 @@ const schema = [
 </Base>
 
 <style>
-  /* `overflow: clip` e não `hidden`: clip não cria contexto de rolagem, então
-     a âncora `#pedir` mais abaixo continua funcionando e nenhuma barra de
-     rolagem fantasma aparece quando o selo sangra para fora. */
-  .topo {
+  /* art-direction · jl (custom: noite JL5 ⇄ dia JL2) · eixos: geometria/estado/escura · orçamento: ~1.5kb JS · 2026-10-01
+
+     UMA IDEIA: ACENDER. A lâmpada da marca aparece três vezes e as três
+     respondem ao mesmo número (--brilho, 0 a 1, a posição da régua):
+       · o botão da régua é a lâmpada — arrastar é acender;
+       · a lâmpada gigante ao fundo acende junto (o halo dentro do anel);
+       · a lâmpada no fim da frase é o interruptor noite ⇄ dia.
+     Entrada: o halo acende. Ponteiro: a régua. Transição: o interruptor troca
+     a capa por View Transition. Scroll: AUSENTE por declaração — a capa é a
+     primeira tela, e o fio do circuito já conduz o scroll do resto da página.
+
+     Escopo: só esta capa. Os tokens moram em .capa e não tocam global.css —
+     as outras capas (/parceiro, /sobre) continuam no .topo de antes.
+
+     Contraste medido (não estimado), nos dois estados:
+       noite #0b3d47 — creme 10.7 · #c5dde1 8.35 · amarelo do "20%" 7.06 ·
+                       verde-400 do valor anual 5.32 · riscado #9dbcc2 5.87
+       dia   #38995c — tinta 4.79 (texto pequeno) · creme 3.22, por isso o
+                       creme só existe em corpo ≥ 56px (frase e valor anual) ·
+                       riscado teal-900 3.4 (32px, texto grande)
+     O dia NÃO é o verde exato da marca (#40ac68): sobre ele o creme dá 2.59 e
+     reprova até como texto grande. Seis pontos mais fundo resolvem os dois
+     pares sem tirar a cor da família. */
+  .capa {
+    --capa-fundo: #0b3d47;
+    --capa-texto: #e6f0ef;
+    --capa-suave: #c5dde1;
+    --capa-grito: #f6f3ea;
+    --capa-grito-em: #f2c14e;
+    --capa-ano: #63c08a;
+    --capa-riscado: #9dbcc2;
+    --capa-gigante: #15606f;
+    --capa-halo: 242, 193, 78;
+    --capa-halo-forca: 0.5;
+    --capa-trilho: rgba(197, 221, 225, 0.22);
+    --capa-trilho-cheio: #63c08a;
+    --capa-fala-fundo: #f6f3ea;
+    --capa-fala-texto: #0b1f1c;
+    --capa-foco: #f6f3ea;
+    --capa-lampada: #f2c14e;
+    /* Fixos nos dois estados: o disco da régua, o âmbar da luz e a tinta da
+       sombra (o teal quase preto da capa, nunca preto puro). */
+    --capa-disco: #f6f3ea;
+    --capa-ambar: #f2c14e;
+    --capa-sombra: 4, 24, 30;
+    /* Posição da régua de 0 a 1. O servidor pinta o valor inicial (600 em
+       150–2000 = 0.243); o script reescreve a cada movimento. */
+    --brilho: 0.243;
+    --display-forte: "Outfit", "Outfit capa forte", var(--display);
+
     position: relative;
     overflow: clip;
+    background: var(--capa-fundo);
+    color: var(--capa-texto);
+    padding-block: var(--e-12) var(--e-16);
   }
-  /* Tamanho e posição são de quem chama; a matéria (máscara, gradiente,
-     opacidade) mora no .selo do global.css. O giro negativo tira a lâmpada da
-     vertical perfeita — simétrico demais lê como ícone, não como textura. */
-  .topo .selo {
-    width: min(48vw, 520px);
-    left: -11%;
-    bottom: -44%;
-    --giro: -8deg;
+  .capa[data-luz="dia"] {
+    --capa-fundo: #38995c;
+    --capa-texto: #0b1f1c;
+    --capa-suave: #0b1f1c;
+    --capa-grito: #0b1f1c;
+    --capa-grito-em: #f6f3ea;
+    --capa-ano: #f6f3ea;
+    /* teal-900 e não teal-700: o riscado é texto que se lê (o valor de
+       hoje), 32px — o -700 dava 2.1:1 aqui; o -900 dá 3.4:1. */
+    --capa-riscado: #0b3d47;
+    --capa-gigante: #2b8550;
+    --capa-halo: 250, 222, 120;
+    --capa-halo-forca: 0.85;
+    --capa-trilho: rgba(11, 31, 28, 0.18);
+    --capa-trilho-cheio: #0b3d47;
+    --capa-fala-fundo: #0b3d47;
+    --capa-fala-texto: #f6f3ea;
+    --capa-foco: #0b1f1c;
+    --capa-lampada: #f6f3ea;
   }
+
+  /* Reserva PESADA para os números e a frase gigante. A Outfit entra com
+     display=optional: na primeira visita em 4G ela costuma perder a janela e a
+     página inteira fica na reserva — e a reserva global ("Outfit capa") é a
+     Segoe/Roboto REGULAR, que o navegador engrossa por síntese. Negrito
+     sintético é um traço fixo: some a 92px, e a frase saía fina (medido:
+     CSS.getPlatformFontsForNode → SegoeUI regular). Aqui a reserva já é um
+     corte black de verdade, do que o aparelho tiver. Sem troca no meio da
+     visita (optional não troca), então sem CLS. */
+  @font-face {
+    font-family: "Outfit capa forte";
+    src: local("Segoe UI Black"), local("SegoeUI-Black"), local("Roboto Black"), local("Roboto-Black"),
+      local("Helvetica Neue Bold"), local("HelveticaNeue-Bold"), local("Arial Black"), local("Arial-Black");
+    font-weight: 600 900;
+  }
+
+  .capa__conteudo { position: relative; z-index: 1; }
+  .capa :focus-visible { outline-color: var(--capa-foco); }
+
+  .capa__olho { color: var(--capa-suave); }
+  .capa__grito {
+    font-family: var(--display-forte);
+    /* Peso declarado DUAS vezes: a Outfit entra com display=optional e, na
+       primeira visita, a frase pode pintar na "Outfit capa" (Roboto local),
+       que ignora font-variation-settings — sem font-weight ela saía fina. */
+    font-weight: 800;
+    font-variation-settings: "wght" 800;
+    font-size: clamp(3.5rem, 2rem + 6.4vw, 5.75rem);
+    line-height: 0.88;
+    letter-spacing: -0.05em;
+    color: var(--capa-grito);
+    margin: var(--e-3) 0 0;
+    max-width: 11ch;
+    text-wrap: balance;
+  }
+  .capa__grito em { font-style: normal; color: var(--capa-grito-em); }
+
+  /* O interruptor. A lâmpada é o mesmo logo-mono.svg do selo e do cabeçalho,
+     recortando a cor do estado — não um segundo desenho da marca. */
+  .capa__interruptor {
+    display: inline-block;
+    /* Botão não herda o corpo do texto: sem isto o em daqui era o de 13px do
+       navegador e a lâmpada saía do tamanho de um ponto final. */
+    font: inherit;
+    width: 0.62em;
+    height: 0.8em;
+    margin-left: 0.08em;
+    vertical-align: -0.04em;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r-2);
+    /* O brilho é fundo radial, não drop-shadow: filter em elemento que gira
+       (o aceno, o hover) repinta a cada frame. */
+    background: radial-gradient(circle at 50% 38%, rgba(var(--capa-halo), 0.38), transparent 62%);
+    cursor: pointer;
+    position: relative;
+    rotate: 0deg;
+    transition: rotate var(--dur-rapida) var(--ease-saida);
+  }
+  .capa__interruptor::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--capa-lampada);
+    -webkit-mask: url("/img/logo-mono.svg") no-repeat center / contain;
+            mask: url("/img/logo-mono.svg") no-repeat center / contain;
+  }
+  .capa__interruptor:hover { rotate: -10deg; }
+  /* Invisível (e fora do foco) até o script ligar, mas ocupando o lugar: se
+     ele surgisse do nada no fim da linha, a frase podia quebrar de novo e
+     empurrar a capa inteira (CLS). */
+  .capa__interruptor[data-espera] { visibility: hidden; }
+  /* Um aceno na chegada, para quem não sabe que a lâmpada é botão. Uma vez só. */
+  @keyframes interruptor-acena { 40% { rotate: -14deg; } 70% { rotate: 6deg; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .capa__interruptor { animation: interruptor-acena 900ms var(--ease-cena) 1200ms both; }
+  }
+
+  .capa h1 {
+    font-size: var(--t-lg);
+    font-weight: 600;
+    font-variation-settings: "wght" 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--capa-texto);
+    margin: var(--e-6) 0 0;
+    max-width: 44ch;
+  }
+  .capa__chamada { color: var(--capa-suave); max-width: 60ch; margin: var(--e-3) 0 0; }
+
+  .capa__grade { display: grid; gap: var(--e-12); align-items: start; }
+  .regua { margin-top: var(--e-8); }
+  @media (min-width: 900px) {
+    .capa__grade { grid-template-columns: minmax(0, 7fr) minmax(360px, 5fr); gap: var(--e-16); }
+  }
+
+  /* --- a régua --- */
+  .regua__rotulo { display: block; font-weight: 600; color: var(--capa-texto); }
+  .regua__controle {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    height: 72px;
+    margin: var(--e-2) 0 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .regua__controle::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: var(--r-full);
+    background: linear-gradient(90deg, var(--capa-trilho-cheio), var(--capa-ambar) calc(var(--brilho) * 100%), var(--capa-trilho) calc(var(--brilho) * 100%));
+  }
+  .regua__controle::-moz-range-track { height: 8px; border-radius: var(--r-full); background: var(--capa-trilho); }
+  .regua__controle::-moz-range-progress { height: 8px; border-radius: var(--r-full); background: linear-gradient(90deg, var(--capa-trilho-cheio), var(--capa-ambar)); }
+  /* O botão da régua é a lâmpada colorida (o logo.svg com o degradê original)
+     num disco creme. O halo cresce com --brilho: a conta maior acende mais. */
+  .regua__controle::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 64px;
+    height: 64px;
+    margin-top: -28px;
+    border-radius: 50%;
+    border: 0;
+    background: var(--capa-disco) url("/img/logo.svg") no-repeat center / 26px auto;
+    box-shadow:
+      0 0 0 8px rgba(var(--capa-halo), calc(0.3 + var(--brilho) * 0.4)),
+      0 0 calc(18px + var(--brilho) * 34px) calc(4px + var(--brilho) * 16px) rgba(var(--capa-halo), calc(0.25 + var(--brilho) * 0.4)),
+      0 6px 16px rgba(var(--capa-sombra), 0.35);
+  }
+  .regua__controle::-moz-range-thumb {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 0;
+    background: var(--capa-disco) url("/img/logo.svg") no-repeat center / 26px auto;
+    box-shadow:
+      0 0 0 8px rgba(var(--capa-halo), calc(0.3 + var(--brilho) * 0.4)),
+      0 0 calc(18px + var(--brilho) * 34px) calc(4px + var(--brilho) * 16px) rgba(var(--capa-halo), calc(0.25 + var(--brilho) * 0.4)),
+      0 6px 16px rgba(var(--capa-sombra), 0.35);
+  }
+  .regua__controle:focus-visible { outline: 3px solid var(--capa-foco); outline-offset: 4px; }
+
+  .regua__escala { display: flex; justify-content: space-between; font-size: var(--t-sm); color: var(--capa-suave); }
+  .regua__resultado { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--e-4) var(--e-8); margin-top: var(--e-6); }
+  .regua__resultado p { margin: 0; }
+  .regua__hoje { font-size: var(--t-sm); color: var(--capa-suave); }
+  .regua__hoje s, .regua__hoje strong {
+    display: block;
+    font-family: var(--display-forte);
+    font-size: var(--t-2xl);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .regua__hoje s { color: var(--capa-riscado); font-weight: 600; font-variation-settings: "wght" 600; text-decoration-thickness: 3px; }
+  .regua__hoje strong { color: var(--capa-grito); font-weight: 700; font-variation-settings: "wght" 700; margin-top: var(--e-1); }
+  .regua__ano span {
+    display: block;
+    font-family: var(--display-forte);
+    font-weight: 800;
+    font-variation-settings: "wght" 800;
+    font-size: clamp(3.5rem, 2.2rem + 4.8vw, 6rem);
+    line-height: 0.86;
+    letter-spacing: -0.045em;
+    color: var(--capa-ano);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .regua__ano small {
+    display: block;
+    margin-top: var(--e-2);
+    font-family: var(--display);
+    font-weight: 600;
+    font-variation-settings: "wght" 600;
+    font-size: var(--t-md);
+    color: var(--capa-texto);
+  }
+  .regua__ressalva { font-size: var(--t-sm); color: var(--capa-suave); margin: var(--e-4) 0 0; }
+
+  .capa__provas {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--e-2) var(--e-6);
+    margin: var(--e-6) 0 0;
+    padding: var(--e-4) 0 0;
+    border-top: 1px solid var(--capa-trilho);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    color: var(--capa-texto);
+  }
+
+  /* --- a consultora e o formulário --- */
+  .capa__lado { position: relative; padding-top: 200px; }
+  .capa__pessoa { position: absolute; top: -12px; right: 0; width: 176px; }
+  .capa__pessoa :global(svg) { width: 100%; height: auto; }
+  .capa__fala {
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 176px;
+    margin: 0;
+    padding: var(--e-3) var(--e-4);
+    border-radius: var(--r-4) var(--r-4) var(--r-1) var(--r-4);
+    background: var(--capa-fala-fundo);
+    color: var(--capa-fala-texto);
+    font-size: var(--t-sm);
+    line-height: 1.4;
+    box-shadow: 0 10px 24px rgba(var(--capa-sombra), 0.3);
+  }
+  /* O cartão do formulário é papel claro nos DOIS estados e nos DOIS temas do
+     site: os tokens que o LeadForm lê são fixados aqui, como a fatura faz com
+     os dela. Sem isto, no tema escuro do cordão o cartão virava #113039 sobre
+     a capa teal — afundado em vez de destacado. */
+  .capa__lado :global(.form) {
+    --superficie-alta: #f6f3ea;
+    --fundo: #fffdf8;
+    --texto: #0b1f1c;
+    --texto-suave: #4c5f5e;
+    --borda: #e4dece;
+    --cinza-500: #6f8280;
+    --link: #17579a;
+    --link-hover: #12518f;
+    --foco: #17579a;
+    color-scheme: only light;
+    color: var(--texto);
+    box-shadow: 0 2px 4px rgba(var(--capa-sombra), 0.2), 0 24px 50px -14px rgba(var(--capa-sombra), 0.55);
+    --resumo-fundo: #e4f5ea;
+    --resumo-valor: #1d7a45;
+    border: 0;
+  }
+  .capa__resumo {
+    display: flex;
+    align-items: baseline;
+    gap: var(--e-3);
+    margin: 0;
+    padding: var(--e-3) var(--e-4);
+    border-radius: var(--r-2);
+    background: var(--resumo-fundo);
+    font-size: var(--t-sm);
+  }
+  .capa__resumo b { margin-left: auto; color: var(--resumo-valor); font-variant-numeric: tabular-nums; }
+  .capa__resumo a { color: var(--link); font-weight: 600; }
+  /* A troca <select> → resumo acontece no CSS, antes da primeira pintura:
+     feita pelo script, ela empurrava o botão de enviar depois que a tela já
+     estava desenhada (CLS 0.0011). scripting: enabled garante que quem vê
+     o resumo tem a régua funcionando; sem JS (ou em navegador que não conhece
+     a media query) o <select> fica à vista, já marcado na faixa certa. O
+     <select> escondido continua no envio. */
+  .capa__resumo { display: none; }
+  @media (scripting: enabled) {
+    .capa__resumo { display: flex; }
+    .capa__lado :global(.form .campo:has(select)) { display: none; }
+    /* Lista de faixas fora do formato: a régua não preenche, o <select> volta. */
+    .capa__lado :global(.form--sem-regua .campo:has(select)) { display: grid; }
+    .capa__lado :global(.form--sem-regua) .capa__resumo { display: none; }
+  }
+
+  /* --- a lâmpada gigante e o halo --- */
+  .capa__gigante,
+  .capa__brilho {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+  }
+  /* 800px de altura e topo em -10px: o centro do anel cai 316px à direita da
+     borda e 272px abaixo do topo da capa. O halo é posto em cima desse ponto. */
+  .capa__gigante {
+    left: calc(50% + 150px);
+    top: -10px;
+    height: 800px;
+    aspect-ratio: 74 / 93.7;
+  }
+  @supports ((-webkit-mask-image: url("/img/logo-mono.svg")) or (mask-image: url("/img/logo-mono.svg"))) {
+    .capa__gigante {
+      background: var(--capa-gigante);
+      -webkit-mask: url("/img/logo-mono.svg") no-repeat center / contain;
+              mask: url("/img/logo-mono.svg") no-repeat center / contain;
+    }
+  }
+  .capa__brilho {
+    left: calc(50% + 166px);
+    top: -28px;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(var(--capa-halo), 0.75) 0%,
+      rgba(var(--capa-halo), 0.3) 38%,
+      rgba(var(--capa-halo), 0) 66%
+    );
+    /* O halo segue a régua: conta maior, lâmpada mais acesa. */
+    opacity: calc(var(--capa-halo-forca) * (0.45 + var(--brilho) * 0.55));
+  }
+  /* Entrada: a lâmpada gigante acende. Só o halo anima — o texto, que é o
+     LCP, já está lá desde o primeiro frame. */
+  @keyframes capa-acende { from { opacity: 0; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .capa__brilho { animation: capa-acende var(--dur-cena) var(--ease-cena) 200ms both; }
+  }
+
   @media (max-width: 899px) {
-    /* No celular a coluna de texto ocupa a largura inteira e o formulário
-       desce: o selo sai do canto e vira uma faixa atrás do fim do texto. */
-    .topo .selo { width: 86vw; left: -30%; bottom: -30%; }
+    .capa { padding-block: var(--e-8) var(--e-12); }
+    .capa__lado { padding-top: 190px; }
+    .capa__pessoa { width: 150px; top: 0; }
+    .capa__fala { top: 44px; right: 150px; }
+    .capa__gigante { left: auto; right: -150px; top: auto; bottom: 120px; height: 560px; }
+    .capa__brilho { left: auto; right: -139px; top: auto; bottom: 272px; width: 420px; height: 420px; }
   }
 </style>
+
+<script>
+  import { faixaDaConta } from "../lib/regua.mjs";
+
+  // A régua e o interruptor. ~1.5kb. Sem este script a capa continua inteira:
+  // a régua mostra a conta de exemplo pintada no servidor, o <select> do
+  // formulário fica visível e o interruptor nem aparece.
+  const capa = document.querySelector<HTMLElement>(".capa[data-art='jl']");
+  const regua = capa?.querySelector<HTMLInputElement>("#conta-luz");
+
+  if (capa && regua) {
+    const min = Number(capa.dataset.reguaMin);
+    const max = Number(capa.dataset.reguaMax);
+    const desconto = Number(capa.dataset.desconto);
+    const reais = (v: number) => `R$ ${Math.round(v).toLocaleString("pt-BR")}`;
+    const campo = (nome: string) => capa.querySelector<HTMLElement>(`[data-regua-${nome}]`)!;
+    const [hoje, com, ano, resumo] = ["hoje", "com", "ano", "resumo"].map(campo);
+
+    // O terceiro campo do formulário vem da régua, pela mesma faixaDaConta()
+    // que o servidor usou para marcar o <select>. Se a lista de faixas sair do
+    // formato, a régua para de preencher e o <select> volta à vista — melhor
+    // que mandar a faixa errada ao CRM.
+    const form = capa.querySelector<HTMLElement>(".form");
+    const select = form?.querySelector<HTMLSelectElement>("select[name='contexto']");
+    const faixas = select ? [...select.options].map((o) => o.value).filter(Boolean) : [];
+    const assume = !!select && faixaDaConta(0, faixas) !== undefined;
+    if (form && !assume) form.classList.add("form--sem-regua");
+
+    const atualizar = (avisar: boolean) => {
+      const v = Number(regua.value);
+      capa.style.setProperty("--brilho", ((v - min) / (max - min)).toFixed(3));
+      hoje.textContent = reais(v);
+      com.textContent = reais(v * (1 - desconto));
+      ano.textContent = reais(v * desconto * 12);
+      resumo.textContent = reais(v);
+      regua.setAttribute("aria-valuetext", `${reais(v)} por mês, economia estimada de ${reais(v * desconto * 12)} por ano`);
+      const faixa = assume ? faixaDaConta(v, faixas) : undefined;
+      if (faixa && select!.value !== faixa) {
+        select!.value = faixa;
+        // Dispara o aviso "abaixo de R$ 250 vai para análise" que o próprio
+        // LeadForm já mostra — só quando a faixa muda, não a cada R$ 10.
+        if (avisar) select!.dispatchEvent(new Event("change"));
+      }
+    };
+    regua.addEventListener("input", () => atualizar(true));
+    atualizar(false);
+
+    // O interruptor: noite (JL5) ⇄ dia (JL2). Estado da página, não do site —
+    // o cordão do cabeçalho continua mandando no tema claro/escuro.
+    const botao = capa.querySelector<HTMLButtonElement>(".capa__interruptor");
+    // Nome fixo ("Capa em modo dia") e o estado em aria-pressed: botão de
+    // alternar que troca o próprio nome faz o leitor de tela anunciar o
+    // contrário do que aconteceu.
+    if (botao) {
+      delete botao.dataset.espera;
+      botao.addEventListener("click", () => {
+        const dia = capa.dataset.luz !== "dia";
+        const trocar = () => {
+          capa.dataset.luz = dia ? "dia" : "noite";
+          botao.setAttribute("aria-pressed", String(dia));
+        };
+        const reduzido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const vt = (document as any).startViewTransition;
+        if (vt && !reduzido) vt.call(document, trocar);
+        else trocar();
+      });
+    }
+  }
+</script>

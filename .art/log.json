@@ -1,11 +1,74 @@
 [
   {
+    "data": "2026-10-01",
+    "projeto": "coopluz",
+    "pagina": "/ (capa — só a home; Vertical.astro é usado só por index.astro)",
+    "direcao": "jl",
+    "tipo": "custom",
+    "eixos": {
+      "materia": "geometria",
+      "motor": "estado",
+      "banda": "escura"
+    },
+    "nota_eixos": "Banda escura por padrão (noite, JL5) com um estado alternativo claro-médio (dia, JL2) trocado pelo interruptor da própria frase. Diferente do circuito (luz/estado/ambas), a troca é da CAPA, não do site: o cordão do cabeçalho continua mandando no tema.",
+    "estrutura": "Manifesto + calculadora em díptico: frase gigante, h1 de SEO, régua da conta e resultado em reais à esquerda (7fr); consultora, fala e formulário de 2 campos visíveis à direita (5fr), começando na altura da frase para o formulário caber acima da dobra.",
+    "pedido": "Dona pediu /art-direction para \"gerar desejo de entrar em contato\". Cinco folhas: A/B/C (texto à esquerda + objeto à direita) → \"me dê mais opções\"; D/E/F (composição trocada) → \"faz mais três e uma mistura do A e F\"; G/H/I + A+F → gostou da A+F e pediu \"apresentar o símbolo da lâmpada\"; J/K/L/M (A+F fixa, só a lâmpada varia) → \"misture a J com a L\"; JL1–JL5 → \"execute da JL5 e deixe um símbolo na headline que se a pessoa clicar fica na JL2\".",
+    "verbo": "acender — a lâmpada da marca aparece três vezes e as três respondem ao mesmo número (--brilho = posição da régua)",
+    "camadas": {
+      "entrada": "o halo dentro da lâmpada gigante acende (opacity, 900ms, 200ms de atraso); a lâmpada-interruptor acena uma vez aos 1200ms (rotate). O texto (LCP) não anima.",
+      "scroll": "AUSENTE POR DECLARAÇÃO: a capa é a primeira tela; o fio do circuito já conduz o scroll do resto da página.",
+      "ponteiro": "a régua (input range) — o botão é a lâmpada colorida num disco creme, o halo do botão e o halo da lâmpada gigante crescem com o valor; o valor preenche a faixa do formulário. Teclado faz o mesmo (setas).",
+      "transicao": "o interruptor da frase troca noite ⇄ dia com document.startViewTransition (cross-fade de raiz); sem suporte ou com movimento reduzido, troca seca."
+    },
+    "materia_humana": "consultora Humaaans (Pablo Stanley, CC0) montada das partes do pacote npm sem React e repintada (blazer creme, calça tinta) para ler nos dois fundos; src/assets/capa/consultora.svg, embutida via ?raw.",
+    "custo": {
+      "faixa": "captacao",
+      "js_gzip_b": 735,
+      "deps_novas": [],
+      "delta_pagina_gzip_b": 5297,
+      "nota_peso": "home 27496b gzip contra 22199b da produção (HEAD 3fcd19e) — inclui o SVG da consultora (2236b gzip), +1688b de CSS e o script da capa. Medido sobre o build (.vercel/output/static).",
+      "lcp_ms": {
+        "mediana_390": 1176,
+        "mediana_1440": 892,
+        "alvo": 2000,
+        "condicao": "4G simulado (150ms RTT, 1.6Mbps) + CPU 4x, 5 amostras, servidor local; produção na mesma medição: 1404/1392 (rede real, não comparável 1:1)"
+      },
+      "cls": 0,
+      "inp": "não medido isoladamente: 1 listener de input na régua, escrita de 5 textos + 1 custom property por evento."
+    },
+    "gates_corrigidos": [
+      "G6 token-fechado — #f6f3ea, #f2c14e, rgba(4,24,30) e o verde do resumo viraram --capa-disco/--capa-ambar/--capa-sombra/--resumo-*",
+      "G19 neutro com croma — branco puro do texto e do foco virou o creme #f6f3ea; fundo dos campos #fffdf8",
+      "G21 blur não anima — drop-shadow no interruptor (que gira) virou fundo radial",
+      "G22 contraste — dia no verde da marca #40ac68 dava creme 2.59; fundo do dia virou #38995c (creme 3.22 só em ≥56px, tinta 4.79); riscado do dia teal-700 2.1 → teal-900 3.4",
+      "G26 CLS — o script trocava <select> por resumo depois da pintura (0.0011); a troca foi para @media (scripting: enabled) e o <select> sai do servidor já marcado pela mesma faixaDaConta() (src/lib/regua.mjs, testada)",
+      "tipografia — na 1ª visita em 4G a Outfit (display=optional) perde a janela e a reserva era Segoe/Roboto REGULAR com negrito sintético: a frase saía fina. Reserva própria \"Outfit capa forte\" (Segoe UI Black/Roboto Black/Helvetica Neue Bold/Arial Black) — medido por CSS.getPlatformFontsForNode"
+    ],
+    "gates_nao_aplicaveis": [
+      "G13 scroll-por-distância — sem camada de scroll",
+      "G16 palco — sem loop autônomo",
+      "G31 dpr — sem canvas"
+    ],
+    "divida_declarada": "Cabeçalho no celular continua em 3 linhas (~250px antes da capa) — é componente compartilhado, fora do raio desta tela. A página abaixo da capa continua com 11 blocos no ritmo herdado do hub (recomendado: 6). \"20% sobre a conta\" na régua precisa de confirmação da dona (a fatura de exemplo usa 140 de 700, coerente).",
+    "recusadas": [
+      "A Sua conta, B Casa fresca, C Fila que entra (pediu mais opções)",
+      "D Rua de Goiás, E Escolha o seu caso, F Manifesto verde (pediu mais e a mistura A+F)",
+      "G, H, I",
+      "J, K, M (escolheu mistura J+L)",
+      "JL1, JL2 (como padrão), JL3, JL4"
+    ]
+  },
+  {
     "data": "2026-08-22",
     "projeto": "coopluz",
     "pagina": "/ (secao \"Na midia\", entre \"Numeros da cooperativa\" e \"Leia mais\")",
     "direcao": "ima",
     "tipo": "catalogo",
-    "eixos": { "materia": "geometria", "motor": "ponteiro", "banda": "clara" },
+    "eixos": {
+      "materia": "geometria",
+      "motor": "ponteiro",
+      "banda": "clara"
+    },
     "estrutura": "Nao troca a macroestrutura da pagina (continua o ritmo herdado do hub: .secao > .container > olho + h2 + chamada + lista) — divida ja declarada na entrada \"fatura\". Esta e uma secao nova dentro desse ritmo, nao uma direcao de pagina inteira.",
     "pedido": "Usuario trouxe 4 videos do YouTube como referencia (\"achei 4 videos\"). Baixados os frames reais (nao so metadados): 1 Short da propria marca (ilustracao flat verde, moedas, casal), 1 entrevista Jovem Pan News, 2 clipes com bumper \"Economize Coopluz\" + logo da Globo (b-roll de torres de transmissao e infografico de mapa). Perguntado o uso pretendido; usuario delegou (\"Pode escolher o melhor\").",
     "decisao": "Descartado embutir os frames/videos (carregam marca de terceiro — Globo/Jovem Pan — reexibir seria usar a marca deles como se fosse nossa) e descartado adotar o estilo flat do Short (quebraria o sistema autoral ja existente de fatura/circuito). O que sobra e sem risco: os 4 videos PROVAM cobertura de imprensa real. Virou secao de prova social \"Na midia\", citando veiculo + manchete + link para o original — sem logo de emissora (nao ha asset licenciado), so tipografia.",

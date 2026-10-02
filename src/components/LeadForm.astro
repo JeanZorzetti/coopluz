@@ -11,8 +11,14 @@ interface Props {
    *  <label for> do segundo apontaria para o input do PRIMEIRO — clicar no
    *  rótulo move o foco para o formulário errado. Cada instância declara o seu. */
   instancia?: string;
+  /** Troca a linha abaixo do título. O padrão conta "três campos" — errado
+   *  quando um deles chega preenchido de fora (a régua da capa da home). */
+  subtitulo?: string;
+  /** Opção já marcada no <select>. A régua da capa pinta um valor de exemplo
+   *  e o formulário precisa chegar coerente com ele, antes de qualquer JS. */
+  contextoInicial?: string;
 }
-const { solucao, titulo = "Peça sua cotação", destaque = false, instancia = "1" } = Astro.props;
+const { solucao, titulo = "Peça sua cotação", destaque = false, instancia = "1", subtitulo, contextoInicial } = Astro.props;
 const id = `lead-${solucao.slug}-${instancia}`;
 ---
 
@@ -27,8 +33,7 @@ const id = `lead-${solucao.slug}-${instancia}`;
       <>
         <h2>{titulo}</h2>
         <p class="form__sub">
-          Três campos. Um consultor responde no seu WhatsApp {ATENDIMENTO.prazo} — sem robô e sem ligação de
-          telemarketing.
+          {subtitulo ?? `Três campos. Um consultor responde no seu WhatsApp ${ATENDIMENTO.prazo} — sem robô e sem ligação de telemarketing.`}
         </p>
       </>
     )
@@ -76,6 +81,11 @@ const id = `lead-${solucao.slug}-${instancia}`;
       <span id={`${id}-whatsapp-dica`} class="campo__dica">DDD + 9 dígitos. É por aqui que respondemos.</span>
     </p>
 
+    {/* Quem chama pode resumir o terceiro campo quando ele chega preenchido de
+         fora (a régua da capa). O <select> continua no DOM e no envio: o resumo
+         só o esconde quando o JS de quem chama assume o preenchimento. */}
+    <slot name="resumo" />
+
     <p class="campo">
       <label for={`${id}-contexto`}>{solucao.campo.rotulo}</label>
       {
@@ -88,7 +98,7 @@ const id = `lead-${solucao.slug}-${instancia}`;
             data-aviso-texto={solucao.campo.avisoPara?.texto}
           >
             <option value="">Selecione</option>
-            {solucao.campo.opcoes.map((o) => <option value={o}>{o}</option>)}
+            {solucao.campo.opcoes.map((o) => <option value={o} selected={o === contextoInicial}>{o}</option>)}
           </select>
         ) : (
           <input id={`${id}-contexto`} name="contexto" type="text" maxlength="300" placeholder={solucao.campo.exemplo} />

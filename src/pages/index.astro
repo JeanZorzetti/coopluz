@@ -46,27 +46,9 @@ const perguntas = [
   h1="Pague 20% menos na conta da Equatorial Goiás, sem obra e sem placa no telhado"
   chamada="A Coopluz é uma cooperativa de energia por compensação. Você se torna cooperado, recebe créditos de fazendas solares cooperadas e o desconto entra direto na sua fatura. Sem instalar nada, sem trocar de distribuidora e sem taxa de adesão."
   perguntas={perguntas}
-  tituloForm="Veja se você se qualifica"
+  tituloForm="Receba a análise da sua conta"
   rotuloBarra="Ver meu desconto"
 >
-  <div class="beneficios" slot="hero">
-    <ul class="beneficios__grade" role="list">
-      <li>
-        <strong>20% de desconto</strong>
-        <span>Todos os meses na sua fatura</span>
-      </li>
-      <li>
-        <strong>Zero instalação</strong>
-        <span>Sem placas e sem obras</span>
-      </li>
-      <li class="beneficios__item--acento">
-        <strong>Sem SPC e Serasa</strong>
-        <span>Adesão sem consulta de crédito</span>
-      </li>
-    </ul>
-    <p class="nota">Sem taxa de adesão e sem multa para cancelar.</p>
-  </div>
-
   <section class="secao">
     <div class="container">
       <span class="olho">O problema</span>
@@ -345,36 +327,6 @@ const perguntas = [
     color: var(--texto-suave);
   }
 
-  .beneficios { margin-top: var(--e-6); }
-  .beneficios__grade {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--e-4);
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  }
-  .beneficios__grade li {
-    background: var(--superficie-alta);
-    border: 1px solid var(--borda);
-    border-radius: var(--r-3);
-    padding: var(--e-4);
-  }
-  .beneficios__grade strong { display: block; font-size: var(--t-lg); }
-  .beneficios__grade span { display: block; margin-top: var(--e-2); font-size: var(--t-sm); color: var(--texto-suave); }
-  .beneficios__grade li.beneficios__item--acento {
-    background: var(--verde-100);
-    border-color: var(--verde-500);
-  }
-  .beneficios__item--acento strong { color: var(--verde-700); }
-  /* --texto-suave, e não --cinza-600: o primitivo é um hex fixo que NÃO
-     inverte no tema escuro, e o fundo deste card inverte (--verde-100 vira
-     #153a2a). O par ficava cinza-escuro sobre verde-escuro, 1.86:1 — medido em
-     pixel renderizado, não estimado. O semântico resolve para exatamente o
-     mesmo #4c5f5e no claro, então nada muda lá, e para #a9bcbc no escuro:
-     5.97:1. Bug anterior a esta direção; corrigido aqui porque estava na
-     página que ela entrega. */
-  .beneficios__item--acento span { color: var(--texto-suave); }
   .fora li { padding-left: var(--e-6); position: relative; color: var(--texto-suave); }
   .fora li::before { content: "—"; position: absolute; left: 0; color: var(--cinza-400); }
   .nota { font-size: var(--t-sm); color: var(--texto-suave); margin-top: var(--e-4); }
