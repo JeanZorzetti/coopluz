@@ -1,5 +1,30 @@
 [
   {
+    "data": "2026-10-02",
+    "projeto": "coopluz",
+    "pagina": "/ (seção \"O problema\", logo abaixo da capa)",
+    "direcao": "bandeira",
+    "tipo": "derivada",
+    "eixos": { "materia": "pigmento", "motor": "scroll", "banda": "escura" },
+    "nota_eixos": "Fundo sempre escuro nos dois temas do cordão (como a capa); as quatro cores das bandeiras tarifárias da ANEEL vão no pano, e o fundo é a mesma cor quase apagada.",
+    "estrutura": "Díptico 6fr/5fr: texto à esquerda, bandeira no mastro com régua das 4 bandeiras à direita; no celular a bandeira desce para baixo do texto.",
+    "pedido": "Dona achou o ponto verde (nó do circuito) horrível e o lado direito vazio. Folha 1: A relógio de luz, B 'subiu' em degraus, C bandeira tarifária -> 'me dê mais 3 opções'. Folha 2: D lâmpadas como gráfico, E pessoa Humaaans com a conta, F marca-texto -> escolheu C da primeira folha.",
+    "verbo": "piorar — a bandeira passa de verde a vermelha 2 enquanto o pano atravessa a tela",
+    "camadas": {
+      "entrada": "AUSENTE POR DECLARAÇÃO: o estado inicial já é a primeira bandeira (verde).",
+      "scroll": "o progresso do pano na tela (0.12 a 0.62) escolhe o passo 0-3 em data-bandeira; fundo e pano trocam de cor em 900ms, rótulo e régua em 400ms. Sem JS fica no passo 3.",
+      "ponteiro": "AUSENTE POR DECLARAÇÃO: seção de leitura.",
+      "transicao": "o pano tremula com scale (primitiva já usada na página; skew foi tirado por ser a 4a)."
+    },
+    "custo": { "faixa": "captacao", "js_gzip_b": 300, "deps_novas": [], "lcp": "sem impacto: abaixo da dobra", "cls": 0 },
+    "gates_corrigidos": [
+      "G22 contraste — branco sobre o pano amarelo dava 2.6:1; no passo amarelo o texto vira tinta #0b1f1c (6.6:1). Verde do pano #2f9e5a -> #23804a para o <small> passar 4.5:1.",
+      "G15 primitivas — skew na tremulação trocado por scale só."
+    ],
+    "divida_declarada": "O nó do circuito (ponto verde) foi tirado SÓ desta seção; continua nas outras. A dona não respondeu se quer tirar de todas.",
+    "recusadas": ["A relógio de luz, B subiu em degraus (pediu mais 3)", "D lâmpadas que crescem, E pessoa com a conta, F marca-texto"]
+  },
+  {
     "data": "2026-10-01",
     "projeto": "coopluz",
     "pagina": "/ (capa — só a home; Vertical.astro é usado só por index.astro)",

@@ -49,20 +49,40 @@ const perguntas = [
   tituloForm="Receba a análise da sua conta"
   rotuloBarra="Ver meu desconto"
 >
-  <section class="secao">
-    <div class="container">
-      <span class="olho">O problema</span>
-      <h2>A conta de luz subiu e não tem como consumir menos</h2>
-      <p class="chamada">
-        Bandeira tarifária, reajuste anual, calor de Goiás no ar-condicionado. Em residências e comércios da região,
-        a energia virou uma das três maiores despesas fixas do mês — e cortar consumo já não resolve, porque o que
-        subiu foi o preço do kWh, não o seu uso.
-      </p>
-      <p class="chamada">
-        A saída conhecida era investir em um sistema solar próprio, com obra, projeto e anos de retorno. A
-        compensação de energia resolve o mesmo problema sem o investimento: em vez de gerar no seu telhado, você
-        usa a energia de uma fazenda solar da Coopluz.
-      </p>
+  {/* A seção é a bandeira tarifária: o fundo passa por verde, amarela, vermelha 1
+       e vermelha 2 enquanto ela atravessa a tela. Sem JS fica na vermelha 2 —
+       o estado que o texto descreve. */}
+  <section class="secao secao--bandeira" data-bandeira="3">
+    <div class="container bandeira__grade">
+      <div>
+        <span class="olho">O problema</span>
+        <h2>A conta de luz subiu e não tem como consumir menos</h2>
+        <p class="chamada">
+          Bandeira tarifária, reajuste anual, calor de Goiás no ar-condicionado. Em residências e comércios da região,
+          a energia virou uma das três maiores despesas fixas do mês — e cortar consumo já não resolve, porque o que
+          subiu foi o preço do kWh, não o seu uso.
+        </p>
+        <p class="chamada">
+          A saída conhecida era investir em um sistema solar próprio, com obra, projeto e anos de retorno. A
+          compensação de energia resolve o mesmo problema sem o investimento: em vez de gerar no seu telhado, você
+          usa a energia de uma fazenda solar da Coopluz.
+        </p>
+      </div>
+      <div class="bandeira" aria-hidden="true">
+        <span class="bandeira__mastro"></span>
+        <div class="bandeira__pano">
+          <strong data-passo="0">Bandeira verde<small>sem cobrança extra</small></strong>
+          <strong data-passo="1">Bandeira amarela<small>mais caro</small></strong>
+          <strong data-passo="2">Vermelha 1<small>mais caro ainda</small></strong>
+          <strong data-passo="3">Vermelha 2<small>a mais cara</small></strong>
+        </div>
+        <ol class="bandeira__regua">
+          <li data-passo="0">verde</li>
+          <li data-passo="1">amarela</li>
+          <li data-passo="2">vermelha 1</li>
+          <li data-passo="3">vermelha 2</li>
+        </ol>
+      </div>
     </div>
   </section>
 
@@ -327,6 +347,126 @@ const perguntas = [
     color: var(--texto-suave);
   }
 
+  /* art-direction · bandeira · eixos: pigmento/scroll/escura · orçamento: ~0,4kb JS · 2026-10-02
+     "O problema" como a bandeira tarifária da conta. O fundo é sempre escuro
+     (nos dois temas do cordão, como a capa): as quatro cores da ANEEL só
+     aparecem no pano, e o fundo é a mesma cor quase apagada, para o texto
+     creme passar em todas. Sem o nó do circuito: a dona achou o ponto verde
+     ruim, e aqui ele brigaria com a régua de cores. */
+  .secao--bandeira {
+    --bandeira-fundo: #3a0d10;
+    --bandeira-pano: #b3202a;
+    background: var(--bandeira-fundo);
+    color: #f6f3ea;
+    transition: background-color 900ms var(--ease-cena);
+  }
+  .secao--bandeira[data-bandeira="0"] { --bandeira-fundo: #0f3d26; --bandeira-pano: #23804a; }
+  .secao--bandeira[data-bandeira="1"] { --bandeira-fundo: #3d300a; --bandeira-pano: #c99a1c; }
+  .secao--bandeira[data-bandeira="2"] { --bandeira-fundo: #3f1a0e; --bandeira-pano: #c94a24; }
+  .secao--bandeira::before { display: none; }
+  .secao--bandeira .olho { color: #f6f3ea; opacity: 0.85; }
+  .secao--bandeira h2 { color: #f6f3ea; }
+  .secao--bandeira .chamada { color: #d4dddb; }
+  .bandeira__grade {
+    display: grid;
+    grid-template-columns: 6fr 5fr;
+    gap: var(--e-12);
+    align-items: center;
+  }
+  .bandeira { position: relative; height: 300px; }
+  .bandeira__mastro {
+    position: absolute;
+    left: 30px;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    border-radius: 3px;
+    background: linear-gradient(#e9e4d6, #9a9483);
+  }
+  .bandeira__pano {
+    position: absolute;
+    left: 36px;
+    top: 14px;
+    width: 74%;
+    height: 150px;
+    display: grid;
+    place-items: center;
+    background: var(--bandeira-pano);
+    border-radius: 0 10px 10px 0;
+    clip-path: polygon(0 0, 100% 6%, 96% 50%, 100% 94%, 0 100%);
+    transform-origin: left center;
+    transition: background-color 900ms var(--ease-cena);
+  }
+  .bandeira__pano strong {
+    grid-area: 1 / 1;
+    font-family: var(--display);
+    font-size: var(--t-xl);
+    color: #fff;
+    text-align: center;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    transition: opacity 400ms;
+  }
+  /* Branco sobre o amarelo dá 2.6:1; ali o texto vira tinta (6.6:1). */
+  .bandeira__pano strong[data-passo="1"] { color: #0b1f1c; }
+  .bandeira__pano small { display: block; font-size: var(--t-sm); font-weight: 600; opacity: 0.9; }
+  .bandeira__regua {
+    position: absolute;
+    left: 48px;
+    right: 0;
+    bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--t-sm);
+    font-weight: 600;
+  }
+  .bandeira__regua li { padding-top: 16px; position: relative; }
+  .bandeira__regua li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 10px;
+    border-radius: 999px;
+    opacity: 0.35;
+    transition: opacity 400ms;
+  }
+  .bandeira__regua li:nth-child(1)::before { background: #23804a; }
+  .bandeira__regua li:nth-child(2)::before { background: #c99a1c; }
+  .bandeira__regua li:nth-child(3)::before { background: #c94a24; }
+  .bandeira__regua li:nth-child(4)::before { background: #b3202a; }
+  .secao--bandeira[data-bandeira="0"] [data-passo="0"],
+  .secao--bandeira[data-bandeira="1"] [data-passo="1"],
+  .secao--bandeira[data-bandeira="2"] [data-passo="2"],
+  .secao--bandeira[data-bandeira="3"] [data-passo="3"] { opacity: 1; }
+  .secao--bandeira[data-bandeira="0"] li[data-passo="0"]::before,
+  .secao--bandeira[data-bandeira="1"] li[data-passo="1"]::before,
+  .secao--bandeira[data-bandeira="2"] li[data-passo="2"]::before,
+  .secao--bandeira[data-bandeira="3"] li[data-passo="3"]::before {
+    opacity: 1;
+    box-shadow: 0 0 0 3px rgba(246, 243, 234, 0.6);
+  }
+  /* O pano tremula só com `scale`, primitiva que a página já usa — nada de
+     skew, que seria a quarta. */
+  @keyframes bandeira-tremula { 50% { scale: 0.97 1.02; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .bandeira__pano { animation: bandeira-tremula 3.2s ease-in-out infinite; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .secao--bandeira, .bandeira__pano, .bandeira__pano strong, .bandeira__regua li::before { transition: none; }
+  }
+  @media (max-width: 860px) {
+    .bandeira__grade { grid-template-columns: 1fr; gap: var(--e-6); }
+    .bandeira { height: 250px; }
+    .bandeira__pano { height: 130px; }
+    .bandeira__regua { font-size: 0.75rem; }
+  }
+
   .fora li { padding-left: var(--e-6); position: relative; color: var(--texto-suave); }
   .fora li::before { content: "—"; position: absolute; left: 0; color: var(--cinza-400); }
   .nota { font-size: var(--t-sm); color: var(--texto-suave); margin-top: var(--e-4); }
@@ -376,6 +516,27 @@ const perguntas = [
 </style>
 
 <script>
+  // Bandeira tarifária: enquanto "O problema" atravessa a tela, a bandeira
+  // passa de verde a vermelha 2. Lê a posição num frame por rolagem e só
+  // escreve o atributo quando o passo muda. A régua é o pano, não a seção:
+  // no celular ele fica abaixo do texto e chegaria já vermelho.
+  const bandeira = document.querySelector<HTMLElement>(".secao--bandeira");
+  const pano = bandeira?.querySelector<HTMLElement>(".bandeira");
+  if (bandeira && pano) {
+    let pendente = false;
+    const atualizar = () => {
+      pendente = false;
+      const r = pano.getBoundingClientRect();
+      const progresso = (innerHeight - r.top) / (innerHeight + r.height);
+      const passo = String(Math.max(0, Math.min(3, Math.floor(((progresso - 0.12) / 0.5) * 4))));
+      if (bandeira.dataset.bandeira !== passo) bandeira.dataset.bandeira = passo;
+    };
+    addEventListener("scroll", () => {
+      if (!pendente) { pendente = true; requestAnimationFrame(atualizar); }
+    }, { passive: true });
+    atualizar();
+  }
+
   // Ímã dos cartões de imprensa. Um listener no window para todos os
   // alvos (não um por cartão) e só liga com ponteiro real + sem preferência
   // por movimento reduzido: os links já funcionam sem isto, a inclinação
