@@ -482,6 +482,44 @@ const schema = [
     line-height: 1.4;
     box-shadow: 0 10px 24px rgba(var(--capa-sombra), 0.3);
   }
+  /* A fala chega como mensagem de WhatsApp: o balão surge da consultora,
+     mostra "digitando…" e só então o texto aparece. Depois fica boiando ao
+     lado dela para puxar o olho até o formulário; o mouse em cima segura. O
+     texto está no HTML desde o início — só a cor anima, então leitor de tela
+     e Google leem a frase inteira e o balão não muda de tamanho (CLS). */
+  @keyframes fala-chega { from { opacity: 0; scale: 0.85; translate: 0 12px; } }
+  @keyframes fala-texto { from { color: transparent; } }
+  @keyframes fala-digitando {
+    0%, 60% { opacity: 1; }
+    30% { opacity: 0.35; }
+    85% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes fala-flutua { to { translate: 0 -8px; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .capa__fala {
+      transform-origin: 100% 100%;
+      animation:
+        fala-chega 500ms var(--ease-cena) 600ms both,
+        fala-texto 300ms ease 2000ms both,
+        fala-flutua 2.6s ease-in-out 2300ms infinite alternate;
+    }
+    .capa__fala:hover { animation-play-state: paused; }
+    .capa__fala::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: var(--e-4);
+      width: 8px;
+      height: 8px;
+      margin-top: -4px;
+      border-radius: 50%;
+      background: var(--capa-fala-texto);
+      box-shadow: 14px 0 0 var(--capa-fala-texto), 28px 0 0 var(--capa-fala-texto);
+      opacity: 0;
+      animation: fala-digitando 1400ms ease 700ms both;
+    }
+  }
   /* O cartão do formulário é papel claro nos DOIS estados e nos DOIS temas do
      site: os tokens que o LeadForm lê são fixados aqui, como a fatura faz com
      os dela. Sem isto, no tema escuro do cordão o cartão virava #113039 sobre
