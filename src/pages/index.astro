@@ -6,6 +6,14 @@ import QuemPode from "../components/QuemPode.astro";
 
 const solucao = COOPLUZ;
 
+// Os três selos da seção de números. Posição de março/2026, relatório da
+// Coopluz. O anel só repete dado que já está no título ou na nota.
+const selos = [
+  { numero: "3.865", rotulo: "cooperados", detalhe: "recebendo crédito hoje", anel: "Coopluz · Goiás · março de 2026 · Coopluz · Goiás · ", giro: "-6deg" },
+  { numero: "10×", rotulo: "em quatro meses", detalhe: "dez/25 a mar/26", anel: "De dezembro a março · de 380 a 3.865 cooperados · ", giro: "4deg" },
+  { numero: "1,66 mi", rotulo: "kWh compensados", detalhe: "no mês de março/2026", anel: "Energia solar compensada · 180 t de CO₂ evitadas · ", giro: "-3deg" },
+];
+
 const perguntas = [
   {
     p: "Preciso instalar placa solar no meu telhado?",
@@ -110,86 +118,63 @@ const perguntas = [
 
   <QuemPode />
 
-  <section class="secao secao--suave">
+  {/* Números, imprensa e leitura numa seção só (folha de 03/10, opção F).
+       Os três números viram selos de carimbo: o anel de texto repete o que
+       já está escrito na seção (título e nota), por isso é aria-hidden. */}
+  <section class="secao secao--suave selos-secao" data-art="tres-selos" aria-labelledby="selos-titulo">
     <div class="container">
       <span class="olho">Números da cooperativa</span>
-      <h2>De 380 para 3.865 cooperados em quatro meses</h2>
-      {/* Grade própria, e não a `beneficios__grade` do herói: aqui o número
-           É o argumento. Reusar o cartão de benefício deixava "3.865" no mesmo
-           corpo de um rótulo de card, e o dado que sustenta a página inteira
-           passava despercebido. A unidade sai do número e vira linha de baixo,
-           para o algarismo ficar sozinho na primeira linha. */}
-      <ul class="numeros" role="list">
-        <li>
-          <strong>3.865</strong>
-          <b>cooperados</b>
-          <span>recebendo crédito hoje, em Goiás</span>
-        </li>
-        <li>
-          <strong>10&times;</strong>
-          <b>em quatro meses</b>
-          <span>crescimento de dez/25 a mar/26</span>
-        </li>
-        <li>
-          <strong>1,66 mi</strong>
-          <b>kWh compensados</b>
-          <span>no mês de março/2026</span>
-        </li>
+      <h2 id="selos-titulo">De 380 para 3.865 cooperados em quatro meses</h2>
+      <ul class="selos" role="list">
+        {selos.map((s, i) => (
+          <li class="carimbo" style={`--giro: ${s.giro}`}>
+            <svg class="carimbo__anel" viewBox="0 0 240 240" aria-hidden="true" focusable="false">
+              <defs><path id={`selo-anel-${i}`} d="M120,120 m-100,0 a100,100 0 1,1 200,0 a100,100 0 1,1 -200,0" /></defs>
+              <text><textPath href={`#selo-anel-${i}`} textLength="618" lengthAdjust="spacing">{s.anel}</textPath></text>
+            </svg>
+            <div class="carimbo__miolo">
+              <strong>{s.numero}</strong>
+              <span>{s.rotulo}</span>
+              <small>{s.detalhe}</small>
+            </div>
+          </li>
+        ))}
       </ul>
-      <p class="nota">
+      <p class="selos__nota">
         Posição de março/2026, conforme relatório da Coopluz — 180 t de CO₂ evitadas, equivalente a 720 árvores
         plantadas. A cooperativa segue crescendo mês a mês.
       </p>
-    </div>
-  </section>
 
-  <section class="secao">
-    <div class="container">
-      <span class="olho">Na mídia</span>
-      <h2>Energia por assinatura também virou notícia</h2>
-      <p class="chamada">
-        Antes deste site, o modelo de compensação por assinatura já tinha passado pela Jovem Pan News e pela Rede
-        Globo — sem a Coopluz pagar pelo espaço.
-      </p>
-      <ul class="imprensa lista-limpa" role="list">
-        <li>
-          <a
-            class="imprensa__item externo"
-            href="https://www.youtube.com/watch?v=AajbB7OHUR0"
-            target="_blank"
-            rel="noopener"
-            data-ima
-          >
-            <span class="imprensa__veiculo">Jovem Pan News</span>
-            <span class="imprensa__manchete">Brasileiro já pode assinar luz em casa ou comércio</span>
-            <span class="imprensa__legenda">Fonte solar pode garantir desconto de 15% ao consumidor</span>
-          </a>
-        </li>
-        <li>
-          <a
-            class="imprensa__item externo"
-            href="https://www.youtube.com/watch?v=_pZob1Y9smI"
-            target="_blank"
-            rel="noopener"
-            data-ima
-          >
-            <span class="imprensa__veiculo">Rede Globo</span>
-            <span class="imprensa__manchete">Energia solar por assinatura: entenda como funciona</span>
-            <span class="imprensa__legenda">Cobertura sobre economizar na conta de luz sem instalar placa</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="secao">
-    <div class="container">
-      <span class="olho">Leia mais</span>
-      <h2>Entenda a conta de luz antes de decidir</h2>
-      <ul class="lista-limpa" role="list">
-        <li><a href="/blog/reduzir-conta-equatorial-sem-placa-solar">Como reduzir a conta da Equatorial Goiás sem instalar placa solar</a></li>
-        <li><a href="/blog/fio-b-60-por-cento-2026-conta-equatorial-goias">Fio B a 60% em 2026: por que a conta da Equatorial Goiás subiu</a></li>
-      </ul>
+      <div class="selos__linha">
+        <h3>Visto na TV</h3>
+        <ul class="lista-limpa selos__itens" role="list">
+          <li>
+            <a class="selos__video externo" href="https://www.youtube.com/watch?v=AajbB7OHUR0" target="_blank" rel="noopener">
+              <span class="selos__play" aria-hidden="true"></span>
+              <span>
+                <small>Jovem Pan News</small>
+                <b>Brasileiro já pode assinar luz em casa ou comércio</b>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a class="selos__video externo" href="https://www.youtube.com/watch?v=_pZob1Y9smI" target="_blank" rel="noopener">
+              <span class="selos__play" aria-hidden="true"></span>
+              <span>
+                <small>Rede Globo</small>
+                <b>Energia solar por assinatura: entenda como funciona</b>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="selos__linha">
+        <h3>Antes de decidir, leia</h3>
+        <ul class="lista-limpa selos__itens" role="list">
+          <li><a class="selos__artigo" href="/blog/reduzir-conta-equatorial-sem-placa-solar">Como reduzir a conta da Equatorial Goiás sem instalar placa solar<span aria-hidden="true">→</span></a></li>
+          <li><a class="selos__artigo" href="/blog/fio-b-60-por-cento-2026-conta-equatorial-goias">Fio B a 60% em 2026: por que a conta da Equatorial Goiás subiu<span aria-hidden="true">→</span></a></li>
+        </ul>
+      </div>
     </div>
   </section>
   <section class="secao secao--suave">
@@ -236,107 +221,184 @@ const perguntas = [
 </Vertical>
 
 <style>
-  /* art-direction · ímã · eixos: geometria/ponteiro/clara · orçamento: ~1kb JS · 2026-08-22
-     Prova social de imprensa (Jovem Pan, Globo). Matéria geometria — os cartões
-     são tipo puro, sem foto: os vídeos de origem carregam bumper e marca da
-     própria emissora, reusar o frame seria reexibir a marca deles como se
-     fosse nossa. A citação (veículo + manchete + link para o original) é o
-     que se pode reaproveitar sem isso. Card inteiro é o link (G27: nada some
-     sem JS, só o deslocamento é enriquecimento) e reage à aproximação do
-     cursor com o mesmo --ease-mola que já existe no arquivo — sem token novo. */
-  .imprensa {
-    display: grid;
-    gap: var(--e-4);
-    margin-top: var(--e-6);
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  }
-  .imprensa__item {
-    display: block;
-    background: var(--superficie-alta);
-    border: 1px solid var(--borda);
-    border-radius: var(--r-3);
-    padding: var(--e-6);
-    text-decoration: none;
-    color: inherit;
-  }
-  .imprensa__veiculo {
-    display: block;
-    font-size: var(--t-sm);
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--marca);
-    margin-bottom: var(--e-2);
-  }
-  .imprensa__manchete {
-    display: block;
-    font-family: var(--display);
-    font-size: var(--t-md);
-    font-variation-settings: "wght" 700;
-    color: var(--texto);
-    letter-spacing: -0.01em;
-  }
-  .imprensa__item:hover .imprensa__manchete { color: var(--marca-forte); }
-  .imprensa__legenda {
-    display: block;
-    margin-top: var(--e-2);
-    font-size: var(--t-sm);
-    color: var(--texto-suave);
-  }
-  /* Entrada e ímã usam a MESMA primitiva do resto do arquivo: `rotate`. A
-     página já está no teto de 3 primitivas de movimento (rotate no selo e no
-     cordão, opacity e scale no cone/fio/nó) — `translate` em pixels, como o
-     catálogo de Ímã propõe, seria a 4ª. O gesto vira "apontar": o cartão
-     inclina como agulha de bússola em direção ao cursor, em vez de deslizar. */
-  .imprensa__item { rotate: 0deg; }
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .imprensa__item {
-        animation: imprensa-entra var(--dur-cena) var(--ease-cena) both;
-        animation-timeline: view();
-        animation-range: entry 10% cover 30%;
-      }
-    }
-  }
-  @keyframes imprensa-entra { from { opacity: 0; rotate: -4deg; } }
+  /* art-direction · tres-selos · eixos: geometria/entrada/média · orçamento: ~0,3kb JS · 2026-10-03
+     Números, imprensa e leitura numa seção só. Os números viram selos de
+     carimbo nas três cores que a página já usa como objeto: o creme do papel
+     (selo "Nome negativado?"), o verde da marca e o âmbar da lâmpada acesa.
+     As cores dos selos são fixas nos dois temas do cordão, como o papel; o
+     resto da seção segue os tokens globais.
 
-  /* O bloco de prova. `--t-3xl` no algarismo (o mesmo corpo do H1) porque é
-     a única seção da página em que o dado, e não a frase, é o argumento. */
-  .numeros {
+     Contraste medido:
+       selos — tinta #0b1f1c sobre creme #f6f3ea 15.4 · sobre verde #40ac68 5.96
+               · sobre âmbar #f2c14e 10.2 (o anel é enfeite, aria-hidden)
+       claro — veículo #6e5100 / #fff 7.39 · título #0b1f1c / #fff 17.1
+       escuro — veículo #f2c14e / #113039 8.31 · título #e6f0f0 / #113039 12.0
+     Sem camada de scroll: o fio do circuito já conduz a rolagem da página. */
+  .selos-secao {
+    --selo-creme: #f6f3ea;
+    --selo-verde: #40ac68;
+    --selo-ambar: #f2c14e;
+    --selo-tinta: #0b1f1c;
+    --selo-tracejado: rgba(11, 31, 28, 0.35);
+    --selo-halo: 242, 193, 78;
+    --selo-veiculo: light-dark(#6e5100, #f2c14e);
+  }
+
+  .selos {
     list-style: none;
-    margin: var(--e-8) 0 0;
+    margin: var(--e-12) 0 0;
     padding: 0;
     display: grid;
-    gap: var(--e-6);
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--e-8);
+    justify-items: center;
   }
-  .numeros li {
-    border-top: 3px solid var(--verde-500);
-    padding-top: var(--e-4);
+  .carimbo {
+    position: relative;
+    width: 240px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    background: var(--selo-creme);
+    color: var(--selo-tinta);
+    rotate: var(--giro);
+    box-shadow: 0 24px 60px -24px rgba(var(--selo-halo), 0.5);
+    /* O miolo mede em cqi: o selo encolhe no celular e o número vai junto. */
+    container-type: inline-size;
   }
-  .numeros strong {
+  .carimbo:nth-child(2) { background: var(--selo-verde); }
+  .carimbo:nth-child(3) { background: var(--selo-ambar); }
+  .carimbo::before {
+    content: "";
+    position: absolute;
+    inset: 14%;
+    border-radius: 50%;
+    border: 2px dashed var(--selo-tracejado);
+  }
+  .carimbo__anel {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: rotate var(--dur-cena) var(--ease-cena);
+  }
+  .carimbo__anel text {
+    font-family: var(--fonte);
+    font-size: 11.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    fill: currentColor;
+  }
+  .carimbo__miolo { position: relative; max-width: 64cqi; }
+  .carimbo strong {
     display: block;
     font-family: var(--display);
     font-variation-settings: "wght" 800;
-    font-size: var(--t-3xl);
-    line-height: 1;
+    font-size: 19cqi;
+    line-height: 0.95;
+    white-space: nowrap;
     letter-spacing: -0.03em;
-    color: var(--verde-700);
-    /* Algarismo de largura fixa: sem isto, "3.865" e "1,66" desalinham entre
-       si e a linha de números perde a leitura de tabela. */
     font-variant-numeric: tabular-nums;
   }
-  .numeros b {
-    display: block;
-    margin-top: var(--e-2);
-    font-size: var(--t-md);
-    font-weight: 700;
+  .carimbo span { display: block; margin-top: 1cqi; font-weight: 700; font-size: clamp(0.8125rem, 6.4cqi, 0.9375rem); line-height: 1.25; }
+  .carimbo small { display: block; margin-top: 1cqi; font-size: clamp(0.6875rem, 5cqi, 0.75rem); line-height: 1.3; }
+
+  /* Ponteiro: o anel gira um pouco sob o cursor, como carimbo na mão. */
+  @media (hover: hover) {
+    .carimbo:hover .carimbo__anel { rotate: 24deg; }
   }
-  .numeros span {
+
+  /* Entrada: quando a seção aparece, os selos são carimbados um a um. O
+     script só põe o estado "espera" se houver movimento e observador; sem
+     JS os selos já estão no lugar. */
+  .selos-secao[data-carimbo="espera"] .carimbo { opacity: 0; scale: 1.3; rotate: calc(var(--giro) + 12deg); }
+  .selos-secao[data-carimbo="feito"] .carimbo {
+    transition:
+      opacity var(--dur-base) var(--ease-saida),
+      scale var(--dur-cena) var(--ease-cena),
+      rotate var(--dur-cena) var(--ease-cena);
+  }
+  .selos-secao[data-carimbo="feito"] .carimbo:nth-child(2) { transition-delay: 140ms; }
+  .selos-secao[data-carimbo="feito"] .carimbo:nth-child(3) { transition-delay: 280ms; }
+
+  .selos__nota { max-width: 70ch; margin: var(--e-8) auto 0; text-align: center; font-size: var(--t-sm); color: var(--texto-suave); }
+
+  .selos__linha {
+    display: grid;
+    grid-template-columns: 12rem 1fr;
+    gap: var(--e-4) var(--e-6);
+    align-items: center;
+    margin-top: var(--e-4);
+  }
+  .selos__linha:first-of-type { margin-top: var(--e-12); padding-top: var(--e-8); border-top: 1px solid var(--borda); }
+  .selos__linha h3 { margin: 0; font-size: var(--t-md); color: var(--texto-suave); }
+  .selos__itens { grid-template-columns: 1fr 1fr; gap: var(--e-4); }
+  .selos__itens li { display: flex; }
+  .selos__video,
+  .selos__artigo {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--e-4);
+    min-height: 72px;
+    padding: var(--e-3) var(--e-4);
+    border-radius: var(--r-4);
+    color: var(--texto);
+    text-decoration: none;
+    transition: border-color var(--dur-rapida) var(--curva), background-color var(--dur-rapida) var(--curva);
+  }
+  .selos__video { background: var(--superficie-alta); border: 1px solid var(--borda); }
+  .selos__video:hover { color: var(--texto); border-color: var(--selo-veiculo); }
+  .selos__video small {
     display: block;
-    margin-top: var(--e-1);
-    font-size: var(--t-sm);
-    color: var(--texto-suave);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--selo-veiculo);
+  }
+  .selos__video b { display: block; font-size: 0.9375rem; line-height: 1.3; }
+  .selos__video::after { margin-left: auto; color: var(--texto-suave); }
+  .selos__play {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--selo-ambar);
+    display: grid;
+    place-items: center;
+    transition: scale var(--dur-rapida) var(--curva);
+  }
+  .selos__play::before {
+    content: "";
+    margin-left: 3px;
+    border-left: 12px solid var(--selo-tinta);
+    border-block: 8px solid transparent;
+  }
+  .selos__video:hover .selos__play { scale: 1.08; }
+  .selos__artigo { justify-content: space-between; border: 1px solid var(--borda); font-weight: 600; font-size: 0.9375rem; line-height: 1.45; }
+  .selos__artigo:hover { color: var(--texto); background: var(--superficie-alta); }
+  .selos__artigo span { color: var(--verde-700); font-weight: 800; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .carimbo__anel, .selos__play { transition: none; }
+  }
+  @media (max-width: 860px) {
+    .selos { grid-template-columns: 1fr 1fr; gap: var(--e-4); }
+    .carimbo { width: min(200px, calc((100vw - 5rem) / 2)); }
+    .carimbo:nth-child(3) { grid-column: 1 / -1; }
+    .selos__linha { grid-template-columns: 1fr; }
+  }
+  /* Abaixo de 560px dois selos lado a lado ficam com 150px e o miolo passa
+     por cima do tracejado. Vira uma coluna em zigue-zague, encaixada. */
+  @media (max-width: 559px) {
+    .selos { grid-template-columns: 1fr; gap: 0; }
+    .carimbo { width: 212px; justify-self: start; }
+    .carimbo:nth-child(2) { justify-self: end; margin-top: -56px; }
+    .carimbo:nth-child(3) { grid-column: auto; margin-top: -56px; }
+    .selos__itens { grid-template-columns: 1fr; }
   }
 
   /* art-direction · bandeira-regua · eixos: pigmento/scroll/escura · orçamento: ~0,4kb JS · 2026-10-03
@@ -544,8 +606,6 @@ const perguntas = [
     .bandeira__agora { padding: var(--e-6); font-size: var(--t-md); }
   }
 
-  .nota { font-size: var(--t-sm); color: var(--texto-suave); margin-top: var(--e-4); }
-
   .marcas {
     display: flex;
     flex-wrap: wrap;
@@ -615,47 +675,19 @@ const perguntas = [
       }
     }, { threshold: [0, 0.6] }).observe(tarifa);
   }
-  // Ímã dos cartões de imprensa. Um listener no window para todos os
-  // alvos (não um por cartão) e só liga com ponteiro real + sem preferência
-  // por movimento reduzido: os links já funcionam sem isto, a inclinação
-  // é enriquecimento puro. Gira em torno de `rotate`, a mesma primitiva do
-  // selo e do cordão — o cartão aponta para o cursor, não desliza até ele.
-  const alvos = [...document.querySelectorAll<HTMLElement>("[data-ima]")].map((el) => ({
-    el,
-    alvo: 0,
-    atual: 0,
-    raf: 0,
-  }));
-
-  if (
-    alvos.length &&
-    matchMedia("(hover: hover)").matches &&
-    matchMedia("(prefers-reduced-motion: no-preference)").matches
-  ) {
-    const RAIO = 130;
-    const GIRO_MAX = 6;
-
-    function passo(a: (typeof alvos)[number]) {
-      a.atual += (a.alvo - a.atual) * 0.16;
-      a.el.style.rotate = `${a.atual.toFixed(2)}deg`;
-      const parado = Math.abs(a.alvo - a.atual) < 0.05;
-      a.raf = parado ? 0 : requestAnimationFrame(() => passo(a));
-    }
-
-    addEventListener(
-      "pointermove",
-      (e) => {
-        for (const a of alvos) {
-          const r = a.el.getBoundingClientRect();
-          const dx = e.clientX - (r.left + r.width / 2);
-          const dy = e.clientY - (r.top + r.height / 2);
-          const d = Math.hypot(dx, dy);
-          const f = d < RAIO ? 1 - d / RAIO : 0;
-          a.alvo = Math.sign(dx) * f * GIRO_MAX;
-          if (!a.raf) a.raf = requestAnimationFrame(() => passo(a));
-        }
-      },
-      { passive: true },
-    );
+  // Selos: quando a seção de números aparece, os três são carimbados um a
+  // um (o CSS faz o movimento). Sem JS ou com movimento reduzido, nada é
+  // escondido: os selos já estão no lugar.
+  const selosSecao = document.querySelector<HTMLElement>(".selos-secao");
+  const selosLista = selosSecao?.querySelector<HTMLElement>(".selos");
+  if (selosSecao && selosLista && "IntersectionObserver" in window &&
+      matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+    selosSecao.dataset.carimbo = "espera";
+    const obs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      selosSecao.dataset.carimbo = "feito";
+      obs.disconnect();
+    }, { threshold: 0.25 });
+    obs.observe(selosLista);
   }
 </script>
