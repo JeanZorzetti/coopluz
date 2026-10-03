@@ -478,7 +478,7 @@ const perguntas = [
     border-top: 8px solid var(--cor);
     background: var(--b-degrau);
     color: var(--b-apagado);
-    transition: background-color 400ms, color 400ms;
+    transition: background-color 700ms var(--ease-cena), color 700ms;
   }
   .tarifa__passos li:nth-child(1) { --cor: var(--b-verde); }
   .tarifa__passos li:nth-child(2) { --cor: var(--b-amarela); }
@@ -500,7 +500,7 @@ const perguntas = [
     letter-spacing: -0.02em;
     font-variation-settings: "wght" 700;
     transform-origin: left bottom;
-    transition: scale 400ms var(--ease-cena);
+    transition: scale 700ms var(--ease-cena);
   }
   .tarifa__passos em { display: block; margin-top: var(--e-1); font-style: normal; font-size: var(--t-sm); }
   /* O degrau aceso ganha a cor da bandeira no fundo (misturada com o fundo
@@ -620,28 +620,30 @@ const perguntas = [
 </style>
 
 <script>
-  // Bandeira tarifária: enquanto "O problema" atravessa a tela, a bandeira
-  // passa de verde a vermelha 2. Lê a posição num frame por rolagem e só
-  // escreve o atributo quando o passo muda. A medida é a régua da ANEEL, não
-  // a seção: é nela que o degrau acende, e ela precisa chegar na tela ainda
-  // verde para a pessoa ver a conta subir.
+  // Bandeira tarifária: quando a régua da ANEEL aparece na tela, a bandeira
+  // passa sozinha, devagar, de verde a vermelha 2 (um degrau a cada PASSO_MS)
+  // e para na vermelha 2, o estado que o texto descreve. Se a régua sai
+  // inteira da tela, volta ao verde para tocar de novo na próxima vez.
+  // Sem JS ou com movimento reduzido, fica parada na vermelha 2.
   const bandeira = document.querySelector<HTMLElement>(".secao--bandeira");
   const tarifa = bandeira?.querySelector<HTMLElement>(".tarifa__passos");
-  if (bandeira && tarifa) {
-    let pendente = false;
-    const atualizar = () => {
-      pendente = false;
-      const r = tarifa.getBoundingClientRect();
-      const progresso = (innerHeight - r.top) / (innerHeight + r.height);
-      const passo = String(Math.max(0, Math.min(3, Math.floor(((progresso - 0.1) / 0.45) * 4))));
-      if (bandeira.dataset.bandeira !== passo) bandeira.dataset.bandeira = passo;
-    };
-    addEventListener("scroll", () => {
-      if (!pendente) { pendente = true; requestAnimationFrame(atualizar); }
-    }, { passive: true });
-    atualizar();
+  if (bandeira && tarifa && matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+    const PASSO_MS = 1800;
+    let timers: number[] = [];
+    const parar = () => { timers.forEach(clearTimeout); timers = []; };
+    bandeira.dataset.bandeira = "0";
+    new IntersectionObserver(([e]) => {
+      if (e.intersectionRatio >= 0.6) {
+        if (timers.length || bandeira.dataset.bandeira === "3") return;
+        for (let p = 1; p <= 3; p++) {
+          timers.push(window.setTimeout(() => { bandeira.dataset.bandeira = String(p); }, PASSO_MS * p));
+        }
+      } else if (e.intersectionRatio === 0) {
+        parar();
+        bandeira.dataset.bandeira = "0";
+      }
+    }, { threshold: [0, 0.6] }).observe(tarifa);
   }
-
   // Ímã dos cartões de imprensa. Um listener no window para todos os
   // alvos (não um por cartão) e só liga com ponteiro real + sem preferência
   // por movimento reduzido: os links já funcionam sem isto, a inclinação
