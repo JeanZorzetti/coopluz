@@ -2,6 +2,49 @@
   {
     "data": "2026-10-03",
     "projeto": "coopluz",
+    "pagina": "/ (seção \"Como funciona\") — antes e depois",
+    "direcao": "antes-e-depois",
+    "tipo": "derivada da própria fatura de exemplo (mesmas rubricas de 700,00 e crédito de 140,00 da direção \"fatura\")",
+    "eixos": { "materia": "pigmento", "motor": "estado", "banda": "clara" },
+    "nota_eixos": "Única faixa clara entre capa/\"O problema\" (escuras) e o resto: mesa creme com grão. No tema escuro a mesa vira #17150f e as contas continuam creme (papel não inverte).",
+    "pedido": "Dona mandou print da seção \"Como funciona\" com /art-direction: \"melhore essa parte\". Diagnóstico medido no ar: 2.800px de seção no desktop e 3.470px no celular para 4 passos curtos, vão escuro à direita, primeiro passo só depois de meia tela, total R$ 560 pequeno. Folha: A Impressão na hora (derivada da impressão simultânea do leiturista) / B Antes e depois / C Noventa dias (número gigante + fio de luz). Escolheu B direto.",
+    "pesquisa": "Setor: Sun Mobi (4 cartões coral com ícone = lugar-comum) e Bulbe (lista numerada + celular = o que a seção já era). Fora da web: leitura e impressão simultânea da conta (Cemig/Honeywell, baguete.com.br), usada só na A.",
+    "estrutura": "Cabeçalho (olho/h2/chamada | interruptor) → mesa em 3 colunas (conta de hoje torta à esquerda, conta da Coopluz por cima e torta para o outro lado, −R$ 140 + \"Sua conta é outra?\") → linha do tempo de 4 nós (Hoje · Todo mês · Na fatura · Até 90 dias). Celular/tablet <760: contas lado a lado só com cabeçalho, crédito e total; linha do tempo vertical abaixo de 900.",
+    "verbo": "chegar — a conta nova chega por cima da velha",
+    "camadas": {
+      "entrada": "quando metade da mesa está visível (IntersectionObserver), o fio da linha do tempo corre 1.4s (scale), os nós acendem quando o fio passa (scale+opacity, mola), a conta nova cai aos 1.25s (opacity/scale/rotate, 900ms), carimbo bate aos 1.9s, −R$ 140 aparece aos 2.1s. Recomeça se a mesa sair 200px da tela. Clique no interruptor desliga o automático.",
+      "scroll": "AUSENTE POR DECLARAÇÃO: a rolagem só dispara a entrada; a dona já pediu na régua da ANEEL que o movimento passe sem precisar rolar, e amarrar à rolagem era o que fazia a seção anterior ter 3 telas.",
+      "ponteiro": "interruptor de dois botões (aria-pressed) com a lâmpada da marca: Conta de hoje / Com a Coopluz; hover num passo marca no papel a parte dele com marca-texto verde (#e3f2df).",
+      "transicao": "a troca do interruptor reusa as transições da entrada, sem atraso na volta."
+    },
+    "custo": {
+      "faixa": "captacao",
+      "js_gzip_b": 414,
+      "deps_novas": [],
+      "delta_pagina_gzip_b": 1128,
+      "nota_peso": "home 30991b gzip (build local) contra 29863b da produção (c2cd6f6/778b7ad), medido por fetch + zlib.",
+      "lcp": "sem impacto: seção abaixo da dobra",
+      "cls": 0,
+      "altura_secao_px": { "1366": 916, "820": 1225, "390": 1366, "antes_1366": 2801, "antes_390": 3468 }
+    },
+    "gates_corrigidos": [
+      "G22 contraste — --papel-credito #1d7a45 sobre a mesa creme dava 4.26; verde da mesa virou #186a3b (5.28). Marca-texto do hover #dcefd9 dava 4.43 com o crédito; virou #e3f2df (4.60).",
+      "G18 sombra com cor — no escuro a sombra verde da conta caía em #000000; virou #03170c.",
+      "G25 foco — o global pinta o anel de branco em .fatura (mesa teal); na mesa creme voltou para #17579a (5.82) / #7cc4f2 no escuro.",
+      "olhando o quadro: a conta da frente cobria o R$ 700 da de trás (total alinhado à direita) — sobreposição tirada; em 820px o layout de celular esticava as contas para 400px vazias — layout de 3 colunas desce para 760px; realce do hover em --papel-marcado era invisível (creme sobre creme)."
+    ],
+    "gates_nao_aplicaveis": [
+      "G3/G5 — é seção, não hero",
+      "G13 — sem camada de scroll; a entrada é disparada por visibilidade, como a régua da ANEEL (778b7ad) que a dona pediu",
+      "G16 — sem loop autônomo, a sequência roda uma vez por chegada",
+      "G31 — sem canvas"
+    ],
+    "texto": "Passos encurtados para caber em 4 colunas (sem afirmação nova); rótulos de tempo Hoje/Todo mês/Na fatura/Até 90 dias. \"Sua conta é outra?\" perdeu o exemplo de R$ 700 (já está na mesa).",
+    "recusadas": ["A Impressão na hora", "C Noventa dias (não escolhidas; sem motivo dito)"]
+  },
+  {
+    "data": "2026-10-03",
+    "projeto": "coopluz",
     "pagina": "/ (seção \"O problema\") — régua da ANEEL",
     "direcao": "bandeira-regua",
     "tipo": "derivada da tabela oficial da ANEEL (gov.br/aneel, Sobre Bandeiras Tarifárias, atualizada 08/01/2026)",
