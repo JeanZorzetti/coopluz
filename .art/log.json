@@ -1,5 +1,22 @@
 [
   {
+    "data": "2026-10-03",
+    "projeto": "coopluz",
+    "pagina": "/ (seção \"O problema\") — régua da ANEEL",
+    "direcao": "bandeira-regua",
+    "tipo": "derivada da tabela oficial da ANEEL (gov.br/aneel, Sobre Bandeiras Tarifárias, atualizada 08/01/2026)",
+    "eixos": { "materia": "pigmento", "motor": "scroll", "banda": "escura" },
+    "pedido": "Dona pediu /art-direction para melhorar a seção (print com ela contornada). Folha: A Régua da ANEEL / B A saída acende (cartão creme saindo da seção) / C Mastro e placas (posto de salva-vidas). Escolheu A.",
+    "diagnostico": "bandeira de 176px lia como ícone; 'Com a Coopluz' com o mesmo peso de 'A saída conhecida'; borda de 4 cores lia como enfeite; o texto dizia que a conta subiu sem dizer quanto.",
+    "estrutura": "Linha 240px/1fr: bandeira maior + olho/h2/chamada. Régua de 4 degraus (cor da ANEEL no topo, + R$ por 100 kWh) substitui a borda. Saídas 5fr/7fr: a conhecida apagada, a Coopluz o único cartão creme da seção, com brilho âmbar.",
+    "camadas": { "entrada": "AUSENTE (igual às anteriores)", "scroll": "o mesmo script troca data-bandeira 0-3, agora medindo a régua (não o pano): ela entra verde e chega à vermelha 2; o degrau aceso ganha color-mix da cor da bandeira e o número cresce (scale 1.25)", "ponteiro": "AUSENTE: seção de leitura", "transicao": "pano tremula com scale" },
+    "dados": "R$/kWh × 100: amarela 0,01885 → 1,89; vermelha 1 0,04463 → 4,46; vermelha 2 0,07877 → 7,88. Rotulado 'antes dos impostos' com link para a ANEEL.",
+    "contraste": "degrau apagado 9.55:1, aceso 18.9:1, rótulo âmbar-tinta sobre creme 6.66:1",
+    "custo": { "js_gzip_b": 300, "deps_novas": [], "cls": 0, "lcp": "sem impacto: abaixo da dobra" },
+    "prova": "1366/820/390 × 4 posições de rolagem; sem JS fica na vermelha 2; reduced-motion parado e legível; sem rolagem lateral; console limpo.",
+    "divida_declarada": "Os valores das bandeiras mudam quando a ANEEL reajusta; conferir na página da ANEEL a cada reajuste.",
+    "recusadas": ["B A saída acende", "C Mastro e placas (não escolhidas; sem motivo dito)"]
+  },{
     "data": "2026-10-02",
     "projeto": "coopluz",
     "pagina": "/ (seção \"O problema\") — revisão da bandeira",
