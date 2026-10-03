@@ -5,7 +5,11 @@
     "pagina": "/ (seção \"Como funciona\") — antes e depois",
     "direcao": "antes-e-depois",
     "tipo": "derivada da própria fatura de exemplo (mesmas rubricas de 700,00 e crédito de 140,00 da direção \"fatura\")",
-    "eixos": { "materia": "pigmento", "motor": "estado", "banda": "clara" },
+    "eixos": {
+      "materia": "pigmento",
+      "motor": "estado",
+      "banda": "clara"
+    },
     "nota_eixos": "Única faixa clara entre capa/\"O problema\" (escuras) e o resto: mesa creme com grão. No tema escuro a mesa vira #17150f e as contas continuam creme (papel não inverte).",
     "pedido": "Dona mandou print da seção \"Como funciona\" com /art-direction: \"melhore essa parte\". Diagnóstico medido no ar: 2.800px de seção no desktop e 3.470px no celular para 4 passos curtos, vão escuro à direita, primeiro passo só depois de meia tela, total R$ 560 pequeno. Folha: A Impressão na hora (derivada da impressão simultânea do leiturista) / B Antes e depois / C Noventa dias (número gigante + fio de luz). Escolheu B direto.",
     "pesquisa": "Setor: Sun Mobi (4 cartões coral com ícone = lugar-comum) e Bulbe (lista numerada + celular = o que a seção já era). Fora da web: leitura e impressão simultânea da conta (Cemig/Honeywell, baguete.com.br), usada só na A.",
@@ -25,7 +29,13 @@
       "nota_peso": "home 30991b gzip (build local) contra 29863b da produção (c2cd6f6/778b7ad), medido por fetch + zlib.",
       "lcp": "sem impacto: seção abaixo da dobra",
       "cls": 0,
-      "altura_secao_px": { "1366": 916, "820": 1225, "390": 1366, "antes_1366": 2801, "antes_390": 3468 }
+      "altura_secao_px": {
+        "390": 1366,
+        "820": 1225,
+        "1366": 916,
+        "antes_1366": 2801,
+        "antes_390": 3468
+      }
     },
     "gates_corrigidos": [
       "G22 contraste — --papel-credito #1d7a45 sobre a mesa creme dava 4.26; verde da mesa virou #186a3b (5.28). Marca-texto do hover #dcefd9 dava 4.43 com o crédito; virou #e3f2df (4.60).",
@@ -40,7 +50,10 @@
       "G31 — sem canvas"
     ],
     "texto": "Passos encurtados para caber em 4 colunas (sem afirmação nova); rótulos de tempo Hoje/Todo mês/Na fatura/Até 90 dias. \"Sua conta é outra?\" perdeu o exemplo de R$ 700 (já está na mesa).",
-    "recusadas": ["A Impressão na hora", "C Noventa dias (não escolhidas; sem motivo dito)"]
+    "recusadas": [
+      "A Impressão na hora",
+      "C Noventa dias (não escolhidas; sem motivo dito)"
+    ]
   },
   {
     "data": "2026-10-03",
@@ -48,30 +61,64 @@
     "pagina": "/ (seção \"O problema\") — régua da ANEEL",
     "direcao": "bandeira-regua",
     "tipo": "derivada da tabela oficial da ANEEL (gov.br/aneel, Sobre Bandeiras Tarifárias, atualizada 08/01/2026)",
-    "eixos": { "materia": "pigmento", "motor": "scroll", "banda": "escura" },
+    "eixos": {
+      "materia": "pigmento",
+      "motor": "scroll",
+      "banda": "escura"
+    },
     "pedido": "Dona pediu /art-direction para melhorar a seção (print com ela contornada). Folha: A Régua da ANEEL / B A saída acende (cartão creme saindo da seção) / C Mastro e placas (posto de salva-vidas). Escolheu A.",
     "diagnostico": "bandeira de 176px lia como ícone; 'Com a Coopluz' com o mesmo peso de 'A saída conhecida'; borda de 4 cores lia como enfeite; o texto dizia que a conta subiu sem dizer quanto.",
     "estrutura": "Linha 240px/1fr: bandeira maior + olho/h2/chamada. Régua de 4 degraus (cor da ANEEL no topo, + R$ por 100 kWh) substitui a borda. Saídas 5fr/7fr: a conhecida apagada, a Coopluz o único cartão creme da seção, com brilho âmbar.",
-    "camadas": { "entrada": "AUSENTE (igual às anteriores)", "scroll": "TROCADO no mesmo dia, a pedido da dona (passar devagar sem precisar rolar): virou ciclo próprio — quando a régua está 60% na tela, data-bandeira sobe 0→3 sozinho, 1800ms por degrau, e para na vermelha 2; sai da tela inteira, volta ao verde e toca de novo. Movimento reduzido e sem JS: parada na vermelha 2. O degrau aceso ganha color-mix da cor da bandeira e o número cresce (scale 1.25, 700ms)", "ponteiro": "AUSENTE: seção de leitura", "transicao": "pano tremula com scale" },
+    "camadas": {
+      "entrada": "AUSENTE (igual às anteriores)",
+      "scroll": "TROCADO no mesmo dia, a pedido da dona (passar devagar sem precisar rolar): virou ciclo próprio — quando a régua está 60% na tela, data-bandeira sobe 0→3 sozinho, 1800ms por degrau, e para na vermelha 2; sai da tela inteira, volta ao verde e toca de novo. Movimento reduzido e sem JS: parada na vermelha 2. O degrau aceso ganha color-mix da cor da bandeira e o número cresce (scale 1.25, 700ms)",
+      "ponteiro": "AUSENTE: seção de leitura",
+      "transicao": "pano tremula com scale"
+    },
     "dados": "R$/kWh × 100: amarela 0,01885 → 1,89; vermelha 1 0,04463 → 4,46; vermelha 2 0,07877 → 7,88. Rotulado 'antes dos impostos' com link para a ANEEL.",
     "contraste": "degrau apagado 9.55:1, aceso 18.9:1, rótulo âmbar-tinta sobre creme 6.66:1",
-    "custo": { "js_gzip_b": 300, "deps_novas": [], "cls": 0, "lcp": "sem impacto: abaixo da dobra" },
+    "custo": {
+      "js_gzip_b": 300,
+      "deps_novas": [],
+      "cls": 0,
+      "lcp": "sem impacto: abaixo da dobra"
+    },
     "prova": "1366/820/390 × 4 posições de rolagem; sem JS fica na vermelha 2; reduced-motion parado e legível; sem rolagem lateral; console limpo.",
     "divida_declarada": "Os valores das bandeiras mudam quando a ANEEL reajusta; conferir na página da ANEEL a cada reajuste.",
-    "recusadas": ["B A saída acende", "C Mastro e placas (não escolhidas; sem motivo dito)"]
-  },{
+    "recusadas": [
+      "B A saída acende",
+      "C Mastro e placas (não escolhidas; sem motivo dito)"
+    ]
+  },
+  {
     "data": "2026-10-02",
     "projeto": "coopluz",
     "pagina": "/ (seção \"O problema\") — revisão da bandeira",
     "direcao": "bandeira-faixa",
     "tipo": "mutação de bandeira",
-    "eixos": { "materia": "pigmento", "motor": "scroll", "banda": "escura" },
+    "eixos": {
+      "materia": "pigmento",
+      "motor": "scroll",
+      "banda": "escura"
+    },
     "pedido": "Dona achou a seção com informação demais. 1ª folha mexia na capa: recusada ('não quero que mude o início'). 2ª folha só da seção: A uma frase / B título no pano / C faixa curta → escolheu C pedindo para manter o texto de explicação melhorado.",
     "estrutura": "Linha: bandeirinha (176px) + olho/h2/1 frase. Abaixo, duas colunas de texto puro: 'A saída conhecida' (apagada) x 'Com a Coopluz' (acesa). Borda de 4 cores de ponta a ponta no pé da seção.",
-    "camadas": { "entrada": "AUSENTE (igual à anterior)", "scroll": "o mesmo script de antes troca data-bandeira 0-3; agora acende o segmento da borda em vez da régua", "ponteiro": "AUSENTE", "transicao": "pano tremula com scale" },
-    "custo": { "js_gzip_b": 300, "deps_novas": [], "cls": 0 },
+    "camadas": {
+      "entrada": "AUSENTE (igual à anterior)",
+      "scroll": "o mesmo script de antes troca data-bandeira 0-3; agora acende o segmento da borda em vez da régua",
+      "ponteiro": "AUSENTE",
+      "transicao": "pano tremula com scale"
+    },
+    "custo": {
+      "js_gzip_b": 300,
+      "deps_novas": [],
+      "cls": 0
+    },
     "texto": "de 129 para ~75 palavras; nenhuma afirmação nova, só reorganizada",
-    "recusadas": ["capa A Edição / B Cartão único / C Faixa (escopo errado)", "seção A uma frase, B título no pano"]
+    "recusadas": [
+      "capa A Edição / B Cartão único / C Faixa (escopo errado)",
+      "seção A uma frase, B título no pano"
+    ]
   },
   {
     "data": "2026-10-02",
@@ -79,7 +126,11 @@
     "pagina": "/ (seção \"O problema\", logo abaixo da capa)",
     "direcao": "bandeira",
     "tipo": "derivada",
-    "eixos": { "materia": "pigmento", "motor": "scroll", "banda": "escura" },
+    "eixos": {
+      "materia": "pigmento",
+      "motor": "scroll",
+      "banda": "escura"
+    },
     "nota_eixos": "Fundo sempre escuro nos dois temas do cordão (como a capa); as quatro cores das bandeiras tarifárias da ANEEL vão no pano, e o fundo é a mesma cor quase apagada.",
     "estrutura": "Díptico 6fr/5fr: texto à esquerda, bandeira no mastro com régua das 4 bandeiras à direita; no celular a bandeira desce para baixo do texto.",
     "pedido": "Dona achou o ponto verde (nó do circuito) horrível e o lado direito vazio. Folha 1: A relógio de luz, B 'subiu' em degraus, C bandeira tarifária -> 'me dê mais 3 opções'. Folha 2: D lâmpadas como gráfico, E pessoa Humaaans com a conta, F marca-texto -> escolheu C da primeira folha.",
@@ -90,13 +141,22 @@
       "ponteiro": "AUSENTE POR DECLARAÇÃO: seção de leitura.",
       "transicao": "o pano tremula com scale (primitiva já usada na página; skew foi tirado por ser a 4a)."
     },
-    "custo": { "faixa": "captacao", "js_gzip_b": 300, "deps_novas": [], "lcp": "sem impacto: abaixo da dobra", "cls": 0 },
+    "custo": {
+      "faixa": "captacao",
+      "js_gzip_b": 300,
+      "deps_novas": [],
+      "lcp": "sem impacto: abaixo da dobra",
+      "cls": 0
+    },
     "gates_corrigidos": [
       "G22 contraste — branco sobre o pano amarelo dava 2.6:1; no passo amarelo o texto vira tinta #0b1f1c (6.6:1). Verde do pano #2f9e5a -> #23804a para o <small> passar 4.5:1.",
       "G15 primitivas — skew na tremulação trocado por scale só."
     ],
     "divida_declarada": "O nó do circuito (ponto verde) foi tirado SÓ desta seção; continua nas outras. A dona não respondeu se quer tirar de todas.",
-    "recusadas": ["A relógio de luz, B subiu em degraus (pediu mais 3)", "D lâmpadas que crescem, E pessoa com a conta, F marca-texto"]
+    "recusadas": [
+      "A relógio de luz, B subiu em degraus (pediu mais 3)",
+      "D lâmpadas que crescem, E pessoa com a conta, F marca-texto"
+    ]
   },
   {
     "data": "2026-10-01",
@@ -321,5 +381,36 @@
       "G33 estrutura-nao-repete — a macroestrutura e a mesma do hub e a mesma da direcao anterior. Corrigir isso exige reescrever o HTML das paginas (a estrutura Percurso proposta como direcao C), que nao foi feito nesta entrega."
     ],
     "nota_estrutura": "A macroestrutura NAO foi trocada. O ritmo de secoes continua identico ao do hub autogestor: .secao / .secao--marca / .secao / .secao--suave, com .grade auto-fit e .cartao. O que mudou foi materia (luz), coreografia (as 4 camadas) e banda (o interruptor). O fio da a pagina um eixo continuo, que e o gesto do Percurso, mas sem reescrever os blocos ele nao e a estrutura Percurso — e uma costura por cima da estrutura antiga."
+  },
+  {
+    "data": "2026-10-03",
+    "projeto": "coopluz",
+    "pagina": "/ (só a seção Quem pode participar)",
+    "direcao": "tres-sins",
+    "tipo": "custom",
+    "eixos": {
+      "materia": "geometria",
+      "motor": "ponteiro",
+      "banda": "clara"
+    },
+    "escolha": "folha de 03/10: A Três sins · B Rua acesa · C Régua dos R$ 250 — a dona escolheu A direto",
+    "camadas": {
+      "entrada": "as três lâmpadas acendem uma por uma (600ms) quando a lista aparece; só a luz, a resposta já é sim",
+      "scroll": "ausente por declaração — o fio do circuito já conduz o scroll da página",
+      "ponteiro": "Sim/Não em cada pergunta (aria-pressed); a lâmpada e o resultado respondem",
+      "transicao": "cor e halo da lâmpada; o resultado troca de frase"
+    },
+    "substitui": "dois .cartao de borda cinza em .grade--2 (herança do hub)",
+    "custo": {
+      "faixa": "captacao",
+      "js_kb_aprox": 0.6,
+      "deps_novas": [],
+      "cls_medido": 0
+    },
+    "fallback": "sem JS: três acesas, 'Três sins: serve para você.', chaves ocultas ocupando o lugar",
+    "recusadas": [
+      "B Rua acesa (ilustração/entrada/escura)",
+      "C Régua dos R$ 250 (geometria/ponteiro/cor)"
+    ]
   }
 ]

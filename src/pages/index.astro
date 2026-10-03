@@ -2,6 +2,7 @@
 import Vertical from "../layouts/Vertical.astro";
 import { COOPLUZ } from "../data/solucoes";
 import Fatura from "../components/Fatura.astro";
+import QuemPode from "../components/QuemPode.astro";
 
 const solucao = COOPLUZ;
 
@@ -107,35 +108,7 @@ const perguntas = [
 
   <Fatura />
 
-  <section class="secao">
-    <div class="container">
-      <span class="olho">Quem pode participar</span>
-      <h2>Consumo acima de R$ 250 por mês, em Goiás</h2>
-      <div class="grade grade--2">
-        <div class="cartao">
-          <h3>Serve para você se…</h3>
-          <ul class="lista-check" role="list">
-            <li>Seu imóvel é atendido pela Equatorial Goiás</li>
-            <li>A conta média passa de R$ 250 por mês</li>
-            <li>É residência, comércio, condomínio ou pequena indústria</li>
-            <li>Você quer economia sem imobilizar capital</li>
-            <li>Seu nome está negativado — não há consulta ao SPC ou Serasa</li>
-          </ul>
-        </div>
-        <div class="cartao">
-          <h3>Ainda não serve se…</h3>
-          <ul class="lista-limpa fora" role="list">
-            <li>O imóvel fica fora da área da Equatorial Goiás</li>
-            <li>Você já tem geração própria compensando 100% do consumo</li>
-          </ul>
-          <p class="nota">
-            Conta média abaixo de R$ 250? Ainda dá para pedir — o cadastro segue para análise da Coopluz em vez de
-            aprovação direta, e a gente diz isso na primeira conversa, antes de qualquer assinatura.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <QuemPode />
 
   <section class="secao secao--suave">
     <div class="container">
@@ -571,8 +544,6 @@ const perguntas = [
     .bandeira__agora { padding: var(--e-6); font-size: var(--t-md); }
   }
 
-  .fora li { padding-left: var(--e-6); position: relative; color: var(--texto-suave); }
-  .fora li::before { content: "—"; position: absolute; left: 0; color: var(--cinza-400); }
   .nota { font-size: var(--t-sm); color: var(--texto-suave); margin-top: var(--e-4); }
 
   .marcas {

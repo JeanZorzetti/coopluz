@@ -1,0 +1,326 @@
+---
+/**
+ * QUEM PODE PARTICIPAR — direção "três sins" (geometria · ponteiro · clara).
+ *
+ * Substitui os dois cartões de borda cinza da .grade--2 (o último bloco da
+ * home que ainda tinha a cara herdada do hub). Escolhida pela dona numa folha
+ * de três (A Três sins · B Rua acesa · C Régua dos R$ 250), em 03/10/2026.
+ *
+ * As regras viram três perguntas sobre a conta, e cada "sim" acende a lâmpada
+ * da marca — o mesmo símbolo que é botão na régua da capa e interruptor na
+ * fatura. Três acesas: serve para você.
+ *
+ * Entrada: as três lâmpadas acendem uma por uma quando a lista aparece, o
+ * mesmo "toca sozinho ao aparecer" da régua da ANEEL. Ponteiro: Sim/Não em
+ * cada pergunta, e o resultado embaixo responde. Scroll: AUSENTE por
+ * declaração — o fio do circuito já conduz o scroll da página.
+ *
+ * Sem JS a seção sai no estado final (três acesas, "Três sins: serve para
+ * você.") e as chaves Sim/Não nem aparecem: botão que não faz nada é pior que
+ * botão nenhum. O que não serve continua escrito embaixo, com ou sem JS.
+ */
+const perguntas = [
+  {
+    id: "area",
+    titulo: "Seu imóvel é atendido pela Equatorial Goiás?",
+    dica: "É o nome que vem no topo da sua fatura.",
+  },
+  {
+    id: "valor",
+    titulo: "A conta média passa de R$ 250 por mês?",
+    dica: "Some as últimas três e divida por três.",
+  },
+  {
+    id: "tipo",
+    titulo: "É residência, comércio, condomínio ou pequena indústria?",
+  },
+];
+
+/* A lâmpada da marca, o mesmo desenho do interruptor da fatura. */
+const lampada = `<svg viewBox="13 4.9 74 93.7" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path stroke-width="9.5" d="M75.16 25.16A30 30 0 0 1 72.47 61.38A30 30 0 0 1 36.85 68.46A30 30 0 0 1 20.5 36.03A30 30 0 0 1 47.39 11.61"/><path stroke-width="6" d="M41 78.5H59M44.25 85.5H55.75M46 92Q50 95.1 54 92"/></g><path fill="currentColor" fill-rule="evenodd" d="M37.04 53.46A18.75 18.75 0 0 1 58.96 31.54A18.75 18.75 0 0 1 37.04 53.46ZM40.22 50.28Q49.03 44.59 54.72 35.78Q46.9 42.46 40.22 50.28Z"/></svg>`;
+---
+
+<section class="secao quem" data-art="tres-sins" aria-labelledby="quem-titulo">
+  <div class="container">
+    <div class="quem__grade">
+      <div>
+        <span class="olho">Quem pode participar</span>
+        <h2 id="quem-titulo">Consumo acima de R$&nbsp;250 por mês, em Goiás</h2>
+        <p class="quem__chamada">
+          Três perguntas sobre a sua conta. Três lâmpadas acesas e você entra — sem imobilizar capital.
+        </p>
+        <p class="quem__selo">
+          <span>Nome negativado?</span>
+          <b>Pode participar.</b>
+          <small>Não há consulta ao SPC ou Serasa.</small>
+        </p>
+      </div>
+
+      <div>
+        <ol class="quem__perguntas" role="list">
+          {perguntas.map((q) => (
+            <li class="quem__pergunta" data-pergunta={q.id} data-sim="true">
+              <span class="quem__bulbo" set:html={lampada} />
+              <div>
+                <b id={`quem-${q.id}`}>{q.titulo}</b>
+                {q.dica && <em>{q.dica}</em>}
+              </div>
+              {/* Dois botões com aria-pressed, como a chave da fatura: as duas
+                   posições têm nome próprio. */}
+              <div class="quem__chave" role="group" aria-labelledby={`quem-${q.id}`} data-espera>
+                <button type="button" data-resposta="sim" aria-pressed="true">Sim</button>
+                <button type="button" data-resposta="nao" aria-pressed="false">Não</button>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <div class="quem__resultado" data-resultado="serve">
+          <div aria-live="polite">
+            <span class="quem__acesas" aria-hidden="true">
+              <i class="acesa" set:html={lampada} /><i class="acesa" set:html={lampada} /><i class="acesa" set:html={lampada} />
+            </span>
+            <p data-texto="serve">Três sins: serve para você.<small>Falta só a análise da sua conta, sem custo.</small></p>
+            <p data-texto="area">Ainda não serve.<small>A Coopluz só atende imóveis na área da Equatorial Goiás.</small></p>
+            <p data-texto="valor">Ainda dá para pedir.<small>Abaixo de R$ 250 o cadastro vai para análise da Coopluz, e a gente diz isso antes de qualquer assinatura.</small></p>
+            <p data-texto="tipo">Vale conversar antes.<small>A análise da sua conta diz se o seu caso entra.</small></p>
+          </div>
+          <a class="btn btn--primario quem__acao" href="#pedir">Ver meu desconto</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="quem__fora">
+      <h3>Ainda não serve se…</h3>
+      <div>
+        <ul class="lista-limpa" role="list">
+          <li><span set:html={lampada} />O imóvel fica fora da área da Equatorial Goiás</li>
+          <li><span set:html={lampada} />Você já tem geração própria compensando 100% do consumo</li>
+        </ul>
+        <p>
+          Conta média abaixo de R$ 250? Ainda dá para pedir — o cadastro segue para análise da Coopluz em vez de
+          aprovação direta, e a gente diz isso na primeira conversa, antes de qualquer assinatura.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* art-direction · tres-sins · eixos: geometria/ponteiro/clara · orçamento: ~0,6kb JS · 2026-10-03
+     Tokens só desta seção. Os cartões seguem o tema do cordão (claro/escuro)
+     pelos tokens globais; o selo é papel creme e o resultado é a tinta teal
+     da capa nos DOIS temas, como o "Com a Coopluz" da seção da bandeira.
+
+     Contraste medido:
+       claro  — título #0b1f1c / #fff 17.1 · dica #4c5f5e / #fff 6.76
+                "Sim" #f6f3ea / #0b3d47 10.7 · "Não" #4c5f5e / #e7eeee 5.75
+       escuro — título #e6f0f0 / #113039 12.0 · dica #a9bcbc / #113039 7.04
+                "Sim" #0b1f1c / #63c08a 7.69 · "Não" #a9bcbc / #14303a 7.01
+       resultado #f6f3ea / #0b3d47 10.7 · #c5dde1 / #0b3d47 8.35
+       selo #6e5100 / #f6f3ea 6.66 · #4c5f5e / #f6f3ea 6.09
+     A lâmpada é enfeite (aria-hidden): quem diz o estado é o botão
+     pressionado e a frase do resultado, não a cor dela. */
+  .quem {
+    --quem-acesa: light-dark(#d9a21f, #f2c14e);
+    --quem-halo: 242, 193, 78;
+    --quem-apagada: light-dark(#c3cfce, #3a5560);
+    --quem-cartao: var(--superficie-alta);
+    --quem-sombra: light-dark(rgba(11, 61, 71, 0.2), rgba(0, 0, 0, 0.35));
+    --quem-chave: var(--cinza-100);
+    --quem-chave-on: light-dark(#0b3d47, #63c08a);
+    --quem-chave-on-texto: light-dark(#f6f3ea, #0b1f1c);
+    --quem-papel: #f6f3ea;
+    --quem-papel-tinta: #0b1f1c;
+    --quem-papel-suave: #4c5f5e;
+    --quem-ambar-tinta: #6e5100;
+    --quem-noite: #0b3d47;
+    --quem-noite-texto: #f6f3ea;
+    --quem-noite-suave: #c5dde1;
+    --quem-noite-apagada: #3f6b74;
+    --quem-noite-acesa: #f2c14e;
+  }
+
+  .quem__grade { display: grid; grid-template-columns: 5fr 7fr; gap: var(--e-12); align-items: start; }
+  .quem h2 { margin-bottom: 0; }
+  .quem__chamada { font-size: var(--t-md); color: var(--texto-suave); margin: var(--e-4) 0 0; max-width: 36ch; }
+
+  .quem__selo {
+    margin: var(--e-8) 0 0;
+    padding: var(--e-6);
+    border-radius: var(--r-4);
+    background: var(--quem-papel);
+    color: var(--quem-papel-tinta);
+    box-shadow: 0 18px 40px -18px rgba(var(--quem-halo), 0.6);
+  }
+  .quem__selo span {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--quem-ambar-tinta);
+  }
+  .quem__selo b { display: block; margin-top: var(--e-1); font-family: var(--display); font-size: 1.375rem; line-height: 1.2; }
+  .quem__selo small { display: block; margin-top: var(--e-1); font-size: 0.9375rem; color: var(--quem-papel-suave); }
+
+  /* --- as perguntas --- */
+  .quem__perguntas { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--e-3); }
+  .quem__pergunta {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    gap: var(--e-4);
+    align-items: center;
+    padding: var(--e-4) var(--e-6) var(--e-4) var(--e-4);
+    border-radius: var(--r-4);
+    background: var(--quem-cartao);
+    box-shadow: 0 1px 2px var(--quem-sombra), 0 14px 30px -12px var(--quem-sombra);
+  }
+  .quem__pergunta b { display: block; font-family: var(--display); font-size: var(--t-lg); line-height: 1.2; }
+  .quem__pergunta em { display: block; margin-top: 2px; font-style: normal; font-size: 0.9375rem; color: var(--texto-suave); }
+
+  /* A lâmpada acende com o "sim": cor e halo, nada de layout. */
+  .quem__bulbo {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: var(--quem-apagada);
+    background: radial-gradient(circle, rgba(var(--quem-halo), 0.55), rgba(var(--quem-halo), 0) 70%);
+    background-size: 0% 0%;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: color var(--dur-base) var(--ease-saida), background-size var(--dur-cena) var(--ease-cena);
+  }
+  .quem__bulbo :global(svg) { width: 30px; height: auto; }
+  .quem__pergunta[data-sim="true"]:not(.quem__pergunta--apagada) .quem__bulbo { color: var(--quem-acesa); background-size: 100% 100%; }
+
+  .quem__chave { display: inline-flex; padding: 4px; border-radius: var(--r-full); background: var(--quem-chave); }
+  /* Escondida mas ocupando o lugar, como o interruptor da capa: se ela
+     surgisse do nada, o cartão mudava de altura depois de pintado (CLS). */
+  .quem__chave[data-espera] { visibility: hidden; }
+  .quem__chave button {
+    min-width: 52px;
+    min-height: 40px;
+    padding: 0 var(--e-4);
+    border: 0;
+    border-radius: var(--r-full);
+    background: transparent;
+    color: var(--texto-suave);
+    font: inherit;
+    font-size: var(--t-sm);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color var(--dur-rapida) var(--ease-saida), color var(--dur-rapida) var(--ease-saida);
+  }
+  .quem__chave button[aria-pressed="true"] { background: var(--quem-chave-on); color: var(--quem-chave-on-texto); }
+
+  /* --- o resultado --- */
+  .quem__resultado {
+    margin-top: var(--e-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--e-4);
+    padding: var(--e-6);
+    border-radius: var(--r-4);
+    background: var(--quem-noite);
+    color: var(--quem-noite-texto);
+  }
+  .quem__resultado p { display: none; margin: 0; font-family: var(--display); font-size: var(--t-xl); font-weight: 700; line-height: 1.15; }
+  .quem__resultado small { display: block; margin-top: var(--e-1); font-family: var(--fonte); font-size: 0.9375rem; font-weight: 500; color: var(--quem-noite-suave); }
+  .quem__resultado[data-resultado="serve"] [data-texto="serve"],
+  .quem__resultado[data-resultado="area"] [data-texto="area"],
+  .quem__resultado[data-resultado="valor"] [data-texto="valor"],
+  .quem__resultado[data-resultado="tipo"] [data-texto="tipo"] { display: block; }
+  .quem__resultado[data-resultado="area"] .quem__acao { display: none; }
+  .quem__acao:focus-visible { outline-color: var(--quem-noite-texto); }
+
+  .quem__acesas { display: flex; gap: 6px; margin-bottom: var(--e-2); }
+  .quem__acesas i { display: block; width: 16px; color: var(--quem-noite-apagada); transition: color var(--dur-base) var(--ease-saida); }
+  .quem__acesas :global(svg) { display: block; width: 100%; height: auto; }
+  .quem__acesas i.acesa:not(.quem--apagada) { color: var(--quem-noite-acesa); }
+
+  /* --- o que não serve --- */
+  .quem__fora {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: var(--e-12);
+    margin-top: var(--e-12);
+    padding-top: var(--e-6);
+    border-top: 1px solid var(--borda);
+  }
+  .quem__fora h3 { margin: 0; font-family: var(--display); font-size: var(--t-md); color: var(--texto-suave); }
+  .quem__fora ul { gap: var(--e-2); }
+  .quem__fora li { display: flex; gap: var(--e-3); align-items: center; color: var(--texto-suave); }
+  .quem__fora li span { flex: none; width: 14px; color: var(--quem-apagada); }
+  .quem__fora li :global(svg) { display: block; width: 100%; height: auto; }
+  .quem__fora p { margin: var(--e-3) 0 0; font-size: var(--t-sm); color: var(--texto-suave); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quem__bulbo, .quem__chave button, .quem__acesas i { transition: none; }
+  }
+  @media (max-width: 860px) {
+    .quem__grade, .quem__fora { grid-template-columns: 1fr; gap: var(--e-6); }
+    .quem__selo { margin-top: var(--e-6); }
+    .quem__pergunta { grid-template-columns: 48px 1fr; padding: var(--e-4); }
+    .quem__bulbo { width: 48px; height: 48px; }
+    .quem__pergunta b { font-size: 1.0625rem; }
+    .quem__chave { grid-column: 2; justify-self: start; }
+    .quem__acao { width: 100%; }
+  }
+</style>
+
+<script>
+  // Três sins. ~0,6kb. Sem este script a seção já está no estado final (três
+  // acesas) e as chaves ficam escondidas.
+  const quem = document.querySelector<HTMLElement>(".quem[data-art='tres-sins']");
+  if (quem) {
+    const itens = [...quem.querySelectorAll<HTMLElement>(".quem__pergunta")];
+    const resultado = quem.querySelector<HTMLElement>(".quem__resultado")!;
+    const acesas = [...quem.querySelectorAll<HTMLElement>(".quem__acesas i")];
+
+    const atualizar = () => {
+      const nao = itens.find((li) => li.dataset.sim !== "true");
+      resultado.dataset.resultado = nao ? nao.dataset.pergunta! : "serve";
+      itens.forEach((li, i) => acesas[i]?.classList.toggle("acesa", li.dataset.sim === "true"));
+    };
+    const responder = (li: HTMLElement, sim: boolean) => {
+      li.dataset.sim = String(sim);
+      li.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String((b.dataset.resposta === "sim") === sim)));
+      atualizar();
+    };
+
+    itens.forEach((li) => {
+      const chave = li.querySelector<HTMLElement>(".quem__chave")!;
+      delete chave.dataset.espera;
+      chave.addEventListener("click", (e) => {
+        const b = (e.target as HTMLElement).closest("button");
+        if (b) responder(li, b.dataset.resposta === "sim");
+      });
+    });
+
+    // Entrada: as lâmpadas começam apagadas e acendem uma por uma quando a
+    // lista aparece. Só a luz apaga — a resposta continua "sim", então o
+    // resultado não pisca "ainda não serve" enquanto elas acendem. Uma vez só;
+    // qualquer clique antes acende tudo na hora.
+    if (matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+      const lista = quem.querySelector<HTMLElement>(".quem__perguntas")!;
+      const acender = (i: number) => {
+        itens[i]?.classList.remove("quem__pergunta--apagada");
+        acesas[i]?.classList.remove("quem--apagada");
+      };
+      itens.forEach((li, i) => { li.classList.add("quem__pergunta--apagada"); acesas[i]?.classList.add("quem--apagada"); });
+      quem.addEventListener("click", () => itens.forEach((_, i) => acender(i)), { once: true });
+      const obs = new IntersectionObserver(([e]) => {
+        if (!e.isIntersecting) return;
+        obs.disconnect();
+        itens.forEach((_, i) => setTimeout(() => acender(i), 400 + i * 600));
+      }, { threshold: 0.5 });
+      obs.observe(lista);
+    }
+    atualizar();
+  }
+</script>
