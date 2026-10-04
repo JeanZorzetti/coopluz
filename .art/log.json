@@ -454,5 +454,43 @@
       ".selo já era classe global (a lâmpada da capa, com máscara): os selos daqui se chamam .carimbo",
       "duas seções --suave seguidas (esta e Quem está por trás) — não mexido, fora do raio"
     ]
+  },
+  {
+    "data": "2026-10-04",
+    "projeto": "coopluz",
+    "pagina": "/ (só a seção Quem está por trás; Do outro lado do balcão saiu da home)",
+    "direcao": "lampada-desmontada",
+    "tipo": "custom",
+    "eixos": {
+      "materia": "geometria",
+      "motor": "entrada",
+      "banda": "escura"
+    },
+    "escolha": "folha 1: A Placa na parede · B Três nós no fio · C O balcão → \"faça mais opções e retire essa parte\" (o convite de parceiro) → folha 2: D Termo de adesão · E Lâmpada desmontada · F O crachá (+ A e B sem o convite) — a dona escolheu E",
+    "camadas": {
+      "entrada": "as três peças do símbolo chegam de mais longe, apagadas, assentam na vista explodida (stagger 80ms) e acendem; o halo âmbar acende por opacidade",
+      "scroll": "ausente por declaração — o fio do circuito já conduz o scroll da página",
+      "ponteiro": "o rótulo sob o cursor acende a peça dele e apaga as outras (:has, sem JS)",
+      "transicao": "cor, opacidade e escala das peças em 160ms"
+    },
+    "substitui": "faixa branca com os três logos (.marcas) e a seção Do outro lado do balcão",
+    "custo": {
+      "faixa": "captacao",
+      "js_kb_aprox": 0.3,
+      "deps_novas": [],
+      "cls_medido": 0
+    },
+    "fallback": "sem JS ou com movimento reduzido: lâmpada montada na vista explodida e acesa",
+    "recusadas": [
+      "A Placa na parede",
+      "B Três nós no fio",
+      "C O balcão",
+      "D Termo de adesão",
+      "F O crachá"
+    ],
+    "notas": [
+      "o convite de parceiro saiu da home a pedido da dona; o programa continua em /parceiro (menu Seja parceiro)",
+      "estouro horizontal de 13px a 390px é anterior e vem dos .carimbo da seção de números, não desta seção"
+    ]
   }
 ]
