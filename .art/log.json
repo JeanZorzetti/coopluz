@@ -492,5 +492,47 @@
       "o convite de parceiro saiu da home a pedido da dona; o programa continua em /parceiro (menu Seja parceiro)",
       "estouro horizontal de 13px a 390px é anterior e vem dos .carimbo da seção de números, não desta seção"
     ]
+  },
+  {
+    "data": "2026-10-06",
+    "projeto": "coopluz",
+    "pagina": "/ (só a seção Perguntas frequentes; Faq.astro segue em /sobre e /parceiro)",
+    "direcao": "faq-luz",
+    "tipo": "custom",
+    "eixos": {
+      "materia": "luz",
+      "motor": "ponteiro",
+      "banda": "média"
+    },
+    "escolha": "folha 1: A Quadro de luz · B Cada resposta acende · C Pergunte para a gente → \"mais opções\" → folha 2: D Varal de lâmpadas · E Uma pergunta por vez · F Quem pergunta (A–C mantidas) — a dona escolheu B",
+    "camadas": {
+      "entrada": "a lâmpada grande dá uma piscada (teste da lâmpada, 1100ms) quando aparece; depois volta ao que já foi lido",
+      "scroll": "ausente por declaração — o fio do circuito já conduz o scroll da página",
+      "ponteiro": "a lampadinha da pergunta esquenta sob o cursor (100ms); só @media (hover: hover)",
+      "transicao": "abriu a pergunta: a lampadinha acende com halo e a lâmpada grande enche um degrau do soquete para cima (clip-path, 900ms)"
+    },
+    "substitui": "grade de 8 <details> com borda cinza e \"+\" azul sobre .secao--suave (herança do hub)",
+    "custo": {
+      "faixa": "captacao",
+      "js_gzip_bytes": 408,
+      "deps_novas": [],
+      "cls_medido": 0
+    },
+    "fallback": "sem JS: <details> nativo abre e fecha, lâmpada grande inteira acesa, contagem escondida",
+    "recusadas": [
+      "A Quadro de luz",
+      "C Pergunte para a gente",
+      "D Varal de lâmpadas",
+      "E Uma pergunta por vez",
+      "F Quem pergunta"
+    ],
+    "gates_nao_atingidos": [
+      "G3 salto tipográfico — herdado da decisão global (t-3xl 4x); aqui o h2 é 3.6rem"
+    ],
+    "notas": [
+      "fundo #38995c (verde da capa em modo dia); no tema escuro #0f3524 com título creme; cartões creme fixos nos dois temas",
+      "duas colunas fixas (1–4 e 5–8) e não CSS columns: em columns a pergunta aberta empurrava as de baixo para a outra coluna",
+      "o JSON-LD FAQPage continua no Vertical.astro, sem mudança"
+    ]
   }
 ]

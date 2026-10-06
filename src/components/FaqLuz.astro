@@ -1,0 +1,330 @@
+---
+/**
+ * PERGUNTAS FREQUENTES DA HOME — direção "cada resposta acende"
+ * (luz · ponteiro · média).
+ *
+ * Escolhida pela dona numa folha de seis (A Quadro de luz · B Cada resposta
+ * acende · C Pergunte para a gente → "mais opções" → D Varal · E Uma por vez ·
+ * F Quem pergunta), em 06/10/2026. Só a home: /sobre e /parceiro continuam no
+ * Faq.astro, que é o componente compartilhado.
+ *
+ * A lâmpada da marca no lugar do "+": abriu a pergunta, a lâmpada dela acende.
+ * A lâmpada grande do cabeçalho enche de luz, do soquete para cima, a cada
+ * pergunta lida pela primeira vez. O fundo é o verde da capa em modo dia.
+ *
+ * Entrada: a lâmpada grande dá uma piscada quando a seção aparece — o teste
+ * da lâmpada, para dizer que ela acende. Ponteiro: a lampadinha da pergunta
+ * esquenta sob o cursor. Transição: a pergunta abre, a lampadinha acende e a
+ * grande sobe um degrau. Scroll: AUSENTE por declaração — o fio do circuito
+ * já conduz o scroll da página.
+ *
+ * Sem JS: <details> nativo continua abrindo e fechando (teclado, busca do
+ * navegador e o texto da resposta no HTML para o crawler), a lâmpada grande
+ * fica inteira acesa e a contagem nem aparece.
+ */
+import type { Pergunta } from "./Faq.astro";
+interface Props {
+  perguntas: readonly Pergunta[];
+}
+const { perguntas } = Astro.props;
+// Duas colunas que não trocam itens entre si quando um abre: em `columns` a
+// pergunta aberta empurrava as de baixo para a outra coluna.
+const meio = Math.ceil(perguntas.length / 2);
+const colunas = [perguntas.slice(0, meio), perguntas.slice(meio)];
+
+/* A lâmpada da marca, o mesmo desenho das lâmpadas de "Quem pode participar". */
+const lampada = `<svg viewBox="13 4.9 74 93.7" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path stroke-width="9.5" d="M75.16 25.16A30 30 0 0 1 72.47 61.38A30 30 0 0 1 36.85 68.46A30 30 0 0 1 20.5 36.03A30 30 0 0 1 47.39 11.61"/><path stroke-width="6" d="M41 78.5H59M44.25 85.5H55.75M46 92Q50 95.1 54 92"/></g><path fill="currentColor" fill-rule="evenodd" d="M37.04 53.46A18.75 18.75 0 0 1 58.96 31.54A18.75 18.75 0 0 1 37.04 53.46ZM40.22 50.28Q49.03 44.59 54.72 35.78Q46.9 42.46 40.22 50.28Z"/></svg>`;
+---
+
+<section class="secao faq-luz" data-art="faq-luz" aria-labelledby="faq-titulo">
+  <div class="container">
+    <div class="faq-luz__cab">
+      <div>
+        <span class="olho">Perguntas frequentes</span>
+        <h2 id="faq-titulo">Cada dúvida respondida acende um pouco</h2>
+      </div>
+      {/* Enfeite com número: a contagem não é informação que falte a quem usa
+           leitor de tela — cada pergunta já anuncia se está aberta. */}
+      <div class="faq-luz__medidor" aria-hidden="true">
+        <span class="faq-luz__brilho"></span>
+        <span class="faq-luz__grande">
+          <span class="faq-luz__base" set:html={lampada} />
+          <span class="faq-luz__cheia" set:html={lampada} />
+        </span>
+        <p class="faq-luz__conta"><b data-lidas>0 de {perguntas.length}</b> respondidas</p>
+      </div>
+    </div>
+
+    <div class="faq-luz__lista">
+      {
+        colunas.map((col) => (
+          <div class="faq-luz__coluna">
+            {col.map((q) => (
+              <details class="faq-luz__item">
+                <summary>
+                  <span class="faq-luz__lamp" set:html={lampada} />
+                  <span>{q.p}</span>
+                </summary>
+                <div class="faq-luz__resposta" set:html={q.r} />
+              </details>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /* art-direction · faq-luz (custom) · eixos: luz/ponteiro/média · orçamento: ~0,5kb JS · 2026-10-06
+
+     Tokens só desta seção. O fundo é o verde da capa em modo dia (#38995c, e
+     não o verde exato da marca, pelo mesmo motivo de lá: texto pequeno em
+     tinta precisa de 4.5). No tema escuro do cordão a seção é a mesma marca
+     com a luz apagada: verde fundo, título creme. Os cartões são papel creme
+     nos DOIS temas, como o cartão do formulário da capa.
+
+     Contraste medido (node logos/contraste.mjs):
+       claro  — tinta #0b1f1c / #38995c 4.79 (olho 14px bold e contagem)
+       escuro — #e6f0ef / #0f3524 11.62 · #c5dde1 / #0f3524 9.52
+       cartão — pergunta #0b1f1c / #f6f3ea 15.43 · resposta #4c5f5e / #f6f3ea 6.09
+                resposta #4c5f5e / #fffdf8 6.65 · foco/link #17579a / #f6f3ea 6.60
+     As lâmpadas são enfeite (aria-hidden): quem diz o estado é o <details>.
+     Por isso a lâmpada apagada pode ser fraca de propósito (#2b8550 sobre o
+     verde 1.29, #c9c3b2 sobre o creme 1.59) — ela é o "ainda não". */
+  .faq-luz {
+    --fl-fundo: #38995c;
+    --fl-tinta: #0b1f1c;
+    --fl-suave: #0b1f1c;
+    --fl-base: #2b8550;
+    --fl-acesa: #f2c14e;
+    --fl-halo: 250, 222, 120;
+    --fl-cartao: #f6f3ea;
+    --fl-cartao-aberto: #fffdf8;
+    --fl-cartao-tinta: #0b1f1c;
+    --fl-cartao-suave: #4c5f5e;
+    --fl-lamp-apagada: #c9c3b2;
+    --fl-lamp-morna: #e3c67c;
+    --fl-lamp-acesa: #d9a21f;
+    --fl-sombra: 4, 24, 30;
+    --fl-foco: #17579a;
+    /* Fração de perguntas lidas, de 0 a 1. Sem JS fica 1: lâmpada inteira. */
+    --lidas: 1;
+
+    background: var(--fl-fundo);
+    color: var(--fl-tinta);
+  }
+  @supports (color: light-dark(#fff, #000)) {
+    .faq-luz {
+      --fl-fundo: light-dark(#38995c, #0f3524);
+      --fl-tinta: light-dark(#0b1f1c, #e6f0ef);
+      --fl-suave: light-dark(#0b1f1c, #c5dde1);
+      --fl-base: light-dark(#2b8550, #1d5a3c);
+    }
+  }
+  @media (scripting: enabled) {
+    .faq-luz { --lidas: 0; }
+  }
+
+  .faq-luz .olho { color: var(--fl-suave); }
+  .faq-luz h2 {
+    font-family: "Outfit", "Outfit capa forte", var(--display);
+    /* Peso declarado duas vezes, como a frase da capa: a reserva local
+       ignora font-variation-settings. */
+    font-weight: 800;
+    font-variation-settings: "wght" 800;
+    font-size: clamp(2.25rem, 1.4rem + 3vw, 3.6rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--fl-tinta);
+    margin: 0;
+    max-width: 14ch;
+    text-wrap: balance;
+  }
+
+  .faq-luz__cab { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--e-8); }
+
+  /* --- a lâmpada grande --- */
+  .faq-luz__medidor { position: relative; display: flex; align-items: center; gap: var(--e-4); flex: none; }
+  .faq-luz__brilho {
+    position: absolute;
+    left: -60px;
+    top: 50%;
+    width: 230px;
+    height: 230px;
+    translate: 0 -50%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(var(--fl-halo), 0.6), rgba(var(--fl-halo), 0.18) 45%, rgba(var(--fl-halo), 0) 68%);
+    opacity: calc(var(--lidas) * 0.9);
+    transition: opacity var(--dur-cena) var(--ease-cena);
+    pointer-events: none;
+  }
+  .faq-luz__grande { position: relative; display: block; width: 110px; }
+  .faq-luz__grande :global(svg) { display: block; width: 100%; height: auto; }
+  .faq-luz__base { display: block; color: var(--fl-base); }
+  /* A cópia acesa por cima, recortada de baixo para cima: o soquete acende
+     primeiro. clip-path anima sem layout. */
+  .faq-luz__cheia {
+    position: absolute;
+    inset: 0;
+    color: var(--fl-acesa);
+    clip-path: inset(calc((1 - var(--lidas)) * 100%) 0 0 0);
+    transition: clip-path var(--dur-cena) var(--ease-cena);
+  }
+  .faq-luz__conta { position: relative; margin: 0; font-size: 0.9375rem; color: var(--fl-tinta); }
+  .faq-luz__conta b {
+    display: block;
+    font-family: "Outfit", "Outfit capa forte", var(--display);
+    font-weight: 800;
+    font-variation-settings: "wght" 800;
+    font-size: var(--t-2xl);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Sem JS a contagem não sobe: some, e a lâmpada fica inteira. */
+  .faq-luz__conta { display: none; }
+  @media (scripting: enabled) {
+    .faq-luz__conta { display: block; }
+  }
+
+  /* Entrada: o teste da lâmpada. Uma piscada quando a seção aparece; depois
+     ela volta para o que já foi lido (zero na primeira visita). Sem oth de
+     propósito: terminada a piscada, quem manda de novo é o --lidas. */
+  @keyframes faq-luz-pisca {
+    0% { clip-path: inset(0 0 0 0); opacity: 0; }
+    12% { opacity: 1; }
+    24% { opacity: 0.15; }
+    36% { opacity: 0.85; }
+    100% { clip-path: inset(0 0 0 0); opacity: 0; }
+  }
+  @keyframes faq-luz-pisca-halo {
+    0%, 100% { opacity: 0; }
+    12% { opacity: 0.8; }
+    24% { opacity: 0.1; }
+    36% { opacity: 0.7; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .faq-luz--vista .faq-luz__cheia { animation: faq-luz-pisca 1100ms var(--ease-saida); }
+    .faq-luz--vista .faq-luz__brilho { animation: faq-luz-pisca-halo 1100ms var(--ease-saida); }
+  }
+
+  /* --- as perguntas --- */
+  .faq-luz__lista {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--e-3) var(--e-6);
+    align-items: start;
+    margin-top: var(--e-8);
+  }
+  .faq-luz__coluna { display: grid; gap: var(--e-3); }
+  .faq-luz__item {
+    border-radius: var(--r-4);
+    background: var(--fl-cartao);
+    color: var(--fl-cartao-tinta);
+    box-shadow:
+      0 1px 2px rgba(var(--fl-sombra), 0.14),
+      0 14px 28px -12px rgba(var(--fl-sombra), 0.38);
+    transition: box-shadow var(--dur-rapida) var(--ease-saida), background-color var(--dur-rapida) var(--ease-saida);
+  }
+  .faq-luz__item[open] {
+    background: var(--fl-cartao-aberto);
+    box-shadow:
+      0 0 0 3px var(--fl-acesa),
+      0 1px 2px rgba(var(--fl-sombra), 0.14),
+      0 18px 36px -12px rgba(var(--fl-halo), 0.55);
+  }
+  .faq-luz__item summary {
+    display: flex;
+    align-items: center;
+    gap: var(--e-4);
+    min-height: 56px;
+    padding: var(--e-4) var(--e-6) var(--e-4) var(--e-4);
+    list-style: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.0625rem;
+    line-height: 1.3;
+    border-radius: var(--r-4);
+  }
+  .faq-luz__item summary::-webkit-details-marker { display: none; }
+  /* Anel por DENTRO do cartão: por fora ele cairia no verde, onde o azul
+     de foco não chega a 3:1. Sobre o creme dá 6.60. */
+  .faq-luz__item summary:focus-visible { outline: 3px solid var(--fl-foco); outline-offset: -4px; }
+
+  .faq-luz__lamp {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin: -4px 0;
+    border-radius: 50%;
+    color: var(--fl-lamp-apagada);
+    background: radial-gradient(circle, rgba(var(--fl-halo), 0.7), rgba(var(--fl-halo), 0) 70%) center / 0% 0% no-repeat;
+    /* A cor responde ao cursor em 100ms (G14); o halo, que é a lâmpada
+       acendendo de verdade, tem o tempo dele. */
+    transition: color var(--dur-instante) var(--ease-saida), background-size var(--dur-base) var(--ease-cena);
+  }
+  .faq-luz__lamp :global(svg) { width: 22px; height: auto; }
+  @media (hover: hover) {
+    .faq-luz__item summary:hover .faq-luz__lamp { color: var(--fl-lamp-morna); }
+  }
+  .faq-luz__item[open] .faq-luz__lamp { color: var(--fl-lamp-acesa); background-size: 100% 100%; }
+  /* Lida e fechada: continua acesa, mais fraca. Quem já leu sabe onde já passou. */
+  .faq-luz__item[data-lida]:not([open]) .faq-luz__lamp { color: var(--fl-lamp-acesa); }
+
+  .faq-luz__resposta {
+    padding: 0 var(--e-6) var(--e-6) calc(var(--e-4) + 40px + var(--e-4));
+    color: var(--fl-cartao-suave);
+  }
+  .faq-luz__resposta :global(a) { color: var(--fl-foco); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-luz__item, .faq-luz__lamp, .faq-luz__cheia, .faq-luz__brilho { transition: none; }
+  }
+  @media (max-width: 899px) {
+    .faq-luz__cab { flex-direction: column; align-items: flex-start; gap: var(--e-6); }
+    .faq-luz__grande { width: 72px; }
+    .faq-luz__brilho { left: -50px; width: 170px; height: 170px; }
+    .faq-luz__lista { grid-template-columns: minmax(0, 1fr); }
+    .faq-luz__item summary { padding-right: var(--e-4); font-size: 1rem; }
+    .faq-luz__resposta { padding: 0 var(--e-4) var(--e-4) calc(var(--e-4) + 40px + var(--e-3)); }
+  }
+</style>
+
+<script>
+  // Cada resposta acende. ~0,5kb. Sem este script os <details> abrem e fecham
+  // do mesmo jeito; só a lâmpada grande fica inteira e a contagem some.
+  const secao = document.querySelector<HTMLElement>(".faq-luz[data-art='faq-luz']");
+  if (secao) {
+    const itens = [...secao.querySelectorAll<HTMLDetailsElement>(".faq-luz__item")];
+    const conta = secao.querySelector<HTMLElement>("[data-lidas]")!;
+    const atualizar = () => {
+      const lidas = itens.filter((d) => d.hasAttribute("data-lida")).length;
+      secao.style.setProperty("--lidas", (lidas / itens.length).toFixed(3));
+      conta.textContent = `${lidas} de ${itens.length}`;
+    };
+    itens.forEach((d) =>
+      d.addEventListener("toggle", () => {
+        if (d.open && !d.hasAttribute("data-lida")) {
+          d.setAttribute("data-lida", "");
+          atualizar();
+        }
+      }),
+    );
+    atualizar();
+
+    // Entrada: a piscada, uma vez, quando metade da seção aparece.
+    if (matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+      const obs = new IntersectionObserver(
+        ([e]) => {
+          if (!e.isIntersecting) return;
+          obs.disconnect();
+          secao.classList.add("faq-luz--vista");
+        },
+        { threshold: 0.5 },
+      );
+      obs.observe(secao.querySelector(".faq-luz__medidor")!);
+    }
+  }
+</script>

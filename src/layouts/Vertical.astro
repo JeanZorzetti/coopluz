@@ -1,7 +1,7 @@
 ---
 import Base from "./Base.astro";
 import LeadForm from "../components/LeadForm.astro";
-import Faq from "../components/Faq.astro";
+import FaqLuz from "../components/FaqLuz.astro";
 import type { Pergunta } from "../components/Faq.astro";
 import BarraAcao from "../components/BarraAcao.astro";
 import { AREA_SERVIDA, type Solucao } from "../data/solucoes";
@@ -167,11 +167,9 @@ const schema = [
 
   <slot />
 
-  <section class="secao secao--suave">
-    <div class="container">
-      <Faq perguntas={perguntas} />
-    </div>
-  </section>
+  {/* Folha de 06/10, opção B: a lâmpada da marca no lugar do "+". O Faq.astro
+       continua sendo o das outras páginas. */}
+  <FaqLuz perguntas={perguntas} />
 
   <section class="secao" id="pedir" tabindex="-1">
     <div class="container fechamento">
