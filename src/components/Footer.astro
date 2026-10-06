@@ -1,12 +1,20 @@
 ---
 import { ATENDIMENTO, COOPERATIVA, EMPRESA, SITE, enderecoLinha, whatsapp } from "../consts";
 const ano = new Date().getFullYear();
+// "Coopluz Goiás" → a região sai em âmbar, como o "20%" da capa.
+const corte = SITE.nome.lastIndexOf(" ");
+const [nomeMarca, nomeRegiao] = [SITE.nome.slice(0, corte), SITE.nome.slice(corte + 1)];
 ---
 
 <footer class="rodape">
+  {/* Folha de 06/10, opção D (mistura B + C): o fio da página termina numa
+       lâmpada acesa pendurada no canto do rodapé. Peças só de enfeite. */}
+  <span class="rodape__facho" aria-hidden="true"></span>
+  <span class="rodape__pendente" aria-hidden="true"><span class="rodape__lampada"></span></span>
+
   <div class="container rodape__grade">
     <div>
-      <p class="rodape__marca">{SITE.nome}</p>
+      <p class="rodape__marca">{nomeMarca} <em>{nomeRegiao}</em></p>
       <p class="rodape__texto">
         Energia por compensação na área da Equatorial Goiás. {SITE.papel} da cooperativa {COOPERATIVA.nome},
         atendendo desde {EMPRESA.fundacao}.
@@ -77,38 +85,266 @@ const ano = new Date().getFullYear();
 </footer>
 
 <style>
+  /* art-direction · rodapé D (mistura B + C) · eixos: luz/entrada/escura · orçamento: 0kb JS · 2026-10-06
+
+     O fio da página termina aqui: uma lâmpada da marca, acesa, pendurada no
+     canto, jogando luz para baixo. Da folha B vêm a lâmpada, a luz e o âmbar
+     ("Goiás" e os títulos); da C, as linhas finas entre colunas, os links sem
+     sublinhado e os dois avisos lado a lado.
+
+     Entrada: a lâmpada acende e o facho abre quando o rodapé entra em cena
+     (view(), sem JS). Scroll: AUSENTE por declaração — o fio do circuito já
+     conduz a rolagem da página. Ponteiro: link sob o cursor esquenta a
+     lâmpada (100ms). Transição: o sublinhado âmbar do link em 100ms.
+
+     O fundo é --superficie-marca (#0b3d47) nos dois temas, então os tokens
+     daqui são fixos. Contraste medido sobre #0b3d47: âmbar 7.06 · creme 10.7 ·
+     #c5dde1 8.35 · #9dbcc2 5.87. O facho nunca passa de 0.10 de âmbar, teto
+     em que o aviso (#9dbcc2, 13px) continua acima de 4.5. */
   .rodape {
+    --rd-ambar: #f2c14e;
+    --rd-creme: #f6f3ea;
+    --rd-apagada: #2c4a54;
+    --rd-fio: rgba(99, 198, 224, 0.75);
+    --rd-divisa: rgba(197, 221, 225, 0.14);
+    --rd-divisa-ambar: rgba(242, 193, 78, 0.22);
+    --rd-luz: rgba(242, 193, 78, 0.1);
+    --rd-luz-fraca: rgba(242, 193, 78, 0.06);
+    --rd-halo: rgba(242, 193, 78, 0.42);
+    --rd-halo-longe: rgba(242, 193, 78, 0.12);
+    /* Onde a lâmpada pende. Na calha (≥1240px) ela fica sob o fio da página;
+       abaixo disso a calha não cabe 64px, e ela vai para o canto do rodapé
+       com um fio curto próprio. */
+    --rd-pendente-x: 16px;
+
+    position: relative;
+    /* Acima do .fio (15), abaixo do cabeçalho (20) e da barra de ação (30): o
+       fio da página para no topo do rodapé e o pendente continua daqui. */
+    z-index: 16;
+    overflow: clip;
+    isolation: isolate;
     background: var(--superficie-marca);
     color: var(--texto-sobre-marca);
     padding-block: var(--e-16) var(--e-8);
   }
+  @media (min-width: 900px) {
+    .rodape { padding-block: 3.75rem 1.75rem; }
+  }
+  /* Grão por cima de tudo, como no cone da capa: é o que tira o facho da cara
+     de gradiente de CSS. */
+  .rodape::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: var(--grao);
+    opacity: 0.05;
+    mix-blend-mode: soft-light;
+    pointer-events: none;
+  }
+
+  /* --- a lâmpada ---------------------------------------------------------- */
+  .rodape__pendente {
+    position: absolute;
+    top: 24px;
+    right: var(--rd-pendente-x);
+    width: 48px;
+    aspect-ratio: 74 / 93.7;
+    pointer-events: none;
+  }
+  /* O halo é uma camada própria, e não `filter: drop-shadow` na lâmpada: assim
+     acender e esquentar animam só `opacity`, que não repinta o desfoque. */
+  .rodape__pendente::after {
+    content: "";
+    position: absolute;
+    inset: -70% -90% -50%;
+    z-index: -1;
+    background: radial-gradient(closest-side, var(--rd-halo), var(--rd-halo-longe) 55%, transparent);
+    opacity: 0.8;
+    transition: opacity var(--dur-instante) ease;
+  }
+  /* O fio do pendente: sai do topo do rodapé e entra no casquilho. */
+  .rodape__pendente::before {
+    content: "";
+    position: absolute;
+    left: calc(50% - 1px);
+    bottom: 100%;
+    width: 2px;
+    height: 40px;
+    background: var(--rd-fio);
+  }
+  /* A marca recorta a cor, como o .selo do global.css. Sem suporte a máscara
+     a lâmpada vira um retângulo âmbar — então ela só existe dentro do @supports. */
+  .rodape__lampada { display: none; }
+  @supports ((-webkit-mask-image: url("/img/logo-mono.svg")) or (mask-image: url("/img/logo-mono.svg"))) {
+    .rodape__lampada {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: var(--rd-ambar);
+      -webkit-mask: url("/img/logo-mono.svg") no-repeat center / contain;
+              mask: url("/img/logo-mono.svg") no-repeat center / contain;
+    }
+  }
+  /* Entre 560 e 1239px o fio da página corre a 8px da borda e a lâmpada não
+     cabe lá: uma dobra em ângulo reto (como as do circuito do "Próximo
+     passo") leva a corrente do fio até o casquilho. */
+  @media (min-width: 560px) and (max-width: 1239px) {
+    .rodape::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: var(--fio-x);
+      width: calc(var(--rd-pendente-x) + 24px - var(--fio-x));
+      height: 12px;
+      border-right: 2px solid var(--rd-fio);
+      border-bottom: 2px solid var(--rd-fio);
+      border-bottom-right-radius: 4px;
+      pointer-events: none;
+    }
+    .rodape__pendente::before { height: 12px; }
+  }
+  @media (min-width: 1240px) {
+    .rodape { --rd-pendente-x: calc(var(--fio-x) - 31px); }
+    .rodape__pendente { top: 40px; width: 64px; }
+    .rodape__pendente::before { height: 40px; }
+  }
+  @media (hover: hover) {
+    .rodape:has(a:hover) .rodape__pendente::after { opacity: 1; }
+  }
+  .rodape:has(a:focus-visible) .rodape__pendente::after { opacity: 1; }
+
+  /* O facho: ápice no casquilho, aberto para baixo e à esquerda, com penumbra
+     longa de um lado e corte curto do outro — a mesma receita do cone da
+     capa. A poça fica no chão do rodapé. */
+  .rodape__facho {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    --facho-x: calc(100% - var(--rd-pendente-x) - 24px);
+    background:
+      radial-gradient(60% 30% at var(--facho-x) 8%, var(--rd-luz), transparent 72%);
+  }
+  @media (min-width: 1240px) {
+    .rodape__facho {
+      --facho-x: calc(100% - var(--fio-x));
+      background:
+        radial-gradient(40% 40% at 74% 96%, var(--rd-luz-fraca), transparent 72%),
+        conic-gradient(from 178deg at var(--facho-x) 90px,
+          transparent 0deg, var(--rd-luz-fraca) 12deg, var(--rd-luz) 22deg, var(--rd-luz) 30deg, transparent 33deg);
+      -webkit-mask: linear-gradient(to bottom, #000 30%, transparent 98%);
+              mask: linear-gradient(to bottom, #000 30%, transparent 98%);
+      transform-origin: var(--facho-x) 90px;
+    }
+  }
+
+  /* Entrada: o rodapé entra em cena e a lâmpada acende, o facho abre. Estado
+     final ESTÁTICO como base — sem timeline de view, ou com movimento
+     reduzido, a lâmpada já está acesa e o facho aberto. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .rodape__lampada {
+        animation: rodape-acende linear both;
+        animation-timeline: view();
+        animation-range: entry 10% entry 70%;
+      }
+      .rodape__pendente::after {
+        animation: rodape-halo linear both;
+        animation-timeline: view();
+        animation-range: entry 10% entry 70%;
+      }
+      .rodape__facho {
+        animation: rodape-abre linear both;
+        animation-timeline: view();
+        animation-range: entry 20% entry 90%;
+      }
+    }
+  }
+  @keyframes rodape-acende {
+    0%, 55% { background-color: var(--rd-apagada); }
+    62% { background-color: var(--rd-ambar); }
+    70% { background-color: var(--rd-apagada); }
+    100% { background-color: var(--rd-ambar); }
+  }
+  @keyframes rodape-halo {
+    0%, 55% { opacity: 0; }
+    62% { opacity: 0.8; }
+    70% { opacity: 0; }
+  }
+  @keyframes rodape-abre { from { opacity: 0; scale: 0.35 1; } }
+
+  /* --- grade --------------------------------------------------------------- */
   .rodape__grade {
     display: grid;
-    gap: var(--e-8);
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--e-8) 0;
+    grid-template-columns: 1fr 1fr;
   }
+  .rodape__grade > :first-child,
+  .rodape__grade > :last-child { grid-column: 1 / -1; }
+  @media (min-width: 900px) {
+    /* 4/2/2/3: a coluna da marca leva o texto corrido; as de link só listas. */
+    /* `max-content` de piso nas de link: a 1024px o "Falar no WhatsApp ↗"
+       quebrava a seta para a linha de baixo. */
+    .rodape__grade { grid-template-columns: 4fr minmax(max-content, 2fr) minmax(max-content, 2fr) 3fr; }
+    .rodape__grade > :first-child,
+    .rodape__grade > :last-child { grid-column: auto; }
+    .rodape__grade > * { padding-inline: 1.75rem; border-left: 1px solid var(--rd-divisa); }
+    .rodape__grade > :first-child { padding-left: 0; border-left: 0; }
+  }
+
   .rodape__marca {
-    color: var(--texto-invertido);
+    color: var(--rd-creme);
     font-family: var(--display);
-    font-variation-settings: "wght" 700;
-    font-size: var(--t-lg);
-    letter-spacing: -0.02em;
-    margin-bottom: var(--e-2);
+    font-variation-settings: "wght" 800;
+    font-size: 1.875rem;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: var(--e-4);
   }
-  .rodape__titulo { color: var(--texto-invertido); font-size: var(--t-sm); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--e-4); }
+  .rodape__marca em { font-style: normal; color: var(--rd-ambar); }
+  .rodape__titulo {
+    color: var(--rd-ambar);
+    font-family: var(--display);
+    font-variation-settings: "wght" 600;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: var(--e-4);
+  }
   .rodape__texto { font-size: var(--t-sm); font-style: normal; line-height: 1.7; }
   .rodape__links, .rodape__redes { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--e-2); font-size: var(--t-sm); }
   .rodape__redes { margin-top: var(--e-4); grid-auto-flow: column; justify-content: start; gap: var(--e-4); }
-  .rodape a { color: var(--link-sobre-marca); }
-  .rodape a:hover { color: var(--texto-invertido); }
+
+  /* Links de lista sem sublinhado: a coluna já diz que é navegação. O link
+     dentro do aviso continua sublinhado — ali ele está no meio de texto
+     corrido e a cor sozinha não basta. */
+  .rodape a {
+    color: var(--link-sobre-marca);
+    text-decoration: underline 2px transparent;
+    text-underline-offset: 5px;
+    transition: color var(--dur-instante) ease, text-decoration-color var(--dur-instante) ease;
+  }
+  .rodape a:hover, .rodape a:focus-visible { color: var(--rd-creme); text-decoration-color: var(--rd-ambar); }
+  .rodape__aviso a { text-decoration: underline 1px currentColor; text-underline-offset: 3px; }
+  .rodape__aviso a:hover { text-decoration: underline 2px var(--rd-ambar); }
+
+  /* --- base ---------------------------------------------------------------- */
   .rodape__base {
-    margin-top: var(--e-12);
-    padding-top: var(--e-6);
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-    font-size: var(--t-sm);
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rd-divisa-ambar);
+    font-size: 0.8125rem;
+    display: grid;
+    gap: var(--e-3);
+  }
+  @media (min-width: 900px) {
+    /* Os dois avisos lado a lado: é o que deixa o rodapé mais curto. */
+    .rodape__base { grid-template-columns: 1fr 1fr; gap: var(--e-3) 2.5rem; }
+    .rodape__linha { grid-column: 1 / -1; }
   }
   .rodape__aviso { color: var(--texto-sobre-marca-suave); max-width: 78ch; }
-  .rodape__aviso + .rodape__aviso { margin-top: var(--e-3); }
+  .rodape__linha p { color: var(--rd-creme); }
 
   /* O seletor de tema saiu daqui: virou o cordão do cabeçalho
      (Header.astro), onde a metáfora da lâmpada funciona. Esta linha voltou a
@@ -120,6 +356,10 @@ const ano = new Date().getFullYear();
     align-items: center;
     justify-content: space-between;
     gap: var(--e-4);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rodape__lampada, .rodape__pendente::after, .rodape__facho { animation: none !important; }
   }
 </style>
 

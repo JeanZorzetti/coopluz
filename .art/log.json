@@ -582,5 +582,37 @@
       "contain-intrinsic-size 750px na seção: com os 600px do .secao o rodapé pulava (CLS 0.0105 → 0)",
       "estouro de 13px a 390px continua vindo da capa e da conta/carimbo, não desta seção"
     ]
+  },
+  {
+    "data": "2026-10-06",
+    "projeto": "coopluz",
+    "pagina": "rodapé (src/components/Footer.astro, todas as páginas); estrutura, links e textos intocados",
+    "direcao": "rodape-pendente",
+    "tipo": "custom",
+    "eixos": { "materia": "luz", "motor": "entrada", "banda": "escura" },
+    "escolha": "folha 1: A O fio aterra · B A lâmpada da varanda · C A capa fecha (mais curto) → \"mais opções com mistura do B e C\" → folha 2 (mistura fixa, só muda onde a lâmpada fica): D Pendurada no fio · E Ao lado do nome · F A lâmpada gigante da capa — a dona escolheu D",
+    "referencias": [
+      "reaproveitadas da rodada Próximo passo (06/10): setor energialemon.com.br / sunmobi.com.br; fora da web, símbolos de esquema elétrico IEC (aterramento da opção A)"
+    ],
+    "camadas": {
+      "entrada": "a lâmpada pisca e acende e o facho abre quando o rodapé entra em cena (view(), sem JS)",
+      "scroll": "ausente por declaração — o fio do circuito já conduz a rolagem da página",
+      "ponteiro": "link sob o cursor ou com foco esquenta o halo da lâmpada (opacity, 100ms)",
+      "transicao": "sublinhado âmbar do link em 100ms"
+    },
+    "substitui": "rodapé teal chapado com links sublinhados em azul-claro e títulos brancos",
+    "custo": { "faixa": "captacao", "js_gzip_bytes": 0, "deps_novas": [], "cls_medido": 0 },
+    "fallback": "sem timeline de view ou com movimento reduzido: lâmpada acesa e facho aberto, parados; sem suporte a máscara a lâmpada some e fica o fio",
+    "recusadas": ["A O fio aterra", "B A lâmpada da varanda (só a mistura)", "C A capa fecha (só a mistura)", "E Ao lado do nome", "F A lâmpada gigante da capa"],
+    "gates_nao_atingidos": [
+      "G3 salto tipográfico — n/a, rodapé não tem título de seção",
+      "G6 — tokens moram no próprio .rodape (fundo fixo nos dois temas), como .capa no Vertical.astro",
+      "G33 — estrutura mantida por pedido da dona"
+    ],
+    "notas": [
+      "o .rodape sobe para z-index 16 (acima do .fio 15) e o pendente continua o fio dentro dele; ≥1240px a lâmpada fica na calha sob o fio da página, 560–1239px uma dobra em ângulo reto liga o fio ao canto, <560px fio curto próprio",
+      "contraste medido em pixel a 1440px: âmbar 6.96 · #c5dde1 8.24 · creme 10.53 · aviso #9dbcc2 5.72",
+      "rodapé de 530px → 469px a 1440px (avisos lado a lado)"
+    ]
   }
 ]
