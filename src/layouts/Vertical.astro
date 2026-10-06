@@ -2,10 +2,10 @@
 import Base from "./Base.astro";
 import LeadForm from "../components/LeadForm.astro";
 import FaqLuz from "../components/FaqLuz.astro";
+import CircuitoFecha from "../components/CircuitoFecha.astro";
 import type { Pergunta } from "../components/Faq.astro";
 import BarraAcao from "../components/BarraAcao.astro";
 import { AREA_SERVIDA, type Solucao } from "../data/solucoes";
-import { ATENDIMENTO, EMPRESA } from "../consts";
 import { faixaDaConta } from "../lib/regua.mjs";
 // Humaaans (Pablo Stanley, CC0), montado a partir das partes do pacote npm e
 // repintado para ler sobre os dois fundos da capa. Embutido via ?raw: 5kb
@@ -171,22 +171,9 @@ const schema = [
        continua sendo o das outras páginas. */}
   <FaqLuz perguntas={perguntas} />
 
-  <section class="secao" id="pedir" tabindex="-1">
-    <div class="container fechamento">
-      <div>
-        <span class="olho">Próximo passo</span>
-        <h2>{solucao.fechamento}</h2>
-        <p class="chamada">
-          {/* Sem SUSEP aqui: a Autogestor é representante autorizado da
-               Coopluz nesta vertical, não corretora de seguros (Clarifications
-               da spec 002-coopluz-standalone-site). */}
-          Um consultor da Autogestor responde no seu WhatsApp {ATENDIMENTO.prazo}. Representante autorizado da
-          Coopluz, com sede em {EMPRESA.endereco.cidade}, atendendo a área de concessão da Equatorial Goiás.
-        </p>
-      </div>
-      <LeadForm solucao={solucao} titulo={tituloForm} destaque instancia="fim" />
-    </div>
-  </section>
+  {/* Folha de 06/10, opção A: o fio da página fecha o circuito na lâmpada
+       gigante. O .fechamento de sempre continua em /parceiro. */}
+  <CircuitoFecha solucao={solucao} titulo={tituloForm} />
 
   {/* Sem a seção "Outras soluções do hub": este site tem 1 vertical só. */}
 

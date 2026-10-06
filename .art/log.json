@@ -534,5 +534,53 @@
       "duas colunas fixas (1–4 e 5–8) e não CSS columns: em columns a pergunta aberta empurrava as de baixo para a outra coluna",
       "o JSON-LD FAQPage continua no Vertical.astro, sem mudança"
     ]
+  },
+  {
+    "data": "2026-10-06",
+    "projeto": "coopluz",
+    "pagina": "/ (só a seção Próximo passo, #pedir; /parceiro segue com o .fechamento)",
+    "direcao": "circuito-fecha",
+    "tipo": "custom",
+    "eixos": {
+      "materia": "luz",
+      "motor": "estado",
+      "banda": "escura"
+    },
+    "escolha": "folha 1: A O circuito fecha · B O canhoto · C Uma linha só — a dona escolheu A direto",
+    "referencias": [
+      "setor: energialemon.com.br e sunmobi.com.br (fechamento = bloco colorido com botões, fotos de clientes, logos de imprensa — evitado)",
+      "fora da web: símbolos de esquema elétrico IEC/ANSI (en.wikipedia.org/wiki/Electronic_symbol) — chave aberta é uma falha no fio; botão de pressão é uma ponte solta"
+    ],
+    "camadas": {
+      "entrada": "o fio se desenha do nó da seção até o soquete da lâmpada gigante (stroke-dashoffset, 900ms, 80ms entre trechos) quando um terço da seção aparece",
+      "scroll": "ausente por declaração — o fio do circuito já conduz o scroll da página",
+      "ponteiro": "foco num campo deixa a lâmina da chave dele perto de fechar (35°→14°); cursor no botão desce a ponte 5px; só @media (hover: hover) para o botão",
+      "transicao": "campo válido fecha a chave e a corrente avança até a próxima aberta (série de verdade); pedido gravado (data-ok do LeadForm) aperta o botão e a lâmpada gigante acende com halo (900ms)"
+    },
+    "substitui": "o .fechamento (texto à esquerda + cartão do LeadForm) com o vão vazio à esquerda",
+    "custo": {
+      "faixa": "captacao",
+      "js_gzip_bytes": 1740,
+      "deps_novas": [],
+      "lcp_medido_s": 1.82,
+      "lcp_condicao": "390px, 1.6Mbps/150ms, CPU 4x, build de produção servido local; LCP é o .capa__chamada, não esta seção",
+      "cls_medido": 0
+    },
+    "fallback": "sem JS: lâmpada gigante apagada + texto + formulário (POST normal para /obrigado); placar e fio da seção não aparecem",
+    "recusadas": [
+      "B O canhoto",
+      "C Uma linha só"
+    ],
+    "gates_nao_atingidos": [
+      "G3 salto tipográfico — herdado da decisão global; aqui o h2 é 3.25rem",
+      "G6 — duas cores dentro dos data-uri dos ícones de chave no celular (CSS var não entra em data-uri)"
+    ],
+    "notas": [
+      "componente novo src/components/CircuitoFecha.astro; LeadForm.astro intocado (o estado vem do input e do data-ok do .form__aviso)",
+      "a lâmpada gigante fica atrás do texto: acesa no escuro é #503f10 (e não o âmbar da capa) para o olho de 14px passar 4.67",
+      "abaixo de 900px não há fio: a chave vira ícone antes do rótulo de cada campo",
+      "contain-intrinsic-size 750px na seção: com os 600px do .secao o rodapé pulava (CLS 0.0105 → 0)",
+      "estouro de 13px a 390px continua vindo da capa e da conta/carimbo, não desta seção"
+    ]
   }
 ]

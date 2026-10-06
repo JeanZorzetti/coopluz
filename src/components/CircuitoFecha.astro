@@ -1,0 +1,463 @@
+---
+/**
+ * PRÓXIMO PASSO DA HOME — direção "o circuito fecha" (luz · estado · escura).
+ *
+ * Escolhida pela dona numa folha de três (A O circuito fecha · B O canhoto ·
+ * C Uma linha só), em 06/10/2026. Só a home: /parceiro continua com o
+ * .fechamento de sempre.
+ *
+ * O fio que desce a página inteira pela direita sai pelo nó desta seção,
+ * passa por uma chave em cada campo do formulário e pelo botão, e termina no
+ * soquete da lâmpada gigante da marca — a mesma da capa, agora do lado
+ * esquerdo: a página abre e fecha nela. A chave é o desenho do esquema
+ * elétrico (aberta = o fio com uma falha, a lâmina levantada). Circuito em
+ * série de verdade: a corrente vai até a primeira chave aberta, e a lâmpada só
+ * acende quando o pedido chega.
+ *
+ * Entrada: o fio se desenha do nó até o soquete quando a seção aparece.
+ * Ponteiro: a lâmina da chave do campo em foco chega perto de fechar; o botão
+ * de pressão desce um pouco sob o cursor. Transição: campo válido fecha a
+ * chave e a corrente avança; pedido enviado aperta o botão e a lâmpada acende.
+ * Scroll: AUSENTE por declaração — o fio do circuito já conduz o scroll.
+ *
+ * Sem JS: lâmpada apagada, texto e formulário — o formulário faz POST normal
+ * e o /obrigado responde. O placar e o fio desta seção nem aparecem.
+ */
+import LeadForm from "./LeadForm.astro";
+import type { Solucao } from "../data/solucoes";
+import { ATENDIMENTO, EMPRESA } from "../consts";
+
+interface Props {
+  solucao: Solucao;
+  titulo: string;
+}
+const { solucao, titulo } = Astro.props;
+---
+
+<section class="secao cf" id="pedir" tabindex="-1" data-art="circuito-fecha">
+  <span class="cf__brilho" aria-hidden="true"></span>
+  <span class="cf__gigante" aria-hidden="true"></span>
+  {/* Sonda do x do fio: o --fio-x é uma expressão com 100vw, e o script não
+       consegue ler o valor resolvido de uma custom property — só a posição
+       de um elemento que a usa. */}
+  <span class="cf__sonda" aria-hidden="true"></span>
+
+  <div class="container cf__grade">
+    <div class="cf__texto">
+      <span class="olho">Próximo passo</span>
+      <h2>{solucao.fechamento}</h2>
+      <p class="chamada">
+        {/* Sem SUSEP aqui: a Autogestor é representante autorizado da
+             Coopluz nesta vertical, não corretora de seguros (Clarifications
+             da spec 002-coopluz-standalone-site). */}
+        Um consultor da Autogestor responde no seu WhatsApp {ATENDIMENTO.prazo}. Representante autorizado da
+        Coopluz, com sede em {EMPRESA.endereco.cidade}, atendendo a área de concessão da Equatorial Goiás.
+      </p>
+      {/* Enfeite com texto: quem usa leitor de tela já ouve o estado de cada
+           campo e o aviso do envio pelo próprio formulário. */}
+      <p class="cf__placar" aria-hidden="true" hidden>
+        <span class="cf__pontos"><i></i><i></i><i></i></span>
+        <span data-placar>Três campos e a lâmpada acende</span>
+      </p>
+    </div>
+    <LeadForm solucao={solucao} titulo={titulo} destaque instancia="fim" />
+  </div>
+
+  <svg class="cf__circuito" aria-hidden="true" focusable="false"></svg>
+</section>
+
+<style>
+  /* art-direction · circuito-fecha (custom) · eixos: luz/estado/escura · orçamento: ~1kb JS · 2026-10-06
+
+     Tokens só desta seção. O fundo é o --fundo do site (branco no claro,
+     #051419 no escuro): o fim da página é o quarto apagado, e a luz que
+     existe nele é a que o pedido acende.
+
+     A lâmpada gigante fica ATRÁS do texto (h2 e chamada passam por cima do
+     anel). Por isso as duas cores dela são escolhidas pelo texto, não pelo
+     gosto — acesa ela não pode ser o âmbar da capa, que reprova com texto claro
+     por cima. Contraste medido (node logos/contraste.mjs):
+       escuro — texto #e6f0f0 / apagada #0e3139 11.92 · suave #a9bcbc / #0e3139 6.99
+                texto #e6f0f0 / acesa #503f10 8.78 · suave #a9bcbc / #503f10 5.15
+                olho #6ab7ee / #503f10 4.67 (o olho é 14px: o #574412 dava 4.29)
+                suave #a9bcbc / halo no máximo (#474428) 4.99 · olho 4.53
+       claro  — texto #0b1f1c / apagada #e7eeee 14.56 · suave #4c5f5e / #e7eeee 5.75
+                texto #0b1f1c / acesa #f6e4ad 13.54 · suave #4c5f5e / #f6e4ad 5.35
+                olho #1c68b4 / #f6e4ad 4.51 · / halo no máximo (#f9e3af) 4.51
+     O fio e as chaves são enfeite (aria-hidden): o estado de cada campo é
+     dito pelo próprio formulário. A chave aberta pode ser fraca de propósito. */
+  .cf {
+    --cf-gigante: #e7eeee;
+    --cf-gigante-acesa: #f6e4ad;
+    --cf-halo: rgba(242, 193, 78, 0.45);
+    --cf-fio: rgba(36, 140, 160, 0.55);
+    --cf-terminal: #248ca0;
+    --cf-vivo: #d9a21f;
+    --cf-vivo-brilho: rgba(217, 162, 31, 0.3);
+    --cf-apagado: #c9d6d6;
+
+    position: relative;
+    /* clip e não hidden: a lâmpada sangra pela esquerda, e clip não cria
+       contexto de rolagem (a âncora #pedir continua funcionando). */
+    overflow: clip;
+    padding-block: var(--e-24);
+    /* Altura de reserva perto da real (747px medidos a 1440): com os 600px
+       do .secao, o rodapé pulava quando a seção entrava em cena (CLS 0.0105
+       medido; com a reserva, 0). */
+    contain-intrinsic-size: auto 750px;
+  }
+  @supports (color: light-dark(#fff, #000)) {
+    .cf {
+      --cf-gigante: light-dark(#e7eeee, #0e3139);
+      --cf-gigante-acesa: light-dark(#f6e4ad, #503f10);
+      --cf-halo: light-dark(rgba(242, 193, 78, 0.45), rgba(242, 193, 78, 0.28));
+      --cf-fio: light-dark(rgba(36, 140, 160, 0.55), rgba(99, 198, 224, 0.55));
+      --cf-terminal: light-dark(#248ca0, #63c6e0);
+      --cf-vivo: light-dark(#d9a21f, #f2c14e);
+      --cf-vivo-brilho: light-dark(rgba(217, 162, 31, 0.3), rgba(242, 193, 78, 0.35));
+      --cf-apagado: light-dark(#c9d6d6, #2c4a54);
+    }
+  }
+
+  /* --- a lâmpada gigante e o halo --- */
+  .cf__gigante,
+  .cf__brilho,
+  .cf__sonda {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+  }
+  /* Ancorada na borda esquerda do container, não no centro da tela: assim o
+     soquete fica sempre embaixo da coluna de texto, em qualquer largura. */
+  .cf__gigante {
+    left: calc(max(var(--e-4), (100% - var(--largura)) / 2) - 140px);
+    top: var(--e-8);
+    height: min(calc(100% - var(--e-16)), 720px);
+    aspect-ratio: 74 / 93.7;
+    transition: background-color var(--dur-cena) var(--ease-cena);
+  }
+  @supports ((-webkit-mask-image: url("/img/logo-mono.svg")) or (mask-image: url("/img/logo-mono.svg"))) {
+    .cf__gigante {
+      background: var(--cf-gigante);
+      -webkit-mask: url("/img/logo-mono.svg") no-repeat center / contain;
+              mask: url("/img/logo-mono.svg") no-repeat center / contain;
+    }
+  }
+  /* O halo nasce no centro do anel (38% da altura do desenho). */
+  .cf__brilho {
+    left: calc(max(var(--e-4), (100% - var(--largura)) / 2) - 140px - 160px);
+    top: calc(var(--e-8) - 120px);
+    width: 820px;
+    height: 820px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--cf-halo) 0%, transparent 62%);
+    opacity: 0;
+    transition: opacity var(--dur-cena) var(--ease-cena);
+  }
+  .cf--acesa .cf__gigante { background-color: var(--cf-gigante-acesa); }
+  .cf--acesa .cf__brilho { opacity: 1; }
+  .cf__sonda { right: var(--fio-x); top: 0; width: 2px; height: 0; }
+
+  /* --- texto e formulário --- */
+  .cf__grade { position: relative; z-index: 1; display: grid; gap: var(--e-12); align-items: center; }
+  @media (min-width: 900px) {
+    /* O vão de 96px é onde o fio desce pelas chaves, 40px antes do cartão. */
+    .cf__grade { grid-template-columns: minmax(0, 1fr) minmax(360px, 440px); column-gap: var(--e-24); }
+    .cf__texto { padding-left: clamp(0px, (100vw - 900px) * 0.22, 120px); }
+  }
+  .cf h2 {
+    font-family: "Outfit", "Outfit capa forte", var(--display);
+    /* Peso declarado duas vezes, como a frase da capa: a reserva local
+       ignora font-variation-settings. */
+    font-weight: 800;
+    font-variation-settings: "wght" 800;
+    font-size: clamp(2.5rem, 1.6rem + 2.6vw, 3.25rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    max-width: 11ch;
+    margin: 0;
+  }
+  .cf .chamada { margin: var(--e-6) 0 0; max-width: 40ch; }
+
+  .cf__placar {
+    display: flex;
+    align-items: center;
+    gap: var(--e-3);
+    margin: var(--e-8) 0 0;
+    font-size: var(--t-sm);
+    font-weight: 600;
+    color: var(--texto-suave);
+  }
+  .cf__placar[hidden] { display: none; }
+  .cf__pontos { display: inline-flex; gap: var(--e-2); }
+  .cf__pontos i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--cf-apagado);
+    transition: background-color var(--dur-base) var(--ease-saida), box-shadow var(--dur-base) var(--ease-saida);
+  }
+  .cf__pontos i[data-on] { background: var(--cf-vivo); box-shadow: 0 0 10px 2px var(--cf-vivo-brilho); }
+
+  /* --- o circuito (desenhado pelo script, só a partir de 900px) --- */
+  .cf__circuito {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .cf__circuito :global(.cf-base) { fill: none; stroke: var(--cf-fio); stroke-width: 2; stroke-linejoin: round; }
+  .cf__circuito :global(.cf-vivo),
+  .cf__circuito :global(.cf-aura) {
+    fill: none;
+    stroke: var(--cf-vivo);
+    stroke-linejoin: round;
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-saida);
+  }
+  .cf__circuito :global(.cf-vivo) { stroke-width: 2.5; }
+  .cf__circuito :global(.cf-aura) { stroke: var(--cf-vivo-brilho); stroke-width: 9; }
+  .cf__circuito :global([data-vivo] .cf-vivo),
+  .cf__circuito :global([data-vivo] .cf-aura) { opacity: 1; }
+
+  .cf__circuito :global(.cf-term) { fill: var(--cf-terminal); transition: fill var(--dur-base) var(--ease-saida); }
+  .cf__circuito :global(.cf-term[data-vivo]) { fill: var(--cf-vivo); }
+  /* A lâmina gira em volta do terminal de cima (transform-origin vem do
+     script, em px do próprio SVG). Aberta: 35°. A mão no campo: 14°. */
+  .cf__circuito :global(.cf-lamina) {
+    stroke: var(--cf-terminal);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    rotate: 35deg;
+    transition: rotate var(--dur-rapida) var(--ease-mola), stroke var(--dur-base) var(--ease-saida);
+  }
+  .cf__circuito :global([data-mao] .cf-lamina) { rotate: 14deg; }
+  .cf__circuito :global([data-fechada] .cf-lamina) { rotate: 0deg; }
+  .cf__circuito :global([data-fechada][data-vivo] .cf-lamina) { stroke: var(--cf-vivo); }
+  /* O botão de pressão do esquema: uma ponte solta ao lado dos terminais que
+     encosta neles quando aperta. */
+  .cf__circuito :global(.cf-ponte) {
+    stroke: var(--cf-terminal);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    fill: none;
+    transition: translate var(--dur-rapida) var(--ease-mola), stroke var(--dur-base) var(--ease-saida);
+  }
+  .cf__circuito :global([data-mao] .cf-ponte) { translate: 5px 0; }
+  .cf__circuito :global([data-fechada] .cf-ponte) { translate: 14px 0; stroke: var(--cf-vivo); }
+  .cf__circuito :global(.cf-rotulo) {
+    fill: var(--texto-suave);
+    font: 600 13px var(--fonte);
+    transition: opacity var(--dur-base) var(--ease-saida);
+  }
+  .cf--acesa .cf__circuito :global(.cf-rotulo) { opacity: 0; }
+
+  /* Entrada: o fio se desenha do nó até o soquete. pathLength="1" em cada
+     trecho, então o mesmo keyframe serve para todos. */
+  @keyframes cf-desenha { from { stroke-dashoffset: 1; } }
+  @keyframes cf-surge { from { opacity: 0; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .cf--espera .cf__circuito { visibility: hidden; }
+    .cf--vista .cf__circuito :global(.cf-base) {
+      stroke-dasharray: 1;
+      animation: cf-desenha var(--dur-cena) var(--ease-cena) both;
+      animation-delay: calc(var(--i, 0) * 80ms);
+    }
+    .cf--vista .cf__circuito :global(.cf-contato),
+    .cf--vista .cf__circuito :global(.cf-rotulo) {
+      animation: cf-surge var(--dur-base) var(--ease-saida) both;
+      animation-delay: calc(200ms + var(--i, 0) * 80ms);
+    }
+  }
+
+  /* --- celular e tablet: sem fio, a chave vai para o rótulo do campo --- */
+  @media (max-width: 899px) {
+    .cf { padding-block: var(--e-12) var(--e-16); }
+    .cf__gigante { left: auto; right: -110px; top: var(--e-4); height: 380px; }
+    .cf__brilho { left: auto; right: -330px; top: -150px; width: 600px; height: 600px; }
+    .cf__circuito { display: none; }
+    /* A chave do campo como ícone antes do rótulo. Data-uri e não SVG no
+       HTML: o rótulo mora no LeadForm, que é compartilhado e não muda. */
+    .cf :global(.form .campo[data-contato] label)::before {
+      content: "";
+      display: inline-block;
+      width: 26px;
+      height: 16px;
+      margin-right: var(--e-2);
+      vertical-align: -3px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 16'%3E%3Cg fill='%2363a8b8' stroke='%2363a8b8' stroke-width='2.5' stroke-linecap='round'%3E%3Ccircle cx='4' cy='11' r='3' stroke='none'/%3E%3Ccircle cx='22' cy='11' r='3' stroke='none'/%3E%3Cpath d='M4 11L19 2' fill='none'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain;
+    }
+    .cf :global(.form .campo[data-contato="fechado"] label)::before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 16'%3E%3Cg fill='%23e0a92a' stroke='%23e0a92a' stroke-width='2.5'%3E%3Ccircle cx='4' cy='11' r='3' stroke='none'/%3E%3Ccircle cx='22' cy='11' r='3' stroke='none'/%3E%3Cpath d='M4 11H22' fill='none'/%3E%3C/g%3E%3C/svg%3E");
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cf__gigante, .cf__brilho, .cf__pontos i,
+    .cf__circuito :global(*) { transition: none; }
+  }
+</style>
+
+<script>
+  import { normalizarWhatsapp } from "../lib/lead.mjs";
+
+  // O circuito fecha. ~1kb. Sem este script a seção continua inteira: lâmpada
+  // apagada, texto e o formulário, que faz POST normal.
+  const secao = document.querySelector<HTMLElement>(".cf[data-art='circuito-fecha']");
+  const form = secao?.querySelector<HTMLFormElement>("form");
+
+  if (secao && form) {
+    const svg = secao.querySelector<SVGSVGElement>(".cf__circuito")!;
+    const placar = secao.querySelector<HTMLElement>(".cf__placar")!;
+    const frase = placar.querySelector<HTMLElement>("[data-placar]")!;
+    const pontos = [...placar.querySelectorAll("i")];
+    const aviso = form.querySelector<HTMLElement>(".form__aviso");
+    const botao = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+
+    // As três chaves, na ordem do fio. O terceiro campo é <select> nesta
+    // solução; se um dia virar <input> livre, ele é opcional e já nasce fechado.
+    const campos = (["nome", "whatsapp", "contexto"] as const).map((nome) => form.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${nome}"]`)!);
+    const valido = [
+      (v: string) => v.trim().length >= 2,
+      (v: string) => normalizarWhatsapp(v) !== null,
+      (v: string) => campos[2].tagName !== "SELECT" || v !== "",
+    ];
+    let enviado = false;
+
+    const estado = () => {
+      const fechadas = enviado ? [true, true, true] : campos.map((c, i) => valido[i](c.value));
+      // Série: a corrente passa até a primeira chave aberta.
+      let alcance = 0;
+      while (alcance < 3 && fechadas[alcance]) alcance++;
+      return { fechadas, alcance };
+    };
+
+    const FRASES = ["Três campos e a lâmpada acende", "Faltam dois campos para a lâmpada acender", "Falta um campo para a lâmpada acender", "Circuito fechado: é só apertar o botão"];
+
+    const aplicar = () => {
+      const { fechadas, alcance } = estado();
+      const n = fechadas.filter(Boolean).length;
+      pontos.forEach((p, i) => p.toggleAttribute("data-on", i < n));
+      frase.textContent = enviado ? "Pedido enviado. A lâmpada acendeu." : FRASES[n];
+      secao.classList.toggle("cf--acesa", enviado);
+      campos.forEach((c, i) => c.closest(".campo")?.setAttribute("data-contato", fechadas[i] ? "fechado" : "aberto"));
+
+      // Trecho k do fio (0 = do nó até a 1ª chave) está vivo se as chaves
+      // 0..k-1 estão fechadas; o último (botão → soquete), só depois do envio.
+      // A chave k fica entre os trechos k e k+1.
+      const vivo = (k: number) => (k < 4 ? k <= alcance : enviado);
+      svg.querySelectorAll<SVGGElement>("[data-trecho]").forEach((t) => {
+        t.toggleAttribute("data-vivo", vivo(Number(t.dataset.trecho)));
+      });
+      svg.querySelectorAll<SVGGElement>("[data-chave]").forEach((g) => {
+        const k = Number(g.dataset.chave);
+        g.toggleAttribute("data-fechada", k < 3 ? fechadas[k] : enviado);
+        g.toggleAttribute("data-vivo", vivo(k));
+        const [cima, baixo] = g.querySelectorAll(".cf-term");
+        cima?.toggleAttribute("data-vivo", vivo(k));
+        baixo?.toggleAttribute("data-vivo", vivo(k + 1));
+      });
+    };
+
+    // O desenho depende do layout: medido, nunca escrito à mão. Refeito a
+    // cada mudança de tamanho da seção.
+    const desenhar = () => {
+      if (innerWidth < 900) {
+        svg.innerHTML = "";
+        return aplicar();
+      }
+      const base = secao.getBoundingClientRect();
+      const rel = (el: Element) => {
+        const b = el.getBoundingClientRect();
+        return { x: b.left - base.left, y: b.top - base.top, w: b.width, h: b.height };
+      };
+      const sonda = rel(secao.querySelector(".cf__sonda")!);
+      const cartao = rel(form.closest(".form")!);
+      const giga = rel(secao.querySelector(".cf__gigante")!);
+      const fioX = sonda.x + 1;
+      const noY = 68; // centro do nó do .secao::before (top 64px, 8px de altura)
+      const x = Math.round(cartao.x - 40);
+      const ys = [...campos, botao].map((el) => {
+        const b = rel(el);
+        return Math.round(b.y + b.h / 2);
+      });
+      const soqX = Math.round(giga.x + giga.w * 0.5);
+      const soqY = Math.round(giga.y + giga.h * 0.965);
+      const baixoY = Math.max(soqY + 28, ys[3] + 72);
+      const G = 16; // meia altura da chave
+
+      const trechos = [
+        `M${fioX} ${noY}H${x}V${ys[0] - G}`,
+        `M${x} ${ys[0] + G}V${ys[1] - G}`,
+        `M${x} ${ys[1] + G}V${ys[2] - G}`,
+        `M${x} ${ys[2] + G}V${ys[3] - G}`,
+        `M${x} ${ys[3] + G}V${baixoY}H${soqX}V${soqY}`,
+      ];
+      let h = trechos
+        .map((d, k) => `<g data-trecho="${k}" style="--i:${k}"><path class="cf-base" pathLength="1" d="${d}"/><path class="cf-aura" d="${d}"/><path class="cf-vivo" d="${d}"/></g>`)
+        .join("");
+      ys.forEach((y, k) => {
+        const t = `<circle class="cf-term" cx="${x}" cy="${y - G}" r="4.5"/><circle class="cf-term" cx="${x}" cy="${y + G}" r="4.5"/>`;
+        const peca =
+          k < 3
+            ? `<path class="cf-lamina" style="transform-origin:${x}px ${y - G}px" d="M${x} ${y - G}V${y + G}"/>`
+            : `<path class="cf-ponte" d="M${x - 14} ${y - 22}V${y + 22}M${x - 14} ${y}H${x - 28}"/>`;
+        h += `<g class="cf-contato" data-chave="${k}" style="--i:${k + 1}">${peca}${t}</g>`;
+      });
+      h += `<text class="cf-rotulo" x="${soqX + 28}" y="${baixoY - 12}" style="--i:5">acende quando o seu pedido chega</text>`;
+      svg.innerHTML = h;
+      aplicar();
+    };
+
+    // Ponteiro: a mão no campo deixa a lâmina perto de fechar.
+    const mao = (k: number, sim: boolean) => svg.querySelector(`[data-chave="${k}"]`)?.toggleAttribute("data-mao", sim);
+    campos.forEach((c, k) => {
+      c.addEventListener("focus", () => mao(k, true));
+      c.addEventListener("blur", () => mao(k, false));
+    });
+    if (matchMedia("(hover: hover)").matches) {
+      botao.addEventListener("pointerenter", () => mao(3, true));
+      botao.addEventListener("pointerleave", () => mao(3, false));
+    }
+
+    form.addEventListener("input", () => {
+      enviado = false;
+      aplicar();
+    });
+    form.addEventListener("change", aplicar);
+    // O LeadForm marca o aviso com data-ok quando o servidor grava: é o botão
+    // apertado de verdade, não o clique (que pode ser recusado).
+    if (aviso) {
+      new MutationObserver(() => {
+        enviado = aviso.hasAttribute("data-ok");
+        aplicar();
+      }).observe(aviso, { attributes: true, attributeFilter: ["data-ok"] });
+    }
+
+    let quadro = 0;
+    new ResizeObserver(() => {
+      cancelAnimationFrame(quadro);
+      quadro = requestAnimationFrame(desenhar);
+    }).observe(secao);
+    placar.hidden = false;
+
+    // Entrada: o fio se desenha uma vez, quando um terço da seção aparece.
+    if (matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+      secao.classList.add("cf--espera");
+      const obs = new IntersectionObserver(
+        ([e]) => {
+          if (!e.isIntersecting) return;
+          obs.disconnect();
+          secao.classList.replace("cf--espera", "cf--vista");
+          // Depois da entrada, um redesenho (resize) não repete a animação.
+          setTimeout(() => secao.classList.remove("cf--vista"), 1600);
+        },
+        { threshold: 0.35 },
+      );
+      obs.observe(secao);
+    }
+  }
+</script>
